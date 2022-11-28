@@ -1,0 +1,2 @@
+;;; Generated package description from evil-quickscope.el  -*- no-byte-compile: t -*-
+(define-package "evil-quickscope" "20160202.1924" "Highlight unique characters in words for f,F,t,T navigation" '((evil "0")) :commit "37a20e4c56c6058abf186ad4013c155e695e876f" :authors '(("Michael Chen" . "blorbx@gmail.com")) :maintainer '("Michael Chen" . "blorbx@gmail.com") :keywords '("faces" "emulation" "vim" "evil") :url "http://github.com/blorbx/evil-quickscope")

@@ -1,0 +1,2 @@
+;;; Generated package description from osx-plist.el  -*- no-byte-compile: t -*-
+(define-package "osx-plist" "20200212.1724" "Apple plist file parser" '((emacs "25.1")) :commit "46d52aa186ea50a35c1780977bf0aa261bd53922" :authors '(("Theresa O'Connor" . "tess@oconnor.cx")) :maintainer '("Neil Okamoto" . "neil.okamoto+melpa@gmail.com") :keywords '("convenience") :url "https://github.com/gonewest818/osx-plist")
