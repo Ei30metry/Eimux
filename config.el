@@ -42,6 +42,10 @@
      magit
      git-timemachine)))
 
+(add-to-list 'load-path "~/.config/haskmacs/evil-commentary")
+(require 'evil-commentary)
+(evil-commentary-mode)
+
 (use-package evil-surround
   :after evil
   :config
@@ -55,7 +59,11 @@
 	 (org-mode . turn-on-evil-quickscope-mode)))
 
 (use-package evil-lion
-  :ensure t)
+  :ensure t
+  :init
+  (evil-lion-mode))
+
+(winner-mode 1)
 
 (setq-default message-log-max nil)
 
@@ -66,11 +74,13 @@
             (kill-buffer buffer)))))
 
 (setq-default warning-minimum-level nil)
+(setq make-backup-files nil)
 
 (use-package general
   :ensure t
   :config
   (general-evil-setup t))
+
 
 (defun +evil--window-swap (direction)
   "Move current window to the next window in DIRECTION.
@@ -121,6 +131,39 @@ the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
   "Swap windows downward."
   (interactive) (+evil--window-swap 'down))
 
+(defun doom/window-maximize-buffer (&optional arg)
+  "Close other windows to focus on this one.
+Use `winner-undo' to undo this. Alternatively, use `doom/window-enlargen'."
+  (interactive "P")
+  (when (and (bound-and-true-p +popup-mode)
+             (+popup-window-p))
+    (+popup/raise (selected-window)))
+  (delete-other-windows))
+
+(defvar winner-undone-data  nil) ; There confs have been passed.
+
+(defun winner-undo ()
+  "Switch back to an earlier window configuration saved by Winner mode.
+In other words, \"undo\" changes in window configuration."
+  (interactive)
+  (cond
+   ((not winner-mode) (error "Winner mode is turned off"))
+   (t (unless (and (eq last-command 'winner-undo)
+ 		   (eq winner-undo-frame (selected-frame)))
+	(winner-save-conditionally)     ; current configuration->stack
+ 	(setq winner-undo-frame (selected-frame))
+ 	(setq winner-point-alist (winner-make-point-alist))
+ 	(setq winner-pending-undo-ring (winner-ring (selected-frame)))
+ 	(setq winner-undo-counter 0)
+ 	(setq winner-undone-data (list (winner-win-data))))
+      (cl-incf winner-undo-counter)	; starting at 1
+      (when (and (winner-undo-this)
+ 		 (not (window-minibuffer-p)))
+ 	(message "Winner undo (%d / %d)"
+ 		 winner-undo-counter
+ 		 (1- (ring-length winner-pending-undo-ring)))))))
+
+
 
 (nvmap :prefix "SPC"
        "." '(find-file :which-key "Find file")
@@ -159,11 +202,22 @@ the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
        "w J" '(+evil/window-move-down :which-key "Move window to down")
        "w K" '(+evil/window-move-up :which-key "Move window to up")
 
+       ;; Window size
+
+       "w m m" '(doom/window-maximize-buffer :which-key "Full screen window")
+       "w u" '(winner-undo :whic-key "Revert back to the last window state")
+
        ;; Company-mode
 
        ;; Magit
 
        "g g" '(magit-status :which-key "Magit status")
+
+       ;; Haskell-mode
+       "o r" '(haskell-session-change :which-key "Open Haskell REPL")
+
+       ;; Terminal
+       "o t" '(vterm :which-key "Open vterm")
        )
 
 ;; (nvmap
@@ -183,7 +237,7 @@ the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
 (setq confirm-kill-emacs 'y-or-n-p)
 
 (add-to-list 'custom-theme-load-path (expand-file-name "~/.config/haskmacs/themes/"))
-(load-theme 'nord t)
+;; (load-theme 'nord t)
 
 (use-package doom-modeline
   :ensure t
@@ -289,8 +343,20 @@ the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
 (use-package org-super-agenda
    :ensure t)
 
+(add-to-list 'load-path "~/.config/haskmacs/org-journal")
+(require 'org-journal)
+
+;; (add-to-list 'load-path "~/.config/haskmacs/helm-bibtex")
+;; (autoload 'helm-bibtex "helm-bibtex" "" t)
+
+(add-to-list 'load-path "~/.config/haskmacs/org-ql")
+(add-to-list 'load-path "~/.config/haskmacs/peg")
+(require 'org-ql)
+
 (use-package which-key
   :ensure t
+  :config
+  (setq which-key-allow-imprecise-window-fit t)
   :init
   (which-key-mode))
 
@@ -298,6 +364,13 @@ the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
 
 (use-package persp-mode
   :ensure t)
+
+(add-to-list 'load-path "~/.config/haskmacs/rainbow-delimiters")
+(require 'rainbow-delimiters)
+(add-hook 'lisp-mode #'rainbow-delimiters-mode)
+
+(add-to-list 'load-path "~/.config/haskmacs/treemacs")
+(require 'treemacs-mode)
 
 (use-package magit
   :ensure t)
@@ -458,6 +531,9 @@ everywhere else."
         lsp-haskell-fomatting-provider "stylish-haskell"))
 
 (setq haskell-font-lock-symbols t)
+
+(add-to-list 'load-path "~/.config/haskmacs/ghcid")
+(require 'ghcid)
 
 ;; (use-package python-mode
 ;;   :ensure t)

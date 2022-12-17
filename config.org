@@ -60,6 +60,12 @@
      magit
      git-timemachine)))
 #+end_src
+** Evil-commentary
+#+begin_src emacs-lisp
+(add-to-list 'load-path "~/.config/haskmacs/evil-commentary")
+(require 'evil-commentary)
+(evil-commentary-mode)
+#+end_src
 ** Evil-surround
 #+begin_src emacs-lisp
 (use-package evil-surround
@@ -79,9 +85,15 @@
 ** Evil-lion
 #+begin_src emacs-lisp
 (use-package evil-lion
-  :ensure t)
+  :ensure t
+  :init
+  (evil-lion-mode))
 #+end_src
-* Disabling default buffers
+* Initial modes
+#+begin_src emacs-lisp
+(winner-mode 1)
+#+end_src
+* Disabling default buffers and backup files
 #+begin_src emacs-lisp
 (setq-default message-log-max nil)
 
@@ -92,6 +104,7 @@
             (kill-buffer buffer)))))
 
 (setq-default warning-minimum-level nil)
+(setq make-backup-files nil)
 #+end_src
 * Keybidings
 #+begin_src emacs-lisp
@@ -150,6 +163,39 @@ the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
   "Swap windows downward."
   (interactive) (+evil--window-swap 'down))
 
+(defun doom/window-maximize-buffer (&optional arg)
+  "Close other windows to focus on this one.
+Use `winner-undo' to undo this. Alternatively, use `doom/window-enlargen'."
+  (interactive "P")
+  (when (and (bound-and-true-p +popup-mode)
+             (+popup-window-p))
+    (+popup/raise (selected-window)))
+  (delete-other-windows))
+
+(defvar winner-undone-data  nil) ; There confs have been passed.
+
+(defun winner-undo ()
+  "Switch back to an earlier window configuration saved by Winner mode.
+In other words, \"undo\" changes in window configuration."
+  (interactive)
+  (cond
+   ((not winner-mode) (error "Winner mode is turned off"))
+   (t (unless (and (eq last-command 'winner-undo)
+ 		   (eq winner-undo-frame (selected-frame)))
+	(winner-save-conditionally)     ; current configuration->stack
+ 	(setq winner-undo-frame (selected-frame))
+ 	(setq winner-point-alist (winner-make-point-alist))
+ 	(setq winner-pending-undo-ring (winner-ring (selected-frame)))
+ 	(setq winner-undo-counter 0)
+ 	(setq winner-undone-data (list (winner-win-data))))
+      (cl-incf winner-undo-counter)	; starting at 1
+      (when (and (winner-undo-this)
+ 		 (not (window-minibuffer-p)))
+ 	(message "Winner undo (%d / %d)"
+ 		 winner-undo-counter
+ 		 (1- (ring-length winner-pending-undo-ring)))))))
+
+
 
 (nvmap :prefix "SPC"
        "." '(find-file :which-key "Find file")
@@ -188,11 +234,22 @@ the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
        "w J" '(+evil/window-move-down :which-key "Move window to down")
        "w K" '(+evil/window-move-up :which-key "Move window to up")
 
+       ;; Window size
+
+       "w m m" '(doom/window-maximize-buffer :which-key "Full screen window")
+       "w u" '(winner-undo :whic-key "Revert back to the last window state")
+
        ;; Company-mode
 
        ;; Magit
 
        "g g" '(magit-status :which-key "Magit status")
+
+       ;; Haskell-mode
+       "o r" '(haskell-session-change :which-key "Open Haskell REPL")
+
+       ;; Terminal
+       "o t" '(vterm :which-key "Open vterm")
        )
 
 ;; (nvmap
@@ -226,7 +283,7 @@ the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
 ** Theme
 #+begin_src emacs-lisp
 (add-to-list 'custom-theme-load-path (expand-file-name "~/.config/haskmacs/themes/"))
-(load-theme 'nord t)
+;; (load-theme 'nord t)
 #+end_src
 
 #+begin_src emacs-lisp
@@ -297,7 +354,8 @@ the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
 #+end_src
 
 * Org-mode
-** Org-mode
+** Improving upon org-mode
+*** Org-mode
 #+begin_src emacs-lisp
 (use-package org
   :ensure t
@@ -320,7 +378,7 @@ the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
 	    (lambda ()
 	      (rainbow-delimiters-mode -1))))
 #+end_src
-** Org-contrib
+*** Org-contrib
 #+begin_src emacs-lisp
 (use-package org-contrib
   :after (org)
@@ -328,7 +386,7 @@ the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
   (require 'ox-extra)
   (ox-extras-activate '(latex-header-blocks ignore-headlines)))
 #+end_src
-** Evil-org
+*** Evil-org
 #+begin_src emacs-lisp
 (use-package evil-org
   :hook (org-mode . evil-org-mode)
@@ -340,14 +398,14 @@ the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
 #+end_src
-** Org-bullets
+*** Org-bullets
 #+begin_src emacs-lisp
 (use-package org-bullets
    :ensure t)
 
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 #+end_src
-** Org-tempo
+*** Org-tempo
 #+begin_src emacs-lisp
 (with-eval-after-load 'org
   (require 'org-tempo)
@@ -355,15 +413,34 @@ the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
   (add-to-list 'org-structure-template-alist '("py" . "src python"))
   (add-to-list 'org-structure-template-alist '("sq" . "src sql")))
 #+end_src
-** Org-super-agenda
+** Productivity
+*** Org-super-agenda
 #+begin_src emacs-lisp
 (use-package org-super-agenda
    :ensure t)
+#+end_src
+*** Org-journal
+#+begin_src emacs-lisp
+(add-to-list 'load-path "~/.config/haskmacs/org-journal")
+(require 'org-journal)
+#+end_src
+*** helm-bibtex
+#+begin_src emacs-lisp
+;; (add-to-list 'load-path "~/.config/haskmacs/helm-bibtex")
+;; (autoload 'helm-bibtex "helm-bibtex" "" t)
+#+end_src
+*** Org-ql
+#+begin_src emacs-lisp
+(add-to-list 'load-path "~/.config/haskmacs/org-ql")
+(add-to-list 'load-path "~/.config/haskmacs/peg")
+(require 'org-ql)
 #+end_src
 * Which key
 #+begin_src emacs-lisp
 (use-package which-key
   :ensure t
+  :config
+  (setq which-key-allow-imprecise-window-fit t)
   :init
   (which-key-mode))
 
@@ -376,6 +453,16 @@ the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
   :ensure t)
 #+end_src
 ** Rainbow delimiters
+#+begin_src emacs-lisp
+(add-to-list 'load-path "~/.config/haskmacs/rainbow-delimiters")
+(require 'rainbow-delimiters)
+(add-hook 'lisp-mode #'rainbow-delimiters-mode)
+#+end_src
+** Treemacs
+#+begin_src emacs-lisp
+(add-to-list 'load-path "~/.config/haskmacs/treemacs")
+(require 'treemacs-mode)
+#+end_src
 ** Magit
 #+begin_src emacs-lisp
 (use-package magit
@@ -577,6 +664,11 @@ everywhere else."
         lsp-haskell-fomatting-provider "stylish-haskell"))
 
 (setq haskell-font-lock-symbols t)
+#+end_src
+*** Ghcid
+#+begin_src emacs-lisp
+(add-to-list 'load-path "~/.config/haskmacs/ghcid")
+(require 'ghcid)
 #+end_src
 ** C
 ** Python
