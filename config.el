@@ -1,57 +1,48 @@
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(package-initialize)
+(straight-use-package 'use-package)
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(eval-and-compile
-  (setq use-package-always-ensure t
-        use-package-expand-minimally t))
+(use-package exec-path-from-shell
+  :straight t
+  :config
+  (exec-path-from-shell-initialize))
 
 (use-package evil
-  :ensure t ;; install evil if not installed
-  :config
+  :straight t
+  :init
   (setq evil-auto-indent nil)
+  (setq evil-emacs-state-modes nil)
+  (setq evil-motion-state-modes nil)
   (setq evil-ex-sibstitute-global t)
   (setq evil-move-cursot-back nil)
+  (setq evil-overriding-maps nil)
   (setq evil-move-beyong-eol t)
   (setq evil-kill-on-visual-paste nil)
-  :init
   (setq evil-want-keybinding nil)
-  (setq evil-want-integration nil)
-  (evil-mode))
+  (setq evil-want-integration t)
+  :config
+  (evil-mode 1))
 
 (use-package evil-collection
+  :straight t
   :after evil
-  :ensure t
   :config
-  (evil-collection-init
-   '(pass
-     calendar
-     dired
-     pdf
-     company
-     vterm
-     flycheck
-     xref
-     eshell
-     org
-     magit
-     git-timemachine)))
+  (evil-collection-init))
 
-(add-to-list 'load-path "~/.config/haskmacs/evil-commentary")
-(require 'evil-commentary)
-(evil-commentary-mode)
+(use-package evil-commentary
+  :straight t
+  :init
+  (evil-commentary-mode))
+;; (add-to-list 'load-path "~/.config/haskmacs/evil-commentary")
+;; (require 'evil-commentary)
+;; (evil-commentary-mode)
 
 (use-package evil-surround
+  :straight t
   :after evil
   :config
   (global-evil-surround-mode 1))
 
 (use-package evil-quickscope
+  :straight t
   :after evil
   :config
   :hook ((prog-mode . turn-on-evil-quickscope-mode)
@@ -59,7 +50,7 @@
 	 (org-mode . turn-on-evil-quickscope-mode)))
 
 (use-package evil-lion
-  :ensure t
+  :straight t
   :init
   (evil-lion-mode))
 
@@ -68,19 +59,82 @@
 (setq-default message-log-max nil)
 
 (add-hook 'minibuffer-exit-hook
-      '(lambda ()
+      #'(lambda ()
          (let ((buffer "*Completions*"))
            (and (get-buffer buffer)
             (kill-buffer buffer)))))
 
 (setq-default warning-minimum-level nil)
 (setq make-backup-files nil)
+(setq aut-save-default nil)
+(setq auto-save-list-file-prefix nil)
 
-(use-package general
-  :ensure t
-  :config
-  (general-evil-setup t))
+;;;###autoload
+(defun +company-has-completion-p ()
+  "Return non-nil if a completion candidate exists at point."
+  (when company-mode
+    (unless company-candidates-length
+      (company-manual-begin))
+    (= company-candidates-length 1)))
 
+(defun kill-all-buffers (&optional buffer-list interactive)
+  "Kill all buffers and closes their windows.
+
+If the prefix arg is passed, doesn't close windows and only kill buffers that
+belong to the current project."
+  (interactive
+   (list (if current-prefix-arg
+             (doom-project-buffer-list)
+           (doom-buffer-list))
+         t))
+  (if (null buffer-list)
+      (message "No buffers to kill")
+    (save-some-buffers)
+    (delete-other-windows)
+    (when (memq (current-buffer) buffer-list)
+      (switch-to-buffer (doom-fallback-buffer)))
+    (mapc #'kill-buffer buffer-list)
+    (doom--message-or-count
+     interactive "Killed %d buffers"
+     (- (length buffer-list)
+        (length (cl-remove-if-not #'buffer-live-p buffer-list))))))
+
+;;;###autoload
+(defun +company/toggle-auto-completion ()
+  "Toggle as-you-type code completion."
+  (interactive)
+  (require 'company)
+  (setq company-idle-delay (unless company-idle-delay 0.2))
+  (message "Auto completion %s"
+           (if company-idle-delay "enabled" "disabled")))
+
+
+;;;###autoload
+(defun +company/complete ()
+  "Bring up the completion popup. If only one result, complete it."
+  (interactive)
+  (require 'company)
+  (when (ignore-errors
+          (/= (point)
+              (cdr (bounds-of-thing-at-point 'symbol))))
+    (save-excursion (insert " ")))
+  (when (and (company-manual-begin)
+             (= company-candidates-length 1))
+    (company-complete-common)))
+
+;;;###autoload
+(defun +company/dabbrev ()
+  "Invokes `company-dabbrev-code' in prog-mode buffers and `company-dabbrev'
+everywhere else."
+  (interactive)
+  (call-interactively
+   (if (derived-mode-p 'prog-mode)
+       #'company-dabbrev-code
+     #'company-dabbrev)))
+
+     
+(defalias 'doom-buffer-list #'buffer-list)
+(defvar doom-fallback-buffer-name "*scratch*")
 
 (defun +evil--window-swap (direction)
   "Move current window to the next window in DIRECTION.
@@ -115,23 +169,34 @@ the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
       (window-swap-states this-window that-window)
       (select-window that-window))))
 
+(defun doom-fallback-buffer ()
+  "Returns the fallback buffer, creating it if necessary. By default this is the
+scratch buffer. See `doom-fallback-buffer-name' to change this."
+  (let (buffer-list-update-hook)
+    (get-buffer-create doom-fallback-buffer-name)))
+
+ (defun doom--message-or-count (interactive message count)
+  (if interactive
+      (message message count)
+    count))
+
 (defun +evil/window-move-left ()
-  "Swap windows to the left."
+  "Swap window to the left."
   (interactive) (+evil--window-swap 'left))
 ;;;###autoload
 (defun +evil/window-move-right ()
-  "Swap windows to the right"
+  "Swap window to the right"
   (interactive) (+evil--window-swap 'right))
 ;;;###autoload
 (defun +evil/window-move-up ()
-  "Swap windows upward."
+  "Swap window upward."
   (interactive) (+evil--window-swap 'up))
 ;;;###autoload
 (defun +evil/window-move-down ()
-  "Swap windows downward."
+  "Swap window downward."
   (interactive) (+evil--window-swap 'down))
 
-(defun doom/window-maximize-buffer (&optional arg)
+(defun window-maximize-buffer (&optional arg)
   "Close other windows to focus on this one.
 Use `winner-undo' to undo this. Alternatively, use `doom/window-enlargen'."
   (interactive "P")
@@ -163,65 +228,130 @@ In other words, \"undo\" changes in window configuration."
  		 winner-undo-counter
  		 (1- (ring-length winner-pending-undo-ring)))))))
 
+(use-package general
+  :straight t
+  :config
+  (general-evil-setup t))
 
+(general-create-definer my-leader-def
+     :prefix "SPC")
 
-(nvmap :prefix "SPC"
-       "." '(find-file :which-key "Find file")
-       ":" '(execute-extended-command :which-key "M-x")
+(general-create-definer my-local-leader-def
+    :prefix "SPC m")
 
-       ;; Buffers
-       "b b" '(ibuffer :which-key "Ibufer")
-       ","   '(persp-switch-to-buffer :which-key "Show buffers")
-       "b k" '(kill-current-buffer :which-key "Kill current buffer")
-       "b ]" '(next-buffer :which-key "Next buffer")
-       "b [" '(previous-buffer :which-key "Previous buffer")
-       "b B" '(ibuffer-list-buffers :which-key "Ibuffer list buffers")
-       "b K" '(kill-buffer :which-key "kill all buffers")
+(my-leader-def
+   :states 'normal
+   :prefix "SPC p"
+   :keymaps '(projectile-mode-map)
+   "c" '(projectile-compile-project :which-key "Compile project"))
+;; haskell-mode keybindings
+(my-local-leader-def
+   :states 'normal
+   :keymaps '(haskell-mode-map haskell-interactive-mode-map)
+   "t" '(haskell-process-do-type :which-key "Show type at point")
+   "r" '(haskell-process-reload :which-key "Reload the current module")
+   "k" '(haskell-interactive-mode-clear :which-key "Clear the GHCi buffer")
+   "l" '(haskell-process-load-file :which-key "Load the module")
+   "v" '(haskell-process-visit-file :which-key "Open the .cabal file")
+   "b" '(haskell-process-cabal-build :which-key "Build the project")
+   "x" '(haskell-process-cabal :which-key "Execute a cabal command")
+   "s" '(haskell-interactive-switch :which-key "Switch between GHCi and buffer"))
 
-       ;; Eshell
-       "e h" '(counsel-esh-history :which-key "Eshell history")
-       "e s" '(eshell :which-key "Eshell")
-       "f r" '(counsel-recentf :which-key "Recent files")
-       "h r r" '((lambda () (interactive) (load-file "~/.config/my-emacs/init.el")) :which-key "Reload emacs config")
-       "t t" '(toggle-truncate-lines :which-key "Toggle truncate lines")
+;; agda2-mode keybindings
+(my-local-leader-def
+   :states 'normal
+   :keymaps '(agda2-mode-map agda2-goal-map)
+   "a" '(agda2-auto-maybe-all :which-key "Try to solve every goal using Auto")
+   "b" '(agda2-previous-goal :which-key "Go to the previous goal")
+   "f" '(agda2-next-goal :which-key "Go to the next goal")
+   "l" '(agda2-load :which-key "Load the current module")
+   "c" '(agda2-make-case :which-key "Case split on the current goal")
+   "e" '(agda2-show-context :which-key "Show the context for the current goal")
+   "r" '(agda2-refine :which-key "Refine the goal")
+   "x q" '(agda2-quit :which-key "Quit")
+   "x c" '(agda2-compile :which-key "Compile the project")
+   "x r" '(agda2-restart :which-key "Restart agda2-mode")
+   "n" '(agda2-compute-normalised-maybe-toplevel :which-key "Show the normalised form")
+   "t" '(agda2-goal-type :which-key "Show the type of the goal")
+   "SPC" '(agda2-give :which-key "Give input")
+   "," '(agda2-goal-and-context :which-key "Show the goal and context")
+   "." '(agda2-goal-and-context-and-infered :which-key "Show the goal and context and infered")
+   "." '(agda2-goal-and-context-and-checked :which-key "Show the goal and context and checked")
+   "=" '(agda2-show-constraints :which-key "Show the constraints")
+   "d" '(agda2-goto-definition-keyboard :which-key "Go to defintion")
+   "?" '(agda2-show-goals :which-key "Show the goals")
+   "RET" '(agda2-elaborate-give :which-key "Elaborate check the give expression")
+   )
 
-       ;; Window splits
-       "w d" '(evil-window-delete :which-key "Close window")
-       "w n" '(evil-window-new :which-key "New window")
-       "w s" '(evil-window-split :which-key "Horizontal split window")
-       "w v" '(evil-window vsplit :which-key "Vertical split window")
+(my-leader-def
+   :keymaps 'normal
 
-       ;; Window motions
-       "w h" '(evil-window-left :which-key "Window left")
-       "w l" '(evil-window-right :which-key "Window right")
-       "w k" '(evil-window-up :which-key "Window up")
-       "w j" '(evil-widnow-down :which-key "Window down")
-       "w w" '(evil-window-next :which-key "Next Window")
-       "w H" '(+evil/window-move-left :which-key "Move window to left")
-       "w L" '(+evil/window-move-right :which-key "Move window to right")
-       "w J" '(+evil/window-move-down :which-key "Move window to down")
-       "w K" '(+evil/window-move-up :which-key "Move window to up")
+   ;; Help menu
+   "h f" '(describe-function :which-key "Describe function")
+   "h m" '(describe-mode :which-key "Describe mode")
+   "h k" '(describe-key :which-key "Describe key")
+   "h K" '(describe-keymap :which-key "Describe keymap")
+   "h b" '(general-describe-keybindings :which-key "Describe all keybindings")
+   "h c" '(describe-char :which-key "Describe char")
+   "h x" '(describe-command :which-key "Describe command")
+   "h s" '(describe-symbol :which-key "Describe symbol")
 
-       ;; Window size
+   "h r r" '((lambda () (interactive) (load-file "~/.config/haskmacs/init.el")) :which-key "Reload emacs config")
 
-       "w m m" '(doom/window-maximize-buffer :which-key "Full screen window")
-       "w u" '(winner-undo :whic-key "Revert back to the last window state")
+   "C" '(org-capture :which-key "Org Capture")
+   "a" '(org-agenda :which-key "Org Agenda")
+   "d" '(dired :which-key "Dired")
 
-       ;; Company-mode
+   ":" '(execute-extended-command :which-key "M-x")
+   "," '(persp-switch-to-buffer :which-key "Show buffers")
+   "." '(find-file :which-key "Find file")
+   
+   ;; Buffers
+   "b b" '(ibuffer :which-key "Ibuffer")
+   "b k" '(kill-current-buffer :which-key "Kill current buffer")
+   "b ]" '(next-buffer :which-key "Next buffer")
+   "b [" '(previous-buffer :which-key "Previous buffer")
+   "b B" '(ibuffer-list-buffers :which-key "Ibuffer list buffers")
+   "b K" '(kill-all-buffers :which-key "kill all buffers")
 
-       ;; Magit
+   "t t" '(toggle-truncate-lines :which-key "Toggle truncate lines")
 
-       "g g" '(magit-status :which-key "Magit status")
+   ;; Window splits
+   "w d" '(evil-window-delete :which-key "Close window")
+   "w n" '(evil-window-new :which-key "New window")
+   "w s" '(evil-window-split :which-key "Horizontal split window")
+   "w v" '(evil-window vsplit :which-key "Vertical split window")
 
-       ;; Haskell-mode
-       "o r" '(haskell-session-change :which-key "Open Haskell REPL")
+   ;; Window motions
+   "w h" '(evil-window-left :which-key "Window left")
+   "w l" '(evil-window-right :which-key "Window right")
+   "w k" '(evil-window-up :which-key "Window up")
+   "w j" '(evil-window-down :which-key "Window down")
+   "w w" '(evil-window-next :which-key "Next Window")
+   "w H" '(+evil/window-move-left :which-key "Move window to left")
+   "w L" '(+evil/window-move-right :which-key "Move window to right")
+   "w J" '(+evil/window-move-down :which-key "Move window to down")
+   "w K" '(+evil/window-move-up :which-key "Move window to up")
 
-       ;; Terminal
-       "o t" '(vterm :which-key "Open vterm")
-       )
+   ;; Window size
+   "w m m" '(window-maximize-buffer :which-key "Full screen window")
+   "w u" '(winner-undo :which-key "Revert back to the last window state")
 
-;; (nvmap
-;;        "-SPC" '(+company/complete :which-key "bring up the pop up menu for autocomplete"))
+   ;; Magit
+   "g g" '(magit-status :which-key "Git status")
+
+   ;; "g g" '(magit-status :which-key "Magit status")
+
+   ;; Terminal
+   "o t" '(vterm :which-key "Open vterm")
+   "o e" '(eshell :which-key "Open eshell")
+
+   ;; Searching
+   "s i" '(consult-imenu :which-key "Imenu buffer")
+   "s I" '(consult-imenu :which-key "Imenu multi-buffer")
+   "s r" '(consult-recent-file :which-key "Recent files")
+
+   "/" '(consult-ripgrep :which-key "Search current project"))
 
 (setq mac-option-key-is-meta t
       mac-command-key-is-meta nil
@@ -229,22 +359,51 @@ In other words, \"undo\" changes in window configuration."
       mac-option-modifier 'meta)
 
 (use-package osx-lib
-  :ensure t)
+  :straight t)
 
 (use-package osx-plist
-  :ensure t)
+  :straight t)
 
 (setq confirm-kill-emacs 'y-or-n-p)
 
-(add-to-list 'custom-theme-load-path (expand-file-name "~/.config/haskmacs/themes/"))
-;; (load-theme 'nord t)
+(setq scroll-conservatively 101)
+;; (use-package reverse-theme
+ ;;   :insure t)
+ (use-package doom-themes
+ :straight t
+ :config
+ ;; Global settings (defaults)
+ (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+       doom-themes-enable-italic t) ; if nil, italics is universally disabled
+ (load-theme 'doom-meltbus t)
+
+ ;; Enable flashing mode-line on errors
+ (doom-themes-visual-bell-config)
+ ;; Enable custom neotree theme (all-the-icons must be installed!)
+ (doom-themes-neotree-config)
+ ;; Corrects (and improves) org-mode's native fontification.
+ (doom-themes-org-config))
+ 
+ (use-package sexy-monochrome-theme :straight t)
+ (use-package minimal-theme :straight t)
+ (use-package kosmos-theme :straight t)
+ ;; (use-package eziam-themes :straight t)
+ (use-package almost-mono-themes :straight t)
+ (add-to-list 'custom-theme-load-path "~/.config/haskmacs/themes")
+ ;; (set-foreground-color "white")
+ ;; (set-background-color "black")
+
+ ;; (load-theme 'reverse-theme t)
 
 (use-package doom-modeline
-  :ensure t
+  :straight t
+  :config
+  (setq doom-modeline-indent-info nil)
+  (setq doom-modeline-major-mode-color-icon nil)
   :init
   (doom-modeline-mode))
 
-(set-face-attribute 'default nil'
+(set-face-attribute 'default nil
                     :font "Andale Mono 14"
                     :weight 'medium)
 
@@ -259,80 +418,91 @@ In other words, \"undo\" changes in window configuration."
 (add-to-list 'default-frame-alist '(font . "Andale Mono 14"))
 
 (use-package all-the-icons
-  :ensure t
+  :straight t
   :if (display-graphic-p))
 
 (use-package dashboard
-  :ensure t
-  :init
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
-  (setq dashboard-banner-logo-title "It's good to have an end to journey toward; but it's the journey that matters in the end.")
-  (setq dashboard-startup-banner "~/.config/haskmacs/images/lambda.png")
-  (setq dashboard-center-content t)
-  (setq dashboard-items '((recents . 10)
-                          (agenda . 5)
-                          (bookmarks . 5)
-                          (projects . 5)
-                          (registers . 5)))
-  :config
-  (dashboard-setup-startup-hook)
-  (dashboard-modify-heading-icons '((recents . "file-text")
-                                    (bookmarks . "book"))))
+:straight t
+:init
+(setq dashboard-set-heading-icons nil)
+(setq dashboard-icon-type 'all-the-icons)
+(setq dashboard-set-file-icons t)
+(setq dashboard-banner-logo-title "It's good to have an end to journey toward; but it's the journey that matters in the end.")
+(setq dashboard-startup-banner "~/.config/haskmacs/images/lambda.png")
+(setq dashboard-center-content t)
+(setq dashboard-items '((agenda . 15)))
+:config
+(dashboard-setup-startup-hook)
+(dashboard-modify-heading-icons '((recents . "file-text")
+                                  (bookmarks . "book"))))
 
 (menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-;; (setq fancy-splash-image "~/.config/my-emacs/images/lambda.png")
+ (tool-bar-mode -1)
+ (scroll-bar-mode -1)
+ (pixel-scroll-precision-mode 1)
+ ;; (setq fancy-splash-image "~/.config/my-emacs/images/lambda.png")
 
-;; for emacs 29
-;; (setq frame-resize-pixelwise t)
-;; (add-to-list 'default-frame-alist '(undecorated . t))
-(global-display-line-numbers-mode 1)
-(global-visual-line-mode t)
-(setq display-line-numbers-type 'relative)
+ ;; for emacs 29
+ ;; (setq frame-resize-pixelwise t)
+ ;; (add-to-list 'default-frame-alist '(undecorated . t))
+ ;; (global-display-line-numbers-mode 1)
+ ;; (defun turn-on-numbers ()
+ ;;      (unless (eq major-mode 'pdf-view-mode)
+ ;;              (display-line-numbers-mode 1)))
+
+ ;; (type-of turn-on-numbers)
+;; (unless (eq major-mode 'pdf-view-mode)
+;;         (global-display-line-numbers-mode 1))
+
+ (global-display-line-numbers-mode 1)
+ (global-visual-line-mode 1)
+ (setq display-line-numbers-type 'relative)
 
 (use-package org
-  :ensure t
-  :defer t
+  :straight t
   :init
-  (setq org-directory (expand-file-name "~/Journal"))
+  (setq org-directory "~/Journal")
   (unless (file-exists-p org-directory)
     (mkdir org-directory t))
   :config
   (setq org-startup-indented t)
+  (setq org-log-into-drawer t)
+  (setq org-treat-insert-todo-heading-as-state-change t)
   (setq org-return-follows-link t)
   (setq org-src-tab-acts-natively nil)
+  (setq org-agenda-files '("~/Agenda/todo.org" "~/Agenda/plan.org"))
   (add-hook 'org-mode-hook 'smartparens-mode)
   (add-hook 'org-agenda-mode-hook
-	    (lambda ()
-	      (visual-line-mode -1)
-	      (toggle-truncate-lines 1)
-	      (display-line-numbers-mode 0)))
-  (add-hook 'org-mode-hook
-	    (lambda ()
-	      (rainbow-delimiters-mode -1))))
+        #'(lambda ()
+          (visual-line-mode -1)
+          (toggle-truncate-lines 1)
+          (display-line-numbers-mode 0))))
+  ;; (add-hook 'org-mode-hook
+  ;;       (lambda ()
+  ;;         (rainbow-delimiters-mode -1))))
 
 (use-package org-contrib
+  :straight t
   :after (org)
   :config
   (require 'ox-extra)
   (ox-extras-activate '(latex-header-blocks ignore-headlines)))
 
 (use-package evil-org
+  :straight t
   :hook (org-mode . evil-org-mode)
   :config
   (add-hook 'evil-org-mode-hook
-	    (lambda ()
+	    #'(lambda ()
 	      (evil-org-set-key-theme '(navigation insert textobjects additional calendar todo))))
   (add-to-list 'evil-emacs-state-modes 'org-agenda-mode)
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
 
 (use-package org-bullets
-   :ensure t)
+   :straight t)
 
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+(add-hook 'org-mode-hook #'(lambda () (org-bullets-mode 1)))
 
 (with-eval-after-load 'org
   (require 'org-tempo)
@@ -340,21 +510,46 @@ In other words, \"undo\" changes in window configuration."
   (add-to-list 'org-structure-template-alist '("py" . "src python"))
   (add-to-list 'org-structure-template-alist '("sq" . "src sql")))
 
-(use-package org-super-agenda
-   :ensure t)
+(use-package toc-org
+  :straight t
+  :config
+  (add-hook 'org-mode-hook 'toc-org-mode))
 
-(add-to-list 'load-path "~/.config/haskmacs/org-journal")
-(require 'org-journal)
+;; (use-package org-super-agenda
+;;    :ensure t)
 
-;; (add-to-list 'load-path "~/.config/haskmacs/helm-bibtex")
-;; (autoload 'helm-bibtex "helm-bibtex" "" t)
+(use-package deft
+    :straight t)
 
-(add-to-list 'load-path "~/.config/haskmacs/org-ql")
-(add-to-list 'load-path "~/.config/haskmacs/peg")
-(require 'org-ql)
+(use-package org-journal
+    :straight t)
+
+(setq org-journal-date-prefix "#+TITLE: "
+      org-journal-dir "~/Journal"
+      org-journal-time-prefix "* "
+      org-journal-date-format "%a, %Y-%m-%d"
+      org-journal-file-format "%Y-%m-%d.org")
+
+
+(setq org-roam-directory "~/Research")
+
+(setq org-directory "~/Journal")
+
+(setq deft-directory "~/Journal"
+      deft-extensions '("md" "org" "txt")
+      deft-recursive t)
+
+;; (use-package helm-bibtex
+;;   :ensure t)
+
+;; (use-package org-ql
+;;   :ensure t)
+;; (add-to-list 'load-path "~/.config/haskmacs/org-ql")
+;; (add-to-list 'load-path "~/.config/haskmacs/peg")
+;; (require 'org-ql)
 
 (use-package which-key
-  :ensure t
+  :straight t
   :config
   (setq which-key-allow-imprecise-window-fit t)
   :init
@@ -363,45 +558,44 @@ In other words, \"undo\" changes in window configuration."
 (setq which-key-idle-delay 0.2)
 
 (use-package persp-mode
-  :ensure t)
+  :straight t)
 
-(add-to-list 'load-path "~/.config/haskmacs/rainbow-delimiters")
-(require 'rainbow-delimiters)
-(add-hook 'lisp-mode #'rainbow-delimiters-mode)
-
-(add-to-list 'load-path "~/.config/haskmacs/treemacs")
-(require 'treemacs-mode)
+;; (add-to-list 'load-path "~/.config/haskmacs/rainbow-delimiters")
+;; (require 'rainbow-delimiters)
+;; (use-package rainbow-delimiters
+;;   :ensure t)
+;; (add-hook 'lisp-mode #'rainbow-delimiters-mode)
 
 (use-package magit
-  :ensure t)
+  :straight t)
 
-(use-package eglot
-  :ensure t)
+;; (use-package eglot
+;;   :ensure t)
 
-(use-package lsp-mode
-  :ensure t
-  :hook (
-         (typescript-mode . lsp)
-         (json-mode . lsp)
-         (haskell-mode . lsp)
-         ;;(python-mode . lsp)
-         )
-  :commands lsp
-  :init
-  (setq lsp-keymap-prefix nil)
-  :config
-  (setq lsp-idle-delay 1))
+;; (use-package lsp-mode
+;;   :straight t
+;;   :hook (
+;;          ;;(typescript-mode . lsp)
+;;          ;;(json-mode . lsp)
+;;          (haskell-mode . lsp)
+;;          ;;(python-mode . lsp)
+;;          )
+;;   :commands lsp
+;;   :init
+;;   (setq lsp-keymap-prefix nil)
+;;   :config
+;;   (setq lsp-idle-delay 1))
 
-(use-package lsp-ui
-  :ensure t)
+;; (use-package lsp-ui
+;;   :ensure t)
 
 (use-package smartparens
-  :ensure t
+  :straight t
   :init
   (smartparens-global-mode))
 
 (use-package vertico
-  :ensure t
+  :straight t
   :bind (:map vertico-map
             ("C-j" . vertico-next)
             ("C-k" . vertico-previous))
@@ -411,75 +605,48 @@ In other words, \"undo\" changes in window configuration."
   (vertico-mode))
 
 (use-package savehist
-  :ensure t
+  :straight t
   :init
   (savehist-mode))
 
 (use-package company
-  :ensure t
+  :straight t
   :config
   (setq company-idle-delay 0.15)
   (setq company-minimum-prefix-length 2)
   (setq company-show-number t))
 
 (add-hook 'after-init-hook 'global-company-mode)
-;;;###autoload
-(defun +company-has-completion-p ()
-  "Return non-nil if a completion candidate exists at point."
-  (when company-mode
-    (unless company-candidates-length
-      (company-manual-begin))
-    (= company-candidates-length 1)))
-
-;;;###autoload
-(defun +company/toggle-auto-completion ()
-  "Toggle as-you-type code completion."
-  (interactive)
-  (require 'company)
-  (setq company-idle-delay (unless company-idle-delay 0.2))
-  (message "Auto completion %s"
-           (if company-idle-delay "enabled" "disabled")))
-
-;;;###autoload
-(defun +company/complete ()
-  "Bring up the completion popup. If only one result, complete it."
-  (interactive)
-  (require 'company)
-  (when (ignore-errors
-          (/= (point)
-              (cdr (bounds-of-thing-at-point 'symbol))))
-    (save-excursion (insert " ")))
-  (when (and (company-manual-begin)
-             (= company-candidates-length 1))
-    (company-complete-common)))
-
-;;;###autoload
-(defun +company/dabbrev ()
-  "Invokes `company-dabbrev-code' in prog-mode buffers and `company-dabbrev'
-everywhere else."
-  (interactive)
-  (call-interactively
-   (if (derived-mode-p 'prog-mode)
-       #'company-dabbrev-code
-     #'company-dabbrev)))
 
 (use-package company-box
-  :ensure t)
+  :straight t)
+
+(use-package orderless
+  :straight t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
 
 (use-package vterm
-  :ensure t)
+  :straight t
+  :config
+  (add-hook 'vterm-mode-hook #'(lambda () (display-line-numbers-mode -1))))
 
 (use-package vterm-toggle
-  :ensure t)
+  :straight t)
 
-;; (use-package projectile
-;;   :ensure t)
+;; (use-package eshell
+;;   :straight t
+;;   (add-hook 'eshell-mode-hook #'(lambda () (display-line-numbers-mode -1))))
+(add-hook 'vterm-mode-hook #'(lambda () (display-line-numbers-mode -1)))
 
-(use-package treemacs
-  :ensure t)
+(use-package projectile
+  :straight t
+  :init
+  (projectile-mode 1))
 
 (use-package xref
-  :ensure t)
+  :straight t)
 
 (setq-default indent-tabs-mode nil)
 (setq-default default-tab-width 4)
@@ -489,14 +656,47 @@ everywhere else."
 (setq-default evil-shift-round nil)
 
 (use-package pdf-tools
-  :ensure t)
+  :straight t
+  :config
+  (add-hook 'pdf-view-mode-hook #'(lambda () (display-line-numbers-mode -1)))
+  (pdf-tools-install))
+
+(use-package imenu
+  :straight t)
+
+(use-package swiper
+  :straight t)
+
+(use-package consult
+   :straight t)
+
+(use-package marginalia
+  :straight t
+  :init
+  (marginalia-mode))
+
+;; (use-package helpful
+;;     :ensure t)
 
 (use-package haskell-mode
-  :ensure t)
-
-(add-hook 'haskell-mode-hook #'lsp-mode)
-(add-hook 'haskell-mode-hook (lambda () (setq evil-auto-indent nil)))
-(custom-set-variables '(haskell-stylish-on-save t))
+  :straight t
+  :config
+  (setq haskell-font-lock-symbols t)
+  (custom-set-variables '(haskell-stylish-on-save t))
+  (custom-set-variables '(haskell-process-log t))
+  :hook
+  (haskell-mode . (lambda () (setq evil-auto-indent nil)))
+  (haskell-mode . interactive-haskell-mode)
+  (haskell-mode . haskell-auto-insert-module-template)
+  (haskell-mode . haskell-decl-scan-mode))
+;; (add-hook 'haskell-mode-hook #'lsp-mode)
+;;(add-hook 'haskell-mode-hook (lambda () (setq evil-auto-indent nil)))
+;; (add-hook 'haskell-mode-hook '(interactive-haskell-mode))
+;; (add-hook 'haskell-mode-hook '(haskell-auto-insert-module-template))
+;; ;; (add-hook 'haskell-mode-hook '(haskell-decl-scan-mode))
+;; (setq haskell-font-lock-symbols t)
+;; (custom-set-variables '(haskell-stylish-on-save t))
+;; (custom-set-variables '(haskell-process-log t))
 
 ;; (defun dotspacemacs/user-config ()
 ;;  (with-eval-after-load "haskell-mode"
@@ -522,33 +722,30 @@ everywhere else."
 ;;   )
 ;; )
 
-(use-package lsp-haskell
-  :ensure t
-  :after haskell-mode
-  :config
-  (setq lsp-haskell-server-path "haskell-language-server-9.4.2\~1.8.0.0"
-        lsp-haskell-liquid-on t
-        lsp-haskell-fomatting-provider "stylish-haskell"))
+;; (use-package lsp-haskell
+;;   :straight t
+;;   :after haskell-mode
+;;   :config
+;;   (setq lsp-haskell-server-path "haskell-language-server-wrapper-2.1.0.0"
+;;         lsp-haskell-liquid-on t
+;;         lsp-haskell-fomatting-provider "stylish-haskell"))
 
-(setq haskell-font-lock-symbols t)
 
-(add-to-list 'load-path "~/.config/haskmacs/ghcid")
-(require 'ghcid)
-
-;; (use-package python-mode
-;;   :ensure t)
 
 (use-package json-mode
-  :ensure t)
+  :straight t)
 
 (use-package yaml-mode
-  :ensure t)
+  :straight t)
 
 (use-package csv-mode
-  :ensure t)
+  :straight t)
 
 (use-package tex-mode
-  :ensure t)
+  :straight t)
+
+(add-to-list 'load-path "~/.config/haskmacs/ott-mode")
+(require 'ott-mode)
 
 (use-package markdown-mode
-  :ensure t)
+  :straight t)

@@ -1,0 +1,17 @@
+.DS_Store
+.idea
+*.log
+tmp/
+*.elc
+*.eln
+\#.*
+eln-cache/
+eshell/
+history 
+straight/
+to-add.org
+.cache
+recentf
+projects
+transient/
+projectile-bookmarks.eld
