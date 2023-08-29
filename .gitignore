@@ -10,8 +10,9 @@ eshell/
 history 
 straight/
 to-add.org
-.cache
+.cache/
 recentf
 projects
 transient/
 projectile-bookmarks.eld
+.lsp-session-v1
