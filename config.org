@@ -100,6 +100,7 @@
 ** Functions
 #+begin_src emacs-lisp
 ;;;###autoload
+(require 'windmove)
 (defun +company-has-completion-p ()
   "Return non-nil if a completion candidate exists at point."
   (when company-mode
@@ -495,7 +496,7 @@ In other words, \"undo\" changes in window configuration."
 #+end_src
 * GUI settings
 #+begin_src emacs-lisp
-   (menu-bar-mode -1)
+   (menu-bar-mode 1)
    (tool-bar-mode -1)
    (scroll-bar-mode -1)
    (pixel-scroll-precision-mode 1)

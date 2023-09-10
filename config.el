@@ -70,6 +70,7 @@
 (setq auto-save-list-file-prefix nil)
 
 ;;;###autoload
+(require 'windmove)
 (defun +company-has-completion-p ()
   "Return non-nil if a completion candidate exists at point."
   (when company-mode
@@ -436,7 +437,7 @@ In other words, \"undo\" changes in window configuration."
 (dashboard-modify-heading-icons '((recents . "file-text")
                                   (bookmarks . "book"))))
 
-(menu-bar-mode -1)
+(menu-bar-mode 1)
  (tool-bar-mode -1)
  (scroll-bar-mode -1)
  (pixel-scroll-precision-mode 1)
