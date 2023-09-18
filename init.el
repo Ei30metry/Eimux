@@ -38,7 +38,6 @@
     (expand-file-name
       "config.org"
       user-emacs-directory))
-;; (load-file "~/.config/haskmacs/config.el")
 ;; init.el ends here
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

@@ -297,7 +297,7 @@ In other words, \"undo\" changes in window configuration."
    "h x" '(describe-command :which-key "Describe command")
    "h s" '(describe-symbol :which-key "Describe symbol")
 
-   "h r r" '((lambda () (interactive) (load-file "~/.config/haskmacs/init.el")) :which-key "Reload emacs config")
+   "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
 
    "C" '(org-capture :which-key "Org Capture")
    "a" '(org-agenda :which-key "Org Agenda")
@@ -356,7 +356,7 @@ In other words, \"undo\" changes in window configuration."
 
 (setq mac-option-key-is-meta t
       mac-command-key-is-meta nil
-      mac-command-modifier 'none
+      mac-command-modifier 'super
       mac-option-modifier 'meta)
 
 (use-package osx-lib
@@ -429,7 +429,7 @@ In other words, \"undo\" changes in window configuration."
 (setq dashboard-icon-type 'all-the-icons)
 (setq dashboard-set-file-icons t)
 (setq dashboard-banner-logo-title "It's good to have an end to journey toward; but it's the journey that matters in the end.")
-(setq dashboard-startup-banner "~/.config/haskmacs/images/lambda.png")
+(setq dashboard-startup-banner "~/.emacs.d/images/lambda.png")
 (setq dashboard-center-content t)
 (setq dashboard-items '((agenda . 15)))
 :config
@@ -516,11 +516,19 @@ In other words, \"undo\" changes in window configuration."
   :config
   (add-hook 'org-mode-hook 'toc-org-mode))
 
-;; (use-package org-super-agenda
-;;    :ensure t)
+(use-package org-super-agenda
+   :straight t)
 
 (use-package deft
-    :straight t)
+    :straight t
+    :config
+    (setq deft-directory "~/Journal"
+          deft-extensions '("md" "org" "txt")
+          deft-recursive t))
+
+(setq deft-directory "~/Journal"
+      deft-extensions '("md" "org" "txt")
+      deft-recursive t)
 
 (use-package org-journal
     :straight t)
@@ -532,13 +540,10 @@ In other words, \"undo\" changes in window configuration."
       org-journal-file-format "%Y-%m-%d.org")
 
 
-(setq org-roam-directory "~/Research")
 
 (setq org-directory "~/Journal")
 
-(setq deft-directory "~/Journal"
-      deft-extensions '("md" "org" "txt")
-      deft-recursive t)
+
 
 ;; (use-package helm-bibtex
 ;;   :ensure t)
@@ -573,19 +578,19 @@ In other words, \"undo\" changes in window configuration."
 ;; (use-package eglot
 ;;   :ensure t)
 
-;; (use-package lsp-mode
-;;   :straight t
-;;   :hook (
-;;          ;;(typescript-mode . lsp)
-;;          ;;(json-mode . lsp)
-;;          (haskell-mode . lsp)
-;;          ;;(python-mode . lsp)
-;;          )
-;;   :commands lsp
-;;   :init
-;;   (setq lsp-keymap-prefix nil)
-;;   :config
-;;   (setq lsp-idle-delay 1))
+;; for improvement 
+(setq read-process-output-max (* 2048 2048))
+(setq gc-cons-threshold 100000000)
+
+(use-package lsp-mode
+   :straight t
+   :commands lsp
+   :init
+   (setq lsp-keymap-prefix nil)
+   :config
+   (setq lsp-log-io nil)
+   (setq lsp-use-plists "1")
+   (setq lsp-idle-delay 1))
 
 ;; (use-package lsp-ui
 ;;   :ensure t)
@@ -723,13 +728,13 @@ In other words, \"undo\" changes in window configuration."
 ;;   )
 ;; )
 
-;; (use-package lsp-haskell
-;;   :straight t
-;;   :after haskell-mode
-;;   :config
-;;   (setq lsp-haskell-server-path "haskell-language-server-wrapper-2.1.0.0"
-;;         lsp-haskell-liquid-on t
-;;         lsp-haskell-fomatting-provider "stylish-haskell"))
+(use-package lsp-haskell
+  :straight t
+  :after haskell-mode
+  :config
+  (setq lsp-haskell-server-path "haskell-language-server-wrapper-2.2.0.0"
+        lsp-haskell-liquid-on t
+        lsp-haskell-fomatting-provider "stylish-haskell"))
 
 
 
@@ -745,7 +750,7 @@ In other words, \"undo\" changes in window configuration."
 (use-package tex-mode
   :straight t)
 
-(add-to-list 'load-path "~/.config/haskmacs/ott-mode")
+(add-to-list 'load-path "~/.emacs.d/ott-mode")
 (require 'ott-mode)
 
 (use-package markdown-mode
