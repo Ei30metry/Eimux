@@ -8,13 +8,6 @@
 (straight-use-package 'use-package)
 #+end_src
 
-** PATH
-#+begin_src emacs-lisp
-(use-package exec-path-from-shell
-  :straight t
-  :config
-  (exec-path-from-shell-initialize))
-#+end_src
 * EVIL Mode
 ** Evil
 #+begin_src emacs-lisp

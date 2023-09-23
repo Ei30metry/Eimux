@@ -34,6 +34,13 @@
 
 (straight-use-package 'org)
 
+(use-package exec-path-from-shell
+  :straight t
+  :config
+  (exec-path-from-shell-arguments nil)
+  (exec-path-from-shell-initialize))
+
+
 (org-babel-load-file
     (expand-file-name
       "config.org"
