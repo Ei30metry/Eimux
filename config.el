@@ -246,6 +246,17 @@ In other words, \"undo\" changes in window configuration."
    :keymaps '(projectile-mode-map)
    "c" '(projectile-compile-project :which-key "Compile project"))
 ;; haskell-mode keybindings
+
+(my-leader-def
+   :states 'normal
+   :prefix "SPC c"
+   :keymaps '(lsp-mode-map lsp-ui-mode-map)
+   "d" '(lsp-find-definition :which-key "Find definition")
+   "t" '(lsp-ui-doc-glance :which-key "Show documentation")
+   "r" '(lsp-ui-peek-find-references :which-key "Show documentation")
+   "S" '(lsp-mode :which-key "Enable lsp-mode")
+   )
+
 (my-local-leader-def
    :states 'normal
    :keymaps '(haskell-mode-map haskell-interactive-mode-map)
@@ -296,6 +307,15 @@ In other words, \"undo\" changes in window configuration."
    "h c" '(describe-char :which-key "Describe char")
    "h x" '(describe-command :which-key "Describe command")
    "h s" '(describe-symbol :which-key "Describe symbol")
+
+   ;; Journal 
+   "j N" '(org-journal-new-entry :which-key "New journal entry")
+   "j n" '(org-journal-next-entry :which-key "Next journal entry")
+   "j p" '(org-journal-previous-entry :which-key "Previous journal entry")
+   "j r" '(org-journal-read-entry :which-key "Read journal entry")
+   "j s" '(org-journal-search-forever :which-key "Search in all the journal files ")
+   "j S" '(org-journal-search :which-key "Search in journal files ")
+   
 
    "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
 
@@ -588,12 +608,13 @@ In other words, \"undo\" changes in window configuration."
    :init
    (setq lsp-keymap-prefix nil)
    :config
+   (setq lsp-file-watch-threshold 3000)
    (setq lsp-log-io nil)
-   (setq lsp-use-plists "1")
+   (setq lsp-use-plists nil)
    (setq lsp-idle-delay 1))
 
-;; (use-package lsp-ui
-;;   :ensure t)
+(use-package lsp-ui
+  :straight t)
 
 (use-package smartparens
   :straight t
@@ -688,7 +709,7 @@ In other words, \"undo\" changes in window configuration."
   :straight t
   :config
   (setq haskell-font-lock-symbols t)
-  (custom-set-variables '(haskell-stylish-on-save t))
+  (custom-set-variables '(haskell-stylish-on-save nil))
   (custom-set-variables '(haskell-process-log t))
   :hook
   (haskell-mode . (lambda () (setq evil-auto-indent nil)))
@@ -732,9 +753,9 @@ In other words, \"undo\" changes in window configuration."
   :straight t
   :after haskell-mode
   :config
-  (setq lsp-haskell-server-path "haskell-language-server-wrapper-2.2.0.0"
-        lsp-haskell-liquid-on t
-        lsp-haskell-fomatting-provider "stylish-haskell"))
+  (setq lsp-haskell-server-path "haskell-language-server-wrapper"))
+        ;; lsp-haskell-liquid-on t
+        ;; lsp-haskell-fomatting-provider "stylish-haskell"))
 
 
 
