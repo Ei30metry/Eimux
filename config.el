@@ -264,7 +264,7 @@ In other words, \"undo\" changes in window configuration."
    "r" '(haskell-process-reload :which-key "Reload the current module")
    "k" '(haskell-interactive-mode-clear :which-key "Clear the GHCi buffer")
    "l" '(haskell-process-load-file :which-key "Load the module")
-   "v" '(haskell-process-visit-file :which-key "Open the .cabal file")
+   "v" '(haskell-cabal-visit-file :which-key "Open the .cabal file")
    "b" '(haskell-process-cabal-build :which-key "Build the project")
    "x" '(haskell-process-cabal :which-key "Execute a cabal command")
    "s" '(haskell-interactive-switch :which-key "Switch between GHCi and buffer"))
@@ -538,6 +538,11 @@ In other words, \"undo\" changes in window configuration."
 
 (use-package org-super-agenda
    :straight t)
+
+(use-package org-books
+  :straight t
+  :config
+  (setq org-books-file "~/Agenda/books.org"))
 
 (use-package deft
     :straight t
