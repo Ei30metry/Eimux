@@ -560,6 +560,12 @@ In other words, \"undo\" changes in window configuration."
     ;;       (lambda ()
     ;;         (rainbow-delimiters-mode -1))))
 #+end_src
+*** Org-Capture
+#+begin_src emacs-lisp
+(setq org-capture-templates
+      '(("t" "Todo" entry (file+headline "~/Agenda/todo.org" "Inbox")
+         "* TODO %?\n  %i\n")))
+#+end_src
 *** Org-contrib
 #+begin_src emacs-lisp
 (use-package org-contrib

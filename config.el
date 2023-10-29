@@ -502,6 +502,10 @@ In other words, \"undo\" changes in window configuration."
   ;;       (lambda ()
   ;;         (rainbow-delimiters-mode -1))))
 
+(setq org-capture-templates
+      '(("t" "Todo" entry (file+headline "~/Agenda/todo.org" "Inbox")
+         "* TODO %?\n  %i\n")))
+
 (use-package org-contrib
   :straight t
   :after (org)
