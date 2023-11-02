@@ -1,10 +1,5 @@
 (straight-use-package 'use-package)
 
-;; (use-package exec-path-from-shell
-;;   :straight t
-;;   :config
-;;   (exec-path-from-shell-initialize))
-
 (use-package evil
   :straight t
   :init
@@ -491,7 +486,7 @@ In other words, \"undo\" changes in window configuration."
   (setq org-treat-insert-todo-heading-as-state-change t)
   (setq org-return-follows-link t)
   (setq org-src-tab-acts-natively nil)
-  (setq org-agenda-files '("~/Agenda/todo.org" "~/Agenda/plan.org"))
+  (setq org-agenda-files '("~/Agenda/todo.org" "~/Agenda/habits.org"))
   (add-hook 'org-mode-hook 'smartparens-mode)
   (add-hook 'org-agenda-mode-hook
         #'(lambda ()
@@ -542,6 +537,15 @@ In other words, \"undo\" changes in window configuration."
 
 (use-package org-super-agenda
    :straight t)
+
+;; (use-package org-alert
+;;   :straight t
+;;   :config
+;;   (setq alert-default-style 'osx-notifier
+;;         org-alert-notification-title "Agenda"
+;;         org-alert-interval 300)
+;;   :init
+;;   (org-alert-enable))
 
 (use-package org-books
   :straight t
