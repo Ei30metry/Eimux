@@ -359,7 +359,7 @@ In other words, \"undo\" changes in window configuration."
    ;; "g g" '(magit-status :which-key "Magit status")
 
    ;; Terminal
-   "o t" '(vterm :which-key "Open vterm")
+   "o t" '(term :which-key "Open term")
    "o e" '(eshell :which-key "Open eshell")
 
    ;; Searching
@@ -667,13 +667,16 @@ In other words, \"undo\" changes in window configuration."
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
 
-(use-package vterm
-  :straight t
-  :config
-  (add-hook 'vterm-mode-hook #'(lambda () (display-line-numbers-mode -1))))
+(add-hook 'term-mode-hook #'(lambda () (display-line-numbers-mode -1)))
+(setq explicit-shell-file-name "zsh")
 
-(use-package vterm-toggle
-  :straight t)
+;; (use-package vterm
+;;   :straight t
+;;   :config
+;;   (add-hook 'vterm-mode-hook #'(lambda () (display-line-numbers-mode -1))))
+
+;; (use-package vterm-toggle
+;;   :straight t)
 
 ;; (use-package eshell
 ;;   :straight t
