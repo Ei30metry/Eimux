@@ -34,18 +34,14 @@
 
 (straight-use-package 'org)
 
-(use-package exec-path-from-shell
-  :straight t
-  :config
-  (exec-path-from-shell-arguments nil)
-  (exec-path-from-shell-initialize))
 
-
-(org-babel-load-file
-    (expand-file-name
-      "config.org"
-      user-emacs-directory))
+;; NOTE very good for debugging 
+;; (org-babel-load-file
+;;     (expand-file-name
+;;       "config.org"
+;;       user-emacs-directory))
 ;; init.el ends here
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -1,5 +1,10 @@
 (straight-use-package 'use-package)
 
+(use-package exec-path-from-shell
+  :straight t
+  :config
+  (exec-path-from-shell-initialize))
+
 (use-package evil
   :straight t
   :init
@@ -698,7 +703,6 @@ In other words, \"undo\" changes in window configuration."
 
 (use-package projectile
   :straight t
-  :config
   :init
   (projectile-mode 1))
 
