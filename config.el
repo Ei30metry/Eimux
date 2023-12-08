@@ -243,10 +243,14 @@ In other words, \"undo\" changes in window configuration."
 
 (my-leader-def
    :states 'normal
-   :prefix "SPC p"
+   :prefix "SPC"
    :keymaps '(projectile-mode-map)
-   "c" '(projectile-compile-project :which-key "Compile project"))
-;; haskell-mode keybindings
+   "p c" '(projectile-compile-project :which-key "Compile project")
+   "p f" '(projectile-find-file :which-key "Find file")
+   "SPC" '(projectile-find-file :which-key "Find file")
+   "p p" '(projectile-switch-project :which-key "Switch to project")
+   "p a" '(projectile-add-known-project :which-key "Add project to known projects")
+   "p t" '(projectile-run-vterm :which-key "Run vterm in project root"))
 
 (my-leader-def
    :states 'normal
@@ -255,7 +259,6 @@ In other words, \"undo\" changes in window configuration."
    "d" '(lsp-find-definition :which-key "Find definition")
    "t" '(lsp-ui-doc-glance :which-key "Show documentation")
    "r" '(lsp-ui-peek-find-references :which-key "Show documentation")
-   "S" '(lsp-mode :which-key "Enable lsp-mode")
    )
 
 (my-local-leader-def
@@ -309,14 +312,14 @@ In other words, \"undo\" changes in window configuration."
    "h x" '(describe-command :which-key "Describe command")
    "h s" '(describe-symbol :which-key "Describe symbol")
 
-   ;; Journal 
+   ;; Journal
    "j N" '(org-journal-new-entry :which-key "New journal entry")
    "j n" '(org-journal-next-entry :which-key "Next journal entry")
    "j p" '(org-journal-previous-entry :which-key "Previous journal entry")
    "j r" '(org-journal-read-entry :which-key "Read journal entry")
    "j s" '(org-journal-search-forever :which-key "Search in all the journal files ")
    "j S" '(org-journal-search :which-key "Search in journal files ")
-   
+
 
    "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
 
@@ -327,7 +330,7 @@ In other words, \"undo\" changes in window configuration."
    ":" '(execute-extended-command :which-key "M-x")
    "," '(persp-switch-to-buffer :which-key "Show buffers")
    "." '(find-file :which-key "Find file")
-   
+
    ;; Buffers
    "b b" '(ibuffer :which-key "Ibuffer")
    "b k" '(kill-current-buffer :which-key "Kill current buffer")
@@ -365,7 +368,8 @@ In other words, \"undo\" changes in window configuration."
    ;; "g g" '(magit-status :which-key "Magit status")
 
    ;; Terminal
-   "o t" '(term :which-key "Open term")
+   "o t" '(vterm :which-key "Open vterm")
+   "o T" '(term :which-key "Open vterm")
    "o e" '(eshell :which-key "Open eshell")
 
    ;; Searching
@@ -373,7 +377,10 @@ In other words, \"undo\" changes in window configuration."
    "s I" '(consult-imenu :which-key "Imenu multi-buffer")
    "s r" '(consult-recent-file :which-key "Recent files")
 
-   "/" '(consult-ripgrep :which-key "Search current project"))
+   "/" '(consult-ripgrep :which-key "Search current project")
+
+   ;; LSP
+   "c S" '(lsp :which-key "LSP mode"))
 
 (setq mac-option-key-is-meta t
       mac-command-key-is-meta nil
@@ -405,7 +412,7 @@ In other words, \"undo\" changes in window configuration."
  (doom-themes-neotree-config)
  ;; Corrects (and improves) org-mode's native fontification.
  (doom-themes-org-config))
- 
+
  (use-package sexy-monochrome-theme :straight t)
  (use-package minimal-theme :straight t)
  (use-package kosmos-theme :straight t)
@@ -617,7 +624,7 @@ In other words, \"undo\" changes in window configuration."
 ;; (use-package eglot
 ;;   :ensure t)
 
-;; for improvement 
+;; for improvement
 (setq read-process-output-max (* 2048 2048))
 (setq gc-cons-threshold 100000000)
 
@@ -673,19 +680,16 @@ In other words, \"undo\" changes in window configuration."
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
 
+(add-hook 'term-mode-hook #'(lambda () (display-line-numbers-mode -1)))
+(setq explicit-shell-file-name "zsh")
+
 (use-package vterm
   :straight t
   :config
   (add-hook 'vterm-mode-hook #'(lambda () (display-line-numbers-mode -1))))
-  ;;(add-hook 'vterm-mode-hook #'(lambda () (setq show-trailing-whitespace nil))))
 
-;; (use-package vterm
-;;   :straight t
-;;   :config
-;;   (add-hook 'vterm-mode-hook #'(lambda () (display-line-numbers-mode -1))))
-
-;; (use-package vterm-toggle
-;;   :straight t)
+  ;; (use-package vterm-toggle
+  ;;   :straight t)
 
 ;; (use-package eshell
 ;;   :straight t
@@ -694,6 +698,7 @@ In other words, \"undo\" changes in window configuration."
 
 (use-package projectile
   :straight t
+  :config
   :init
   (projectile-mode 1))
 

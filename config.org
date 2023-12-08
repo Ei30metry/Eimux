@@ -274,10 +274,14 @@ In other words, \"undo\" changes in window configuration."
 
   (my-leader-def
      :states 'normal
-     :prefix "SPC p"
+     :prefix "SPC"
      :keymaps '(projectile-mode-map)
-     "c" '(projectile-compile-project :which-key "Compile project"))
-  ;; haskell-mode keybindings
+     "p c" '(projectile-compile-project :which-key "Compile project")
+     "p f" '(projectile-find-file :which-key "Find file")
+     "SPC" '(projectile-find-file :which-key "Find file")
+     "p p" '(projectile-switch-project :which-key "Switch to project")
+     "p a" '(projectile-add-known-project :which-key "Add project to known projects")
+     "p t" '(projectile-run-vterm :which-key "Run vterm in project root"))
 
   (my-leader-def
      :states 'normal
@@ -286,7 +290,6 @@ In other words, \"undo\" changes in window configuration."
      "d" '(lsp-find-definition :which-key "Find definition")
      "t" '(lsp-ui-doc-glance :which-key "Show documentation")
      "r" '(lsp-ui-peek-find-references :which-key "Show documentation")
-     "S" '(lsp-mode :which-key "Enable lsp-mode")
      )
 
   (my-local-leader-def
@@ -396,7 +399,8 @@ In other words, \"undo\" changes in window configuration."
      ;; "g g" '(magit-status :which-key "Magit status")
 
      ;; Terminal
-     "o t" '(term :which-key "Open term")
+     "o t" '(vterm :which-key "Open vterm")
+     "o T" '(term :which-key "Open vterm")
      "o e" '(eshell :which-key "Open eshell")
 
      ;; Searching
@@ -404,7 +408,10 @@ In other words, \"undo\" changes in window configuration."
      "s I" '(consult-imenu :which-key "Imenu multi-buffer")
      "s r" '(consult-recent-file :which-key "Recent files")
 
-     "/" '(consult-ripgrep :which-key "Search current project"))
+     "/" '(consult-ripgrep :which-key "Search current project")
+
+     ;; LSP
+     "c S" '(lsp :which-key "LSP mode"))
 
   #+end_src
 *** macOS
@@ -810,7 +817,6 @@ In other words, \"undo\" changes in window configuration."
   :straight t
   :config
   (add-hook 'vterm-mode-hook #'(lambda () (display-line-numbers-mode -1))))
-  ;;(add-hook 'vterm-mode-hook #'(lambda () (setq show-trailing-whitespace nil))))
 
   ;; (use-package vterm-toggle
   ;;   :straight t)
