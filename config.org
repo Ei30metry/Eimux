@@ -88,6 +88,9 @@
 (setq make-backup-files nil)
 (setq aut-save-default nil)
 (setq auto-save-list-file-prefix nil)
+
+;; TODO Fix this
+(setq-default show-trailing-whitespace nil)
 #+end_src
 * Keybidings
 ** Functions
@@ -156,7 +159,6 @@ everywhere else."
        #'company-dabbrev-code
      #'company-dabbrev)))
 
-     
 (defalias 'doom-buffer-list #'buffer-list)
 (defvar doom-fallback-buffer-name "*scratch*")
 
@@ -260,6 +262,10 @@ In other words, \"undo\" changes in window configuration."
     :config
     (general-evil-setup t))
 
+  (general-define-key
+       :states 'insert
+       "C-SPC" '+company/complete )
+
   (general-create-definer my-leader-def
        :prefix "SPC")
 
@@ -313,8 +319,8 @@ In other words, \"undo\" changes in window configuration."
      "t" '(agda2-goal-type :which-key "Show the type of the goal")
      "SPC" '(agda2-give :which-key "Give input")
      "," '(agda2-goal-and-context :which-key "Show the goal and context")
-     "." '(agda2-goal-and-context-and-infered :which-key "Show the goal and context and infered")
-     "." '(agda2-goal-and-context-and-checked :which-key "Show the goal and context and checked")
+     "." '(agda2-goal-and-context-and-inferred :which-key "Show the goal and context and infered")
+     ";" '(agda2-goal-and-context-and-checked :which-key "Show the goal and context and checked")
      "=" '(agda2-show-constraints :which-key "Show the constraints")
      "d" '(agda2-goto-definition-keyboard :which-key "Go to defintion")
      "?" '(agda2-show-goals :which-key "Show the goals")
@@ -323,7 +329,7 @@ In other words, \"undo\" changes in window configuration."
 
   (my-leader-def
      :keymaps 'normal
- 
+
      ;; Help menu
      "h f" '(describe-function :which-key "Describe function")
      "h m" '(describe-mode :which-key "Describe mode")
@@ -334,14 +340,14 @@ In other words, \"undo\" changes in window configuration."
      "h x" '(describe-command :which-key "Describe command")
      "h s" '(describe-symbol :which-key "Describe symbol")
 
-     ;; Journal 
+     ;; Journal
      "j N" '(org-journal-new-entry :which-key "New journal entry")
      "j n" '(org-journal-next-entry :which-key "Next journal entry")
      "j p" '(org-journal-previous-entry :which-key "Previous journal entry")
      "j r" '(org-journal-read-entry :which-key "Read journal entry")
      "j s" '(org-journal-search-forever :which-key "Search in all the journal files ")
      "j S" '(org-journal-search :which-key "Search in journal files ")
-     
+
 
      "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
 
@@ -352,7 +358,7 @@ In other words, \"undo\" changes in window configuration."
      ":" '(execute-extended-command :which-key "M-x")
      "," '(persp-switch-to-buffer :which-key "Show buffers")
      "." '(find-file :which-key "Find file")
-     
+
      ;; Buffers
      "b b" '(ibuffer :which-key "Ibuffer")
      "b k" '(kill-current-buffer :which-key "Kill current buffer")
@@ -444,7 +450,7 @@ In other words, \"undo\" changes in window configuration."
   (doom-themes-neotree-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
-  
+
   (use-package sexy-monochrome-theme :straight t)
   (use-package minimal-theme :straight t)
   (use-package kosmos-theme :straight t)
@@ -719,7 +725,7 @@ In other words, \"undo\" changes in window configuration."
 #+end_src
 ** LSP
 #+begin_src emacs-lisp
-  ;; for improvement 
+  ;; for improvement
   (setq read-process-output-max (* 2048 2048))
   (setq gc-cons-threshold 100000000)
 
@@ -800,10 +806,11 @@ In other words, \"undo\" changes in window configuration."
 #+end_src
 *** vterm
 #+begin_src emacs-lisp
-  ;; (use-package vterm
-  ;;   :straight t
-  ;;   :config
-  ;;   (add-hook 'vterm-mode-hook #'(lambda () (display-line-numbers-mode -1))))
+(use-package vterm
+  :straight t
+  :config
+  (add-hook 'vterm-mode-hook #'(lambda () (display-line-numbers-mode -1))))
+  ;;(add-hook 'vterm-mode-hook #'(lambda () (setq show-trailing-whitespace nil))))
 
   ;; (use-package vterm-toggle
   ;;   :straight t)
@@ -814,7 +821,7 @@ In other words, \"undo\" changes in window configuration."
   ;; (use-package eshell
   ;;   :straight t
   ;;   (add-hook 'eshell-mode-hook #'(lambda () (display-line-numbers-mode -1))))
-  (add-hook 'vterm-mode-hook #'(lambda () (display-line-numbers-mode -1)))
+  (add-hook 'eshell-mode-hook #'(lambda () (display-line-numbers-mode -1)))
 #+end_src
 
 ** Projectile
@@ -938,8 +945,65 @@ In other words, \"undo\" changes in window configuration."
 #+end_src
 ** Agda
 #+begin_src elisp
+(load-file (let ((coding-system-for-read 'utf-8))
+                (shell-command-to-string "agda-mode locate")))
+#+end_src
+** OCaml
+#+begin_src emacs-lisp
+(use-package tuareg-mode
+    :straight t)
+
+(use-package merlin
+    :straight t)
 #+end_src
 ** C
+** Lean
+#+begin_src emacs-lisp
+(use-package lean4-mode
+  :straight (lean4-mode
+	     :type git
+	     :host github
+	     :repo "leanprover/lean4-mode"
+	     :files ("*.el" "data"))
+  ;; to defer loading the package until required
+  :commands (lean4-mode))
+#+end_src
+** Nix
+#+begin_src emacs-lisp
+(use-package nix-mode
+   :straight t)
+
+#+end_src
+** Applescript
+#+begin_src emacs-lisp
+  ;; (use-package applescript-mode
+  ;;     :straight t)
+(use-package apples-mode
+     :straight t)
+#+end_src
+** Javascript
+#+begin_src emacs-lisp
+(use-package js2-mode
+    :straight t)
+#+end_src
+** Python
+#+begin_src emacs-lisp
+(use-package python-mode
+   :straight t)
+#+end_src
+** Swift
+#+begin_src emacs-lisp
+(use-package swift-mode
+    :straight t)
+#+end_src
+*** LSP-Sourcekit
+#+begin_src emacs-lisp
+(use-package lsp-sourcekit
+    :straight t
+    :after lsp-mode
+    :config
+    (setq lsp-sourcekit-executable "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"))
+#+end_src
 * Data Serialization
 ** JSON
 #+begin_src emacs-lisp
@@ -972,4 +1036,26 @@ In other words, \"undo\" changes in window configuration."
 #+begin_src emacs-lisp
 (use-package markdown-mode
   :straight t)
+#+end_src
+
+* Chat
+** Ement
+#+begin_src emacs-lisp
+(use-package ement
+    :straight t)
+#+end_src
+** Telega
+#+begin_src emacs-lisp
+  (use-package telega
+      :straight t
+      :config
+      (setq telega-chat-bidi-display-reordering t)
+      (setq telega-server-libs-prefix "/usr/local")
+      :hook
+      (telega-chat-mode . (lambda () (display-line-numbers-mode -1)))
+      (telega-root-mode . (lambda () (display-line-numbers-mode -1))))
+
+  ;; (defun get-tdlib-path ()
+  ;;   (replace-regexp-in-string "\n$" "" (shell-command-to-string "nix-store -q --outputs $(nix-instantiate '<nixpkgs>' -A tdlib)")))
+
 #+end_src

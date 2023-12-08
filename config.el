@@ -64,6 +64,9 @@
 (setq aut-save-default nil)
 (setq auto-save-list-file-prefix nil)
 
+;; TODO Fix this
+(setq-default show-trailing-whitespace nil)
+
 ;;;###autoload
 (require 'windmove)
 (defun +company-has-completion-p ()
@@ -128,7 +131,6 @@ everywhere else."
        #'company-dabbrev-code
      #'company-dabbrev)))
 
-     
 (defalias 'doom-buffer-list #'buffer-list)
 (defvar doom-fallback-buffer-name "*scratch*")
 
@@ -229,6 +231,10 @@ In other words, \"undo\" changes in window configuration."
   :config
   (general-evil-setup t))
 
+(general-define-key
+     :states 'insert
+     "C-SPC" '+company/complete )
+
 (general-create-definer my-leader-def
      :prefix "SPC")
 
@@ -282,8 +288,8 @@ In other words, \"undo\" changes in window configuration."
    "t" '(agda2-goal-type :which-key "Show the type of the goal")
    "SPC" '(agda2-give :which-key "Give input")
    "," '(agda2-goal-and-context :which-key "Show the goal and context")
-   "." '(agda2-goal-and-context-and-infered :which-key "Show the goal and context and infered")
-   "." '(agda2-goal-and-context-and-checked :which-key "Show the goal and context and checked")
+   "." '(agda2-goal-and-context-and-inferred :which-key "Show the goal and context and infered")
+   ";" '(agda2-goal-and-context-and-checked :which-key "Show the goal and context and checked")
    "=" '(agda2-show-constraints :which-key "Show the constraints")
    "d" '(agda2-goto-definition-keyboard :which-key "Go to defintion")
    "?" '(agda2-show-goals :which-key "Show the goals")
@@ -667,8 +673,11 @@ In other words, \"undo\" changes in window configuration."
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
 
-(add-hook 'term-mode-hook #'(lambda () (display-line-numbers-mode -1)))
-(setq explicit-shell-file-name "zsh")
+(use-package vterm
+  :straight t
+  :config
+  (add-hook 'vterm-mode-hook #'(lambda () (display-line-numbers-mode -1))))
+  ;;(add-hook 'vterm-mode-hook #'(lambda () (setq show-trailing-whitespace nil))))
 
 ;; (use-package vterm
 ;;   :straight t
@@ -681,7 +690,7 @@ In other words, \"undo\" changes in window configuration."
 ;; (use-package eshell
 ;;   :straight t
 ;;   (add-hook 'eshell-mode-hook #'(lambda () (display-line-numbers-mode -1))))
-(add-hook 'vterm-mode-hook #'(lambda () (display-line-numbers-mode -1)))
+(add-hook 'eshell-mode-hook #'(lambda () (display-line-numbers-mode -1)))
 
 (use-package projectile
   :straight t
@@ -773,7 +782,46 @@ In other words, \"undo\" changes in window configuration."
         ;; lsp-haskell-liquid-on t
         ;; lsp-haskell-fomatting-provider "stylish-haskell"))
 
+(load-file (let ((coding-system-for-read 'utf-8))
+                (shell-command-to-string "agda-mode locate")))
 
+(use-package tuareg-mode
+    :straight t)
+
+(use-package merlin
+    :straight t)
+
+(use-package lean4-mode
+  :straight (lean4-mode
+	     :type git
+	     :host github
+	     :repo "leanprover/lean4-mode"
+	     :files ("*.el" "data"))
+  ;; to defer loading the package until required
+  :commands (lean4-mode))
+
+(use-package nix-mode
+   :straight t)
+
+;; (use-package applescript-mode
+  ;;     :straight t)
+(use-package apples-mode
+     :straight t)
+
+(use-package js2-mode
+    :straight t)
+
+(use-package python-mode
+   :straight t)
+
+(use-package swift-mode
+    :straight t)
+
+(use-package lsp-sourcekit
+    :straight t
+    :after lsp-mode
+    :config
+    (setq lsp-sourcekit-executable "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"))
 
 (use-package json-mode
   :straight t)
@@ -792,3 +840,18 @@ In other words, \"undo\" changes in window configuration."
 
 (use-package markdown-mode
   :straight t)
+
+(use-package ement
+    :straight t)
+
+(use-package telega
+    :straight t
+    :config
+    (setq telega-chat-bidi-display-reordering t)
+    (setq telega-server-libs-prefix "/usr/local")
+    :hook
+    (telega-chat-mode . (lambda () (display-line-numbers-mode -1)))
+    (telega-root-mode . (lambda () (display-line-numbers-mode -1))))
+
+;; (defun get-tdlib-path ()
+;;   (replace-regexp-in-string "\n$" "" (shell-command-to-string "nix-store -q --outputs $(nix-instantiate '<nixpkgs>' -A tdlib)")))
