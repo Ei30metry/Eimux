@@ -10,10 +10,10 @@
 
 * PATH
 #+begin_src emacs-lisp
-(use-package exec-path-from-shell
-  :straight t
-  :config
-  (exec-path-from-shell-initialize))
+;; (use-package exec-path-from-shell
+;;  :straight t
+;;  :config
+;;  (exec-path-from-shell-initialize))
 #+end_src
 
 * EVIL Mode
@@ -25,10 +25,10 @@
   (setq evil-auto-indent nil)
   (setq evil-emacs-state-modes nil)
   (setq evil-motion-state-modes nil)
-  (setq evil-ex-sibstitute-global t)
-  (setq evil-move-cursot-back nil)
+  (setq evil-ex-substitute-global t)
+  (setq evil-move-cursor-back nil)
   (setq evil-overriding-maps nil)
-  (setq evil-move-beyong-eol t)
+  (setq evil-move-beyond-eol t)
   (setq evil-kill-on-visual-paste nil)
   (setq evil-want-keybinding nil)
   (setq evil-want-integration t)

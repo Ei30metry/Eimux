@@ -34,6 +34,12 @@
 
 (straight-use-package 'org)
 
+;; TODO don't load the interactive stuff in .zshrc
+(use-package exec-path-from-shell
+ :straight t
+ :config
+ (exec-path-from-shell-initialize))
+
 
 ;; NOTE very good for debugging 
 (org-babel-load-file
@@ -55,12 +61,10 @@
    '(helpful exec-path-from-shell toc-org company-ghci company-cabal evil-collection evil use-package))
  '(warning-suppress-log-types '((use-package)))
  '(warning-suppress-types '((use-package) (use-package) (comp) (comp) (comp))))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
-
-(load-file (let ((coding-system-for-read 'utf-8))
-                (shell-command-to-string "agda-mode locate")))
+)
