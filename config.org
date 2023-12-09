@@ -68,9 +68,7 @@
   :straight t
   :after evil
   :config
-  :hook ((prog-mode . turn-on-evil-quickscope-mode)
-	 (LaTeX-mode . turn-on-evil-quickscope-mode)
-	 (org-mode . turn-on-evil-quickscope-mode)))
+  (global-evil-quickscope-mode))
 #+end_src
 ** Evil-lion
 #+begin_src emacs-lisp
@@ -299,6 +297,10 @@ In other words, \"undo\" changes in window configuration."
      "d" '(lsp-find-definition :which-key "Find definition")
      "t" '(lsp-ui-doc-glance :which-key "Show documentation")
      "r" '(lsp-ui-peek-find-references :which-key "Show documentation")
+     "a" '(lsp-execute-code-action :which-key "Execute code action")
+     "e l" '(flycheck-list-errors :which-key "List error")
+     "e n" '(flycheck-next-error :which-key "List error")
+     "e p" '(flycheck-prev-error :which-key "List error")
      )
 
   (my-local-leader-def
@@ -307,6 +309,8 @@ In other words, \"undo\" changes in window configuration."
      "t" '(haskell-process-do-type :which-key "Show type at point")
      "r" '(haskell-process-reload :which-key "Reload the current module")
      "k" '(haskell-interactive-mode-clear :which-key "Clear the GHCi buffer")
+     "n" '(haskell-goto-next-error :which-key "Go to next error")
+     "p" '(haskell-goto-prev-error :which-key "Go to previous error")
      "l" '(haskell-process-load-file :which-key "Load the module")
      "v" '(haskell-cabal-visit-file :which-key "Open the .cabal file")
      "b" '(haskell-process-cabal-build :which-key "Build the project")
@@ -620,11 +624,16 @@ In other words, \"undo\" changes in window configuration."
 *** Org-tempo
 #+begin_src emacs-lisp
 (with-eval-after-load 'org
-  (require 'org-tempo)
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python"))
-  (add-to-list 'org-structure-template-alist '("sq" . "src sql")))
+(require 'org-tempo)
+(setq org-structure-template-alist
+      '(("el" . "src emacs-lisp")
+        ("py" . "src python")
+        ("sq" . "src sql")
+        ("hs" . "src haskell")
+        ("rs" . "src rust")
+        ("c" . "src c"))))
 #+end_src
+
 *** TOC-org
 #+begin_src emacs-lisp
 (use-package toc-org
@@ -793,7 +802,7 @@ In other words, \"undo\" changes in window configuration."
 (use-package company
   :straight t
   :config
-  (setq company-idle-delay 0.15)
+  (setq company-idle-delay 0.20)
   (setq company-minimum-prefix-length 2)
   (setq company-show-number t))
 
@@ -826,9 +835,6 @@ In other words, \"undo\" changes in window configuration."
   :straight t
   :config
   (add-hook 'vterm-mode-hook #'(lambda () (display-line-numbers-mode -1))))
-
-  ;; (use-package vterm-toggle
-  ;;   :straight t)
 #+end_src
 
 *** eshell
