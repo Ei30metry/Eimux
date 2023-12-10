@@ -288,7 +288,7 @@ In other words, \"undo\" changes in window configuration."
      "SPC" '(projectile-find-file :which-key "Find file")
      "p p" '(projectile-switch-project :which-key "Switch to project")
      "p a" '(projectile-add-known-project :which-key "Add project to known projects")
-     "p t" '(projectile-run-vterm :which-key "Run vterm in project root"))
+     "p t" '(projectile-run-vterm-other-window :which-key "Run vterm in project root"))
 
   (my-leader-def
      :states 'normal
@@ -355,6 +355,8 @@ In other words, \"undo\" changes in window configuration."
      "h c" '(describe-char :which-key "Describe char")
      "h x" '(describe-command :which-key "Describe command")
      "h s" '(describe-symbol :which-key "Describe symbol")
+     "h C r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
+     "h C o" '((lambda () (interactive) (find-file "~/.emacs.d/config.org")) :which-key "Open config.org")
 
      ;; Journal
      "j N" '(org-journal-new-entry :which-key "New journal entry")
@@ -365,14 +367,14 @@ In other words, \"undo\" changes in window configuration."
      "j S" '(org-journal-search :which-key "Search in journal files ")
 
 
-     "h r r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
 
      "C" '(org-capture :which-key "Org Capture")
      "a" '(org-agenda :which-key "Org Agenda")
      "d" '(dired :which-key "Dired")
 
      ":" '(execute-extended-command :which-key "M-x")
-     "," '(persp-switch-to-buffer :which-key "Show buffers")
+     "," '(persp-switch-to-buffer* :which-key "Switch buffer")
+     "<" '(persp-switch-to-buffer :which-key "Switch buffer")
      "." '(find-file :which-key "Find file")
 
      ;; Buffers
@@ -414,14 +416,18 @@ In other words, \"undo\" changes in window configuration."
      ;; Window size
      "w m m" '(window-maximize-buffer :which-key "Full screen window")
      "w u" '(winner-undo :which-key "Revert back to the last window state")
+     "w =" '(balance-windows :which-key "Balance windows")
+     "w _" '(minimize-window :which-key "Balance windows")
 
      ;; Magit
-     "g g" '(magit-status :which-key "Git status")
+     "g s" '(magit-status :which-key "Git status")
+     "g c" '(magit-clone :which-key "Git clone")
+     "g i" '(magit-init :which-key "Git init")
 
      ;; "g g" '(magit-status :which-key "Magit status")
 
      ;; Terminal
-     "o t" '(vterm :which-key "Open vterm")
+     "o t" '(vterm-other-window :which-key "Open vterm")
      "o T" '(term :which-key "Open vterm")
      "o e" '(eshell :which-key "Open eshell")
 
@@ -935,7 +941,8 @@ In other words, \"undo\" changes in window configuration."
     (haskell-mode . (lambda () (setq evil-auto-indent nil)))
     (haskell-mode . interactive-haskell-mode)
     (haskell-mode . haskell-auto-insert-module-template)
-    (haskell-mode . haskell-decl-scan-mode))
+    (haskell-mode . haskell-decl-scan-mode)
+    (haskell-mode . turn-on-haskell-indentation))
   ;; (add-hook 'haskell-mode-hook #'lsp-mode)
   ;;(add-hook 'haskell-mode-hook (lambda () (setq evil-auto-indent nil)))
   ;; (add-hook 'haskell-mode-hook '(interactive-haskell-mode))
