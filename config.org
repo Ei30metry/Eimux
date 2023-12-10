@@ -383,6 +383,15 @@ In other words, \"undo\" changes in window configuration."
      "b B" '(ibuffer-list-buffers :which-key "Ibuffer list buffers")
      "b K" '(kill-all-buffers :which-key "kill all buffers")
 
+     ;; Perspective
+     "W s" '(persp-switch :which-key "Switch perspective")
+     "W ]" '(persp-next :which-key "Next perspective")
+     "W [" '(persp-prev :which-key "Privious perspective")
+     "W b" '(persp-ibuffer :which-key "Perspective ibuffer")
+     "W k b" '(persp-kill-buffer* :which-key "Kill buffer")
+     "W k w" '(persp-kill :which-key "Kill the current perspective")
+     "W k W" '(persp-kill-buffer :which-key "Kill all the other perspectives")
+
      "t t" '(toggle-truncate-lines :which-key "Toggle truncate lines")
 
      ;; Window splits
@@ -725,10 +734,14 @@ In other words, \"undo\" changes in window configuration."
 (setq which-key-idle-delay 0.2)
 #+end_src
 * Tools
-** Persp mode
+** Perspective
 #+begin_src emacs-lisp
-(use-package persp-mode
-  :straight t)
+(use-package perspective
+  :straight t
+  :config
+  (setq persp-suppress-no-prefix-key-warning t)
+  :init
+  (persp-mode))
 #+end_src
 ** Rainbow delimiters
 #+begin_src emacs-lisp
@@ -849,6 +862,10 @@ In other words, \"undo\" changes in window configuration."
 #+begin_src emacs-lisp
 (use-package projectile
   :straight t
+  :config
+  (setq projectile-enable-caching t
+        projectile-auto-update-cache t
+        projectile-discover-projects-in-directory "~/Programming/projects/")
   :init
   (projectile-mode 1))
 #+end_src
