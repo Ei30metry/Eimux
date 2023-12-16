@@ -34,6 +34,8 @@
   (setq evil-want-integration t)
   :config
   (evil-mode 1))
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 #+end_src
 
 ** Evil-collection
@@ -48,6 +50,7 @@
 #+begin_src emacs-lisp
   (use-package evil-commentary
     :straight t
+    :after evil
     :init
     (evil-commentary-mode))
   ;; (add-to-list 'load-path "~/.config/haskmacs/evil-commentary")
@@ -279,6 +282,116 @@ In other words, \"undo\" changes in window configuration."
   (general-create-definer my-local-leader-def
       :prefix "SPC m")
 
+     (my-leader-def
+     ;; :keymaps '(normal )
+     :keymaps '(normal visual)
+
+     ;; Help menu
+     "h f" '(describe-function :which-key "Describe function")
+     "h m" '(describe-mode :which-key "Describe mode")
+     "h k" '(describe-key :which-key "Describe key")
+     "h K" '(describe-keymap :which-key "Describe keymap")
+     "h b" '(general-describe-keybindings :which-key "Describe all keybindings")
+     "h c" '(describe-char :which-key "Describe char")
+     "h x" '(describe-command :which-key "Describe command")
+     "h s" '(describe-symbol :which-key "Describe symbol")
+     "h v" '(describe-variable :which-key "Describe variable")
+     "h C r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
+     "h C o" '((lambda () (interactive) (find-file "~/.emacs.d/config.org")) :which-key "Open config.org")
+
+     ;; Journal
+     "j N" '(org-journal-new-entry :which-key "New journal entry")
+     "j n" '(org-journal-next-entry :which-key "Next journal entry")
+     "j p" '(org-journal-previous-entry :which-key "Previous journal entry")
+     "j r" '(org-journal-read-entry :which-key "Read journal entry")
+     "j s" '(org-journal-search-forever :which-key "Search in all the journal files ")
+     "j S" '(org-journal-search :which-key "Search in journal files ")
+
+     ;; Messanger , mail
+
+     ;; Telegram
+     "M t o" '(telega :which-key "Open Telega")
+     "M t k" '(telega-kill :which-key "Kill Telega")
+
+     ;; Matrix
+     ;; "M e o" '(ement :which-key "Open ement")
+
+     "C" '(org-capture :which-key "Org Capture")
+     "a" '(org-agenda :which-key "Org Agenda")
+     "d" '(dired :which-key "Dired")
+
+     ":" '(execute-extended-command :which-key "M-x")
+     "," '(persp-switch-to-buffer* :which-key "Switch buffer")
+     "<" '(persp-switch-to-buffer :which-key "Switch buffer")
+     "." '(find-file :which-key "Find file")
+
+     ;; Buffers
+     "b b" '(ibuffer :which-key "Ibuffer")
+     "b k" '(kill-current-buffer :which-key "Kill current buffer")
+     "b ]" '(next-buffer :which-key "Next buffer")
+     "b [" '(previous-buffer :which-key "Previous buffer")
+     "b B" '(ibuffer-list-buffers :which-key "Ibuffer list buffers")
+     "b K" '(kill-all-buffers :which-key "kill all buffers")
+
+     ;; Perspective
+     "W ." '(persp-switch :which-key "Switch perspective")
+     "W s" '(persp-switch :which-key "Switch perspective")
+     "W ]" '(persp-next :which-key "Next perspective")
+     "W [" '(persp-prev :which-key "Privious perspective")
+     "W b" '(persp-ibuffer :which-key "Perspective ibuffer")
+     "W k b" '(persp-kill-buffer* :which-key "Kill buffer")
+     "W k w" '(persp-kill :which-key "Kill the current perspective")
+     "W k W" '(persp-kill-buffer :which-key "Kill all the other perspectives")
+
+     "t t" '(toggle-truncate-lines :which-key "Toggle truncate lines")
+
+     ;; Window splits
+     "w d" '(evil-window-delete :which-key "Close window")
+     "w n" '(evil-window-new :which-key "New window")
+     "w s" '(evil-window-split :which-key "Horizontal split window")
+     "w v" '(evil-window vsplit :which-key "Vertical split window")
+
+     ;; Window motions
+     "w h" '(evil-window-left :which-key "Window left")
+     "w l" '(evil-window-right :which-key "Window right")
+     "w k" '(evil-window-up :which-key "Window up")
+     "w j" '(evil-window-down :which-key "Window down")
+     "w w" '(evil-window-next :which-key "Next Window")
+     "w H" '(+evil/window-move-left :which-key "Move window to left")
+     "w L" '(+evil/window-move-right :which-key "Move window to right")
+     "w J" '(+evil/window-move-down :which-key "Move window to down")
+     "w K" '(+evil/window-move-up :which-key "Move window to up")
+
+     ;; Window size
+     "w m m" '(window-maximize-buffer :which-key "Full screen window")
+     "w u" '(winner-undo :which-key "Revert back to the last window state")
+     "w =" '(balance-windows :which-key "Balance windows")
+     "w _" '(minimize-window :which-key "Balance windows")
+
+     ;; Magit
+     "g s" '(magit-status :which-key "Git status")
+     "g c" '(magit-clone :which-key "Git clone")
+     "g i" '(magit-init :which-key "Git init")
+     "g b" '(magit-blame :which-key "Git blame")
+
+     ;; "g g" '(magit-status :which-key "Magit status")
+
+     ;; Terminal
+     "o t" '(vterm-other-window :which-key "Open vterm")
+     "o T" '(term :which-key "Open vterm")
+     "o e" '(eshell :which-key "Open eshell")
+
+     ;; Searching
+     "s i" '(consult-imenu :which-key "Imenu buffer")
+     "s I" '(consult-imenu :which-key "Imenu multi-buffer")
+     "s r" '(consult-recent-file :which-key "Recent files")
+
+     "/" '(consult-ripgrep :which-key "Search current project")
+
+     ;; LSP
+     ;; TODO Fix this! should be `c s s`!
+     "c S" '(lsp :which-key "LSP mode"))
+
   (my-leader-def
      :states 'normal
      :prefix "SPC"
@@ -286,7 +399,8 @@ In other words, \"undo\" changes in window configuration."
      "p c" '(projectile-compile-project :which-key "Compile project")
      "p f" '(projectile-find-file :which-key "Find file")
      "SPC" '(projectile-find-file :which-key "Find file")
-     "p p" '(projectile-switch-project :which-key "Switch to project")
+     "p ," '(projectile-switch-project :which-key "Switch to project")
+     "p s" '(projectile-switch-project :which-key "Switch to project")
      "p a" '(projectile-add-known-project :which-key "Add project to known projects")
      "p t" '(projectile-run-vterm-other-window :which-key "Run vterm in project root"))
 
@@ -301,6 +415,8 @@ In other words, \"undo\" changes in window configuration."
      "e l" '(flycheck-list-errors :which-key "List error")
      "e n" '(flycheck-next-error :which-key "List error")
      "e p" '(flycheck-prev-error :which-key "List error")
+     "s r" '(lsp-restart-workspace :which-key "Restart LSP workspace")
+     "s d" '(lsp-shutdown-workspace :which-key "Shutdown LSP workspace")
      )
 
   (my-local-leader-def
@@ -343,103 +459,6 @@ In other words, \"undo\" changes in window configuration."
      "RET" '(agda2-elaborate-give :which-key "Elaborate check the give expression")
      )
 
-  (my-leader-def
-     :keymaps 'normal
-
-     ;; Help menu
-     "h f" '(describe-function :which-key "Describe function")
-     "h m" '(describe-mode :which-key "Describe mode")
-     "h k" '(describe-key :which-key "Describe key")
-     "h K" '(describe-keymap :which-key "Describe keymap")
-     "h b" '(general-describe-keybindings :which-key "Describe all keybindings")
-     "h c" '(describe-char :which-key "Describe char")
-     "h x" '(describe-command :which-key "Describe command")
-     "h s" '(describe-symbol :which-key "Describe symbol")
-     "h C r" '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
-     "h C o" '((lambda () (interactive) (find-file "~/.emacs.d/config.org")) :which-key "Open config.org")
-
-     ;; Journal
-     "j N" '(org-journal-new-entry :which-key "New journal entry")
-     "j n" '(org-journal-next-entry :which-key "Next journal entry")
-     "j p" '(org-journal-previous-entry :which-key "Previous journal entry")
-     "j r" '(org-journal-read-entry :which-key "Read journal entry")
-     "j s" '(org-journal-search-forever :which-key "Search in all the journal files ")
-     "j S" '(org-journal-search :which-key "Search in journal files ")
-
-
-
-     "C" '(org-capture :which-key "Org Capture")
-     "a" '(org-agenda :which-key "Org Agenda")
-     "d" '(dired :which-key "Dired")
-
-     ":" '(execute-extended-command :which-key "M-x")
-     "," '(persp-switch-to-buffer* :which-key "Switch buffer")
-     "<" '(persp-switch-to-buffer :which-key "Switch buffer")
-     "." '(find-file :which-key "Find file")
-
-     ;; Buffers
-     "b b" '(ibuffer :which-key "Ibuffer")
-     "b k" '(kill-current-buffer :which-key "Kill current buffer")
-     "b ]" '(next-buffer :which-key "Next buffer")
-     "b [" '(previous-buffer :which-key "Previous buffer")
-     "b B" '(ibuffer-list-buffers :which-key "Ibuffer list buffers")
-     "b K" '(kill-all-buffers :which-key "kill all buffers")
-
-     ;; Perspective
-     "W s" '(persp-switch :which-key "Switch perspective")
-     "W ]" '(persp-next :which-key "Next perspective")
-     "W [" '(persp-prev :which-key "Privious perspective")
-     "W b" '(persp-ibuffer :which-key "Perspective ibuffer")
-     "W k b" '(persp-kill-buffer* :which-key "Kill buffer")
-     "W k w" '(persp-kill :which-key "Kill the current perspective")
-     "W k W" '(persp-kill-buffer :which-key "Kill all the other perspectives")
-
-     "t t" '(toggle-truncate-lines :which-key "Toggle truncate lines")
-
-     ;; Window splits
-     "w d" '(evil-window-delete :which-key "Close window")
-     "w n" '(evil-window-new :which-key "New window")
-     "w s" '(evil-window-split :which-key "Horizontal split window")
-     "w v" '(evil-window vsplit :which-key "Vertical split window")
-
-     ;; Window motions
-     "w h" '(evil-window-left :which-key "Window left")
-     "w l" '(evil-window-right :which-key "Window right")
-     "w k" '(evil-window-up :which-key "Window up")
-     "w j" '(evil-window-down :which-key "Window down")
-     "w w" '(evil-window-next :which-key "Next Window")
-     "w H" '(+evil/window-move-left :which-key "Move window to left")
-     "w L" '(+evil/window-move-right :which-key "Move window to right")
-     "w J" '(+evil/window-move-down :which-key "Move window to down")
-     "w K" '(+evil/window-move-up :which-key "Move window to up")
-
-     ;; Window size
-     "w m m" '(window-maximize-buffer :which-key "Full screen window")
-     "w u" '(winner-undo :which-key "Revert back to the last window state")
-     "w =" '(balance-windows :which-key "Balance windows")
-     "w _" '(minimize-window :which-key "Balance windows")
-
-     ;; Magit
-     "g s" '(magit-status :which-key "Git status")
-     "g c" '(magit-clone :which-key "Git clone")
-     "g i" '(magit-init :which-key "Git init")
-
-     ;; "g g" '(magit-status :which-key "Magit status")
-
-     ;; Terminal
-     "o t" '(vterm-other-window :which-key "Open vterm")
-     "o T" '(term :which-key "Open vterm")
-     "o e" '(eshell :which-key "Open eshell")
-
-     ;; Searching
-     "s i" '(consult-imenu :which-key "Imenu buffer")
-     "s I" '(consult-imenu :which-key "Imenu multi-buffer")
-     "s r" '(consult-recent-file :which-key "Recent files")
-
-     "/" '(consult-ripgrep :which-key "Search current project")
-
-     ;; LSP
-     "c S" '(lsp :which-key "LSP mode"))
 
   #+end_src
 *** macOS
@@ -551,7 +570,10 @@ In other words, \"undo\" changes in window configuration."
 #+end_src
 * GUI settings
 #+begin_src emacs-lisp
-   (menu-bar-mode 1)
+   (if (display-graphic-p)
+       (menu-bar-mode 1)
+       (menu-bar-mode -1))
+
    (tool-bar-mode -1)
    (scroll-bar-mode -1)
    (pixel-scroll-precision-mode 1)
@@ -745,8 +767,8 @@ In other words, \"undo\" changes in window configuration."
 (use-package perspective
   :straight t
   :config
-  (setq persp-suppress-no-prefix-key-warning t)
   :init
+  (setq persp-suppress-no-prefix-key-warning t)
   (persp-mode))
 #+end_src
 ** Rainbow delimiters
