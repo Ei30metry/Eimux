@@ -21,3 +21,5 @@ config.el
 projectile-bookmarks.eld
 .lsp-session-v1
 projectile.cache
+multisession/
+url/

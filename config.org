@@ -28,7 +28,7 @@
   (setq evil-ex-substitute-global t)
   (setq evil-move-cursor-back nil)
   (setq evil-overriding-maps nil)
-  (setq evil-move-beyond-eol t)
+  (setq evil-move-beyond-eol nil)
   (setq evil-kill-on-visual-paste nil)
   (setq evil-want-keybinding nil)
   (setq evil-want-integration t)
@@ -334,13 +334,14 @@ In other words, \"undo\" changes in window configuration."
      "b K" '(kill-all-buffers :which-key "kill all buffers")
 
      ;; Perspective
-     "W ." '(persp-switch :which-key "Switch perspective")
+     "W ," '(persp-switch :which-key "Switch perspective")
      "W s" '(persp-switch :which-key "Switch perspective")
      "W ]" '(persp-next :which-key "Next perspective")
      "W [" '(persp-prev :which-key "Privious perspective")
      "W b" '(persp-ibuffer :which-key "Perspective ibuffer")
      "W k b" '(persp-kill-buffer* :which-key "Kill buffer")
      "W k w" '(persp-kill :which-key "Kill the current perspective")
+     "W d" '(persp-kill :which-key "Kill the current perspective")
      "W k W" '(persp-kill-buffer :which-key "Kill all the other perspectives")
 
      "t t" '(toggle-truncate-lines :which-key "Toggle truncate lines")
@@ -370,9 +371,12 @@ In other words, \"undo\" changes in window configuration."
 
      ;; Magit
      "g s" '(magit-status :which-key "Git status")
+     "g S" '(magit-stash :which-key "Git stash")
      "g c" '(magit-clone :which-key "Git clone")
      "g i" '(magit-init :which-key "Git init")
-     "g b" '(magit-blame :which-key "Git blame")
+     "g B" '(magit-blame :which-key "Git blame")
+     "g b" '(magit-branch :which-key "Git branch")
+     "g p" '(magit-pull :which-key "Git branch")
 
      ;; "g g" '(magit-status :which-key "Magit status")
 
@@ -385,6 +389,7 @@ In other words, \"undo\" changes in window configuration."
      "s i" '(consult-imenu :which-key "Imenu buffer")
      "s I" '(consult-imenu :which-key "Imenu multi-buffer")
      "s r" '(consult-recent-file :which-key "Recent files")
+     "s /" '(consult-line :which-key "Consult search for matching line")
 
      "/" '(consult-ripgrep :which-key "Search current project")
 
@@ -761,6 +766,15 @@ In other words, \"undo\" changes in window configuration."
 
 (setq which-key-idle-delay 0.2)
 #+end_src
+* Media
+** EMMC
+#+begin_src emacs-lisp
+(use-package emms :straight t)
+#+end_src
+** empv
+#+begin_src emacs-lisp
+(use-package empv :straight t)
+#+end_src
 * Tools
 ** Perspective
 #+begin_src emacs-lisp
@@ -770,6 +784,11 @@ In other words, \"undo\" changes in window configuration."
   :init
   (setq persp-suppress-no-prefix-key-warning t)
   (persp-mode))
+#+end_src
+** DevDocs
+#+begin_src emacs-lisp
+  (use-package devdocs
+      :straight t)
 #+end_src
 ** Rainbow delimiters
 #+begin_src emacs-lisp
@@ -918,8 +937,6 @@ In other words, \"undo\" changes in window configuration."
   :config
   (add-hook 'pdf-view-mode-hook #'(lambda () (display-line-numbers-mode -1)))
   (pdf-tools-install))
-
-
 #+end_src
 ** Imenu
 #+begin_src emacs-lisp
