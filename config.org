@@ -948,11 +948,16 @@ In other words, \"undo\" changes in window configuration."
 (use-package swiper
   :straight t)
 #+end_src
-** Counsult
+** Consult
 #+begin_src emacs-lisp
 (use-package consult
    :straight t)
 
+#+end_src
+*** Consult-lsp
+#+begin_src emacs-lisp
+(use-package consult-lsp
+  :straight t)
 #+end_src
 ** Marginalia
 #+begin_src emacs-lisp
