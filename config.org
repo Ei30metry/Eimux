@@ -33,7 +33,7 @@
   (setq evil-want-keybinding nil)
   (setq evil-want-integration t)
   :config
-  (evil-mode 1))
+  (evil-mode -1))
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 #+end_src
@@ -44,7 +44,8 @@
     :straight t
     :after evil
     :config
-    (evil-collection-init))
+    ;; (evil-collection-init)
+    )
 #+end_src
 ** Evil-commentary
 #+begin_src emacs-lisp
@@ -105,164 +106,165 @@
 * Keybidings
 ** Functions
 #+begin_src emacs-lisp
-;;;###autoload
-(require 'windmove)
-(defun +company-has-completion-p ()
-  "Return non-nil if a completion candidate exists at point."
-  (when company-mode
-    (unless company-candidates-length
-      (company-manual-begin))
-    (= company-candidates-length 1)))
+  ;;;###autoload
+  (require 'windmove)
+  (defun +company-has-completion-p ()
+    "Return non-nil if a completion candidate exists at point."
+    (when company-mode
+      (unless company-candidates-length
+        (company-manual-begin))
+      (= company-candidates-length 1)))
 
-(defun kill-all-buffers (&optional buffer-list interactive)
-  "Kill all buffers and closes their windows.
+  (defun kill-all-buffers (&optional buffer-list interactive)
+    "Kill all buffers and closes their windows.
 
-If the prefix arg is passed, doesn't close windows and only kill buffers that
-belong to the current project."
-  (interactive
-   (list (if current-prefix-arg
-             (doom-project-buffer-list)
-           (doom-buffer-list))
-         t))
-  (if (null buffer-list)
-      (message "No buffers to kill")
-    (save-some-buffers)
-    (delete-other-windows)
-    (when (memq (current-buffer) buffer-list)
-      (switch-to-buffer (doom-fallback-buffer)))
-    (mapc #'kill-buffer buffer-list)
-    (doom--message-or-count
-     interactive "Killed %d buffers"
-     (- (length buffer-list)
-        (length (cl-remove-if-not #'buffer-live-p buffer-list))))))
+  If the prefix arg is passed, doesn't close windows and only kill buffers that
+  belong to the current project."
+    (interactive
+     (list (if current-prefix-arg
+               (doom-project-buffer-list)
+             (doom-buffer-list))
+           t))
+    (if (null buffer-list)
+        (message "No buffers to kill")
+      (save-some-buffers)
+      (delete-other-windows)
+      (when (memq (current-buffer) buffer-list)
+        (switch-to-buffer (doom-fallback-buffer)))
+      (mapc #'kill-buffer buffer-list)
+      (doom--message-or-count
+       interactive "Killed %d buffers"
+       (- (length buffer-list)
+          (length (cl-remove-if-not #'buffer-live-p buffer-list))))))
 
-;;;###autoload
-(defun +company/toggle-auto-completion ()
-  "Toggle as-you-type code completion."
-  (interactive)
-  (require 'company)
-  (setq company-idle-delay (unless company-idle-delay 0.2))
-  (message "Auto completion %s"
-           (if company-idle-delay "enabled" "disabled")))
+  ;;;###autoload
+  (defun +company/toggle-auto-completion ()
+    "Toggle as-you-type code completion."
+    (interactive)
+    (require 'company)
+    (setq company-idle-delay (unless company-idle-delay 0.2))
+    (message "Auto completion %s"
+             (if company-idle-delay "enabled" "disabled")))
 
 
-;;;###autoload
-(defun +company/complete ()
-  "Bring up the completion popup. If only one result, complete it."
-  (interactive)
-  (require 'company)
-  (when (ignore-errors
-          (/= (point)
-              (cdr (bounds-of-thing-at-point 'symbol))))
-    (save-excursion (insert " ")))
-  (when (and (company-manual-begin)
-             (= company-candidates-length 1))
-    (company-complete-common)))
+  ;;;###autoload
+  (defun +company/complete ()
+    "Bring up the completion popup. If only one result, complete it."
+    (interactive)
+    (require 'company)
+    (when (ignore-errors
+            (/= (point)
+                (cdr (bounds-of-thing-at-point 'symbol))))
+      (save-excursion (insert " ")))
+    (when (and (company-manual-begin)
+               (= company-candidates-length 1))
+      (company-complete-common)))
 
-;;;###autoload
-(defun +company/dabbrev ()
-  "Invokes `company-dabbrev-code' in prog-mode buffers and `company-dabbrev'
-everywhere else."
-  (interactive)
-  (call-interactively
-   (if (derived-mode-p 'prog-mode)
-       #'company-dabbrev-code
-     #'company-dabbrev)))
+  ;;;###autoload
+  (defun +company/dabbrev ()
+    "Invokes `company-dabbrev-code' in prog-mode buffers and `company-dabbrev'
+  everywhere else."
+    (interactive)
+    (call-interactively
+     (if (derived-mode-p 'prog-mode)
+         #'company-dabbrev-code
+       #'company-dabbrev)))
 
-(defalias 'doom-buffer-list #'buffer-list)
-(defvar doom-fallback-buffer-name "*scratch*")
+  (defalias 'doom-buffer-list #'buffer-list)
+  (defvar doom-fallback-buffer-name "*scratch*")
 
-(defun +evil--window-swap (direction)
-  "Move current window to the next window in DIRECTION.
-If there are no windows there and there is only one window, split in that
-direction and place this window there. If there are no windows and this isn't
-the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
-  (when (window-dedicated-p)
-    (user-error "Cannot swap a dedicated window"))
-  (let* ((this-window (selected-window))
-         (this-buffer (current-buffer))
-         (that-window (windmove-find-other-window direction nil this-window))
-         (that-buffer (window-buffer that-window)))
-    (when (or (minibufferp that-buffer)
-              (window-dedicated-p this-window))
-      (setq that-buffer nil that-window nil))
-    (if (not (or that-window (one-window-p t)))
-        (funcall (pcase direction
-                   ('left  #'evil-window-move-far-left)
-                   ('right #'evil-window-move-far-right)
-                   ('up    #'evil-window-move-very-top)
-                   ('down  #'evil-window-move-very-bottom)))
-      (unless that-window
-        (setq that-window
-              (split-window this-window nil
-                            (pcase direction
-                              ('up 'above)
-                              ('down 'below)
-                              (_ direction))))
-        (with-selected-window that-window
-          (switch-to-buffer (doom-fallback-buffer)))
-        (setq that-buffer (window-buffer that-window)))
-      (window-swap-states this-window that-window)
-      (select-window that-window))))
+  (defun +evil--window-swap (direction)
+    "Move current window to the next window in DIRECTION.
+  If there are no windows there and there is only one window, split in that
+  direction and place this window there. If there are no windows and this isn't
+  the only window, use evil-window-move-* (e.g. `evil-window-move-far-left')."
+    (when (window-dedicated-p)
+      (user-error "Cannot swap a dedicated window"))
+    (let* ((this-window (selected-window))
+           (this-buffer (current-buffer))
+           (that-window (windmove-find-other-window direction nil this-window))
+           (that-buffer (window-buffer that-window)))
+      (when (or (minibufferp that-buffer)
+                (window-dedicated-p this-window))
+        (setq that-buffer nil that-window nil))
+      (if (not (or that-window (one-window-p t)))
+          (funcall (pcase direction
+                     ('left  #'evil-window-move-far-left)
+                     ('right #'evil-window-move-far-right)
+                     ('up    #'evil-window-move-very-top)
+                     ('down  #'evil-window-move-very-bottom)))
+        (unless that-window
+          (setq that-window
+                (split-window this-window nil
+                              (pcase direction
+                                ('up 'above)
+                                ('down 'below)
+                                (_ direction))))
+          (with-selected-window that-window
+            (switch-to-buffer (doom-fallback-buffer)))
+          (setq that-buffer (window-buffer that-window)))
+        (window-swap-states this-window that-window)
+        (select-window that-window))))
 
-(defun doom-fallback-buffer ()
-  "Returns the fallback buffer, creating it if necessary. By default this is the
-scratch buffer. See `doom-fallback-buffer-name' to change this."
-  (let (buffer-list-update-hook)
-    (get-buffer-create doom-fallback-buffer-name)))
+  (defun doom-fallback-buffer ()
+    "Returns the fallback buffer, creating it if necessary. By default
+  this is the
+  scratch buffer. See `doom-fallback-buffer-name' to change this."
+    (let (buffer-list-update-hook)
+      (get-buffer-create doom-fallback-buffer-name)))
 
- (defun doom--message-or-count (interactive message count)
-  (if interactive
-      (message message count)
-    count))
+   (defun doom--message-or-count (interactive message count)
+    (if interactive
+        (message message count)
+      count))
 
-(defun +evil/window-move-left ()
-  "Swap window to the left."
-  (interactive) (+evil--window-swap 'left))
-;;;###autoload
-(defun +evil/window-move-right ()
-  "Swap window to the right"
-  (interactive) (+evil--window-swap 'right))
-;;;###autoload
-(defun +evil/window-move-up ()
-  "Swap window upward."
-  (interactive) (+evil--window-swap 'up))
-;;;###autoload
-(defun +evil/window-move-down ()
-  "Swap window downward."
-  (interactive) (+evil--window-swap 'down))
+  (defun +evil/window-move-left ()
+    "Swap window to the left."
+    (interactive) (+evil--window-swap 'left))
+  ;;;###autoload
+  (defun +evil/window-move-right ()
+    "Swap window to the right"
+    (interactive) (+evil--window-swap 'right))
+  ;;;###autoload
+  (defun +evil/window-move-up ()
+    "Swap window upward."
+    (interactive) (+evil--window-swap 'up))
+  ;;;###autoload
+  (defun +evil/window-move-down ()
+    "Swap window downward."
+    (interactive) (+evil--window-swap 'down))
 
-(defun window-maximize-buffer (&optional arg)
-  "Close other windows to focus on this one.
-Use `winner-undo' to undo this. Alternatively, use `doom/window-enlargen'."
-  (interactive "P")
-  (when (and (bound-and-true-p +popup-mode)
-             (+popup-window-p))
-    (+popup/raise (selected-window)))
-  (delete-other-windows))
+  (defun window-maximize-buffer (&optional arg)
+    "Close other windows to focus on this one.
+  Use `winner-undo' to undo this. Alternatively, use `doom/window-enlargen'."
+    (interactive "P")
+    (when (and (bound-and-true-p +popup-mode)
+               (+popup-window-p))
+      (+popup/raise (selected-window)))
+    (delete-other-windows))
 
-(defvar winner-undone-data  nil) ; There confs have been passed.
+  (defvar winner-undone-data  nil) ; There confs have been passed.
 
-(defun winner-undo ()
-  "Switch back to an earlier window configuration saved by Winner mode.
-In other words, \"undo\" changes in window configuration."
-  (interactive)
-  (cond
-   ((not winner-mode) (error "Winner mode is turned off"))
-   (t (unless (and (eq last-command 'winner-undo)
- 		   (eq winner-undo-frame (selected-frame)))
-	(winner-save-conditionally)     ; current configuration->stack
- 	(setq winner-undo-frame (selected-frame))
- 	(setq winner-point-alist (winner-make-point-alist))
- 	(setq winner-pending-undo-ring (winner-ring (selected-frame)))
- 	(setq winner-undo-counter 0)
- 	(setq winner-undone-data (list (winner-win-data))))
-      (cl-incf winner-undo-counter)	; starting at 1
-      (when (and (winner-undo-this)
- 		 (not (window-minibuffer-p)))
- 	(message "Winner undo (%d / %d)"
- 		 winner-undo-counter
- 		 (1- (ring-length winner-pending-undo-ring)))))))
+  (defun winner-undo ()
+    "Switch back to an earlier window configuration saved by Winner mode.
+  In other words, \"undo\" changes in window configuration."
+    (interactive)
+    (cond
+     ((not winner-mode) (error "Winner mode is turned off"))
+     (t (unless (and (eq last-command 'winner-undo)
+   		   (eq winner-undo-frame (selected-frame)))
+  	(winner-save-conditionally)     ; current configuration->stack
+   	(setq winner-undo-frame (selected-frame))
+   	(setq winner-point-alist (winner-make-point-alist))
+   	(setq winner-pending-undo-ring (winner-ring (selected-frame)))
+   	(setq winner-undo-counter 0)
+   	(setq winner-undone-data (list (winner-win-data))))
+        (cl-incf winner-undo-counter)	; starting at 1
+        (when (and (winner-undo-this)
+   		 (not (window-minibuffer-p)))
+   	(message "Winner undo (%d / %d)"
+   		 winner-undo-counter
+   		 (1- (ring-length winner-pending-undo-ring)))))))
 #+end_src
 
 ** Config
@@ -286,7 +288,7 @@ In other words, \"undo\" changes in window configuration."
      ;; :keymaps '(normal )
      :keymaps '(normal visual)
 
-     ;; Help menu
+     ;; Help menup
      "h f" '(describe-function :which-key "Describe function")
      "h m" '(describe-mode :which-key "Describe mode")
      "h k" '(describe-key :which-key "Describe key")
@@ -468,10 +470,10 @@ In other words, \"undo\" changes in window configuration."
   #+end_src
 *** macOS
 #+begin_src emacs-lisp
-(setq mac-option-key-is-meta t
-      mac-command-key-is-meta nil
-      mac-command-modifier 'super
-      mac-option-modifier 'meta)
+(setq mac-option-key-is-meta nil 
+      mac-command-key-is-meta t
+      mac-command-modifier 'meta
+      mac-option-modifier 'super)
 
 #+end_src
 * OS packages
