@@ -336,6 +336,7 @@ In other words, \"undo\" changes in window configuration."
      ;; Perspective
      "W ," '(persp-switch :which-key "Switch perspective")
      "W s" '(persp-switch :which-key "Switch perspective")
+     "W r" '(persp-rename :which-key "Rename perspective")
      "W ]" '(persp-next :which-key "Next perspective")
      "W [" '(persp-prev :which-key "Privious perspective")
      "W b" '(persp-ibuffer :which-key "Perspective ibuffer")
@@ -376,6 +377,7 @@ In other words, \"undo\" changes in window configuration."
      "g i" '(magit-init :which-key "Git init")
      "g B" '(magit-blame :which-key "Git blame")
      "g b" '(magit-branch :which-key "Git branch")
+     "g m" '(magit-merge :which-key "Git merge")
      "g p" '(magit-pull :which-key "Git branch")
 
      ;; "g g" '(magit-status :which-key "Magit status")
@@ -436,7 +438,8 @@ In other words, \"undo\" changes in window configuration."
      "v" '(haskell-cabal-visit-file :which-key "Open the .cabal file")
      "b" '(haskell-process-cabal-build :which-key "Build the project")
      "x" '(haskell-process-cabal :which-key "Execute a cabal command")
-     "s" '(haskell-interactive-switch :which-key "Switch between GHCi and buffer"))
+     "s" '(haskell-interactive-switch :which-key "Switch between GHCi and buffer")
+     "f" '(haskell-mode-stylish-buffer :which-key "Stylish-Haskell"))
 
   ;; agda2-mode keybindings
   (my-local-leader-def
@@ -535,13 +538,16 @@ In other words, \"undo\" changes in window configuration."
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
                     :font "Andale Mono 14"
+                    ;;:font "Jetbrains Mono 14"
                     :weight 'medium)
 
 (set-face-attribute 'variable-pitch nil
+                    ;;:font "Jetbrains Mono 14"
                     :font "Andale Mono 14"
                     :weight 'medium)
 
 (set-face-attribute 'fixed-pitch nil
+                    ;;:font "Jetbrains Mono 14"
                     :font "Andale Mono 14"
                     :weight 'medium)
 ;; needed for emacsclient
@@ -805,8 +811,22 @@ In other words, \"undo\" changes in window configuration."
 #+end_src
 ** Eglot
 #+begin_src emacs-lisp
-;; (use-package eglot
-;;   :ensure t)
+  (use-package eglot
+    :straight t
+    :config
+    (setq-default eglot-workspace-configuration
+          '((haskell (plugin (stan (globalOn . :json-false)))))))
+#+end_src
+** Eglot-booster
+#+begin_src emacs-lisp
+(use-package eglot-booster
+  :straight (eglot-booster
+	     :type git
+	     :host github
+	     :repo "jdtsmith/eglot-booster"
+	     :files ("*.el"))
+  :after eglot
+  :config (eglot-booster-mode-mode))
 #+end_src
 ** LSP
 #+begin_src emacs-lisp
@@ -959,6 +979,11 @@ In other words, \"undo\" changes in window configuration."
 (use-package consult-lsp
   :straight t)
 #+end_src
+*** Consult-eglot
+#+begin_src emacs-lisp
+(use-package consult-eglot
+  :straight t)
+#+end_src
 ** Marginalia
 #+begin_src emacs-lisp
 (use-package marginalia
@@ -979,8 +1004,8 @@ In other words, \"undo\" changes in window configuration."
     :straight t
     :config
     (setq haskell-font-lock-symbols t)
-    (custom-set-variables '(haskell-stylish-on-save nil))
-    (custom-set-variables '(haskell-process-log t))
+    (setq haskell-stylish-on-save nil)
+    (custom-set-variables haskell-process-log t)
     :hook
     (haskell-mode . (lambda () (setq evil-auto-indent nil)))
     (haskell-mode . interactive-haskell-mode)
