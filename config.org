@@ -496,8 +496,8 @@ In other words, \"undo\" changes in window configuration."
 ** Theme
 #+begin_src emacs-lisp
  (setq scroll-conservatively 101)
- ;; (use-package reverse-theme
-  ;;   :insure t)
+ (use-package reverse-theme
+    :straight t)
   (use-package doom-themes
   :straight t
   :config
@@ -781,6 +781,24 @@ In other words, \"undo\" changes in window configuration."
 #+begin_src emacs-lisp
 (use-package empv :straight t)
 #+end_src
+* Document
+** nov
+#+begin_src emacs-lisp
+(use-package nov
+   :straight t
+   :hook
+   (nov-mode . (lambda () (display-line-numbers-mode -1))))
+
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+#+end_src
+** PDF tools
+#+begin_src emacs-lisp
+(use-package pdf-tools
+  :straight t
+  :config
+  (add-hook 'pdf-view-mode-hook #'(lambda () (display-line-numbers-mode -1)))
+  (pdf-tools-install))
+#+end_src
 * Tools
 ** Perspective
 #+begin_src emacs-lisp
@@ -950,14 +968,7 @@ In other words, \"undo\" changes in window configuration."
 (setq-default indent-tabs-mode nil)
 (setq-default evil-shift-round nil)
 #+end_src
-** PDF tools
-#+begin_src emacs-lisp
-(use-package pdf-tools
-  :straight t
-  :config
-  (add-hook 'pdf-view-mode-hook #'(lambda () (display-line-numbers-mode -1)))
-  (pdf-tools-install))
-#+end_src
+
 ** Imenu
 #+begin_src emacs-lisp
 (use-package imenu
