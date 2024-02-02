@@ -18,7 +18,7 @@
 ;;  Description
 ;;
 ;;; Code:
-
+(setq gc-cons-threshold (* 50 1000 1000))
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -38,6 +38,7 @@
 (use-package exec-path-from-shell
  :straight t
  :config
+ (exec-path-from-shell-arguments nil)
  (exec-path-from-shell-initialize))
 
 
