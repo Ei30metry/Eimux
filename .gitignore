@@ -6,6 +6,7 @@ tmp/
 *.eln
 \#.*
 eln-cache/
+elpa/
 eshell/
 history 
 straight/
