@@ -3,6 +3,7 @@
 
 * GUI settings
 #+begin_src emacs-lisp
+   (setq scroll-conservatively 101)
    (if (display-graphic-p)
        (menu-bar-mode 1)
        (menu-bar-mode -1))
@@ -40,34 +41,22 @@
 * UI
 ** Theme
 #+begin_src emacs-lisp
- (setq scroll-conservatively 101)
- (use-package reverse-theme
-    :straight t)
-  (use-package doom-themes
-  :straight t
-  :config
-  ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-meltbus t)
+  (use-package reverse-theme
+     :straight t
+     :defer t)
 
-  ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
-  ;; Enable custom neotree theme (all-the-icons must be installed!)
-  (doom-themes-neotree-config)
-  ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config))
+   (use-package doom-themes
+   :straight t
+   :config
+   ;; Global settings (defaults)
+   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+         doom-themes-enable-italic t)
+   (doom-themes-visual-bell-config)
+   (doom-themes-org-config))
 
-  (use-package sexy-monochrome-theme :straight t)
-  (use-package minimal-theme :straight t)
-  (use-package kosmos-theme :straight t)
-  ;; (use-package eziam-themes :straight t)
-  (use-package almost-mono-themes :straight t)
-  ;; (add-to-list 'custom-theme-load-path "~/.config/haskmacs/themes")
-  ;; (set-foreground-color "white")
-  ;; (set-background-color "black")
+   (use-package grayscale-theme :straight t)
 
-  ;; (load-theme 'reverse-theme t)
+   (load-theme 'doom-sourcerer t)
 #+end_src
 
 #+begin_src emacs-lisp
@@ -390,6 +379,7 @@ In other words, \"undo\" changes in window configuration."
 
      ;; Help menu
      "h f" '(describe-function :which-key "Describe function")
+     "h i" '(info :which-key "Info manual")
      "h m" '(describe-mode :which-key "Describe mode")
      "h k" '(describe-key :which-key "Describe key")
      "h K" '(describe-keymap :which-key "Describe keymap")
@@ -755,7 +745,7 @@ In other words, \"undo\" changes in window configuration."
 * Media
 ** EMMC
 #+begin_src emacs-lisp
-(use-package emms :straight t)
+(use-package emms :straight t :defer t)
 #+end_src
 ** empv
 #+begin_src emacs-lisp
@@ -857,6 +847,13 @@ In other words, \"undo\" changes in window configuration."
   :straight t
   :init
   (smartparens-global-mode))
+#+end_src
+** hl-todo
+#+begin_src emacs-lisp
+(use-package hl-todo
+  :straight t
+  :init
+  (hl-todo-mode))
 #+end_src
 ** Vertico
 #+begin_src emacs-lisp
