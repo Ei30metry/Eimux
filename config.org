@@ -132,7 +132,6 @@
 ** Functions
 #+begin_src emacs-lisp
   ;;;###autoload
-  (require 'windmove)
   (defun +company-has-completion-p ()
     "Return non-nil if a completion candidate exists at point."
     (when company-mode
@@ -194,9 +193,6 @@
      (if (derived-mode-p 'prog-mode)
          #'company-dabbrev-code
        #'company-dabbrev)))
-
-  (defalias 'doom-buffer-list #'buffer-list)
-  (defvar doom-fallback-buffer-name "*scratch*")
 #+end_src
 
 ** General
@@ -306,17 +302,6 @@
   ;;    :straight t
   ;;    :after org
   ;;    :defer t)
-#+end_src
-*** Org-alert
-#+begin_src emacs-lisp
-  ;; (use-package org-alert
-  ;;   :straight t
-  ;;   :config
-  ;;   (setq alert-default-style 'osx-notifier
-  ;;         org-alert-notification-title "Agenda"
-  ;;         org-alert-interval 300)
-  ;;   :init
-  ;;   (org-alert-enable))
 #+end_src
 *** Books
 #+begin_src emacs-lisp
@@ -630,13 +615,9 @@
 ** Consult
 #+begin_src emacs-lisp
 (use-package consult
-   :straight t)
-#+end_src
-*** Consult-lsp
-#+begin_src emacs-lisp
-(use-package consult-lsp
-  :straight t
-  :after lsp-mode)
+   :straight t
+   :bind
+   ("M-g i" . consult-imenu))
 #+end_src
 *** Consult-eglot
 #+begin_src emacs-lisp
@@ -653,8 +634,8 @@
 #+end_src
 ** Helpful
 #+begin_src emacs-lisp
-  ;; (use-package helpful
-  ;;     :ensure t)
+  (use-package helpful
+      :straight t)
 #+end_src
 * Programming Languages
 ** Haskell
@@ -674,16 +655,6 @@
     (haskell-mode . turn-on-haskell-indentation))
 #+end_src
 
-*** LSP-Haskell
-#+begin_src emacs-lisp
-  (use-package lsp-haskell
-    :straight t
-    :after haskell-mode
-    :config
-    (setq lsp-haskell-server-path "haskell-language-server-wrapper"))
-          ;; lsp-haskell-liquid-on t
-          ;; lsp-haskell-fomatting-provider "stylish-haskell"))
-#+end_src
 ** Agda
 #+begin_src elisp
 ;; Get the directory containing agda2-mode.el using agda-mode locate
@@ -730,13 +701,6 @@
    :defer t)
 
 #+end_src
-** Applescript
-#+begin_src emacs-lisp
-  ;; (use-package applescript-mode
-  ;;     :straight t)
-(use-package apples-mode
-     :straight t)
-#+end_src
 ** Javascript
 #+begin_src emacs-lisp
 (use-package js2-mode
@@ -752,7 +716,8 @@
 ** Swift
 #+begin_src emacs-lisp
 (use-package swift-mode
-    :straight t)
+    :straight t
+    :defer t)
 #+end_src
 *** LSP-Sourcekit
 #+begin_src emacs-lisp
