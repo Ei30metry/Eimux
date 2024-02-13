@@ -58,16 +58,6 @@
 
    (load-theme 'doom-sourcerer t)
 #+end_src
-
-#+begin_src emacs-lisp
-(use-package doom-modeline
-  :straight t
-  :config
-  (setq doom-modeline-indent-info nil)
-  (setq doom-modeline-major-mode-color-icon nil)
-  :init
-  (doom-modeline-mode))
-#+end_src
 ** Font
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
@@ -131,7 +121,9 @@
 * Keybidings
 ** Functions
 #+begin_src emacs-lisp
-  ;;;###autoload
+(global-set-key (kbd "C-x C-o") '(lambda () (interactive) (find-file "~/.emacs.d/config.org")))
+(global-set-key (kbd "C-x C-r") '(lambda () (interactive) (load-file "~/.emacs.d/init.el")))
+;;;###autpoload
   (defun +company-has-completion-p ()
     "Return non-nil if a completion candidate exists at point."
     (when company-mode
@@ -194,15 +186,7 @@
          #'company-dabbrev-code
        #'company-dabbrev)))
 #+end_src
-
-** General
-#+begin_src emacs-lisp
-  (use-package general
-    :straight t
-    :config
-    (general-evil-setup nil))
-  #+end_src
-*** macOS
+** macOS
 #+begin_src emacs-lisp
 (setq mac-option-key-is-meta nil 
       mac-command-key-is-meta t
@@ -610,7 +594,9 @@
 ** Swiper
 #+begin_src emacs-lisp
 (use-package swiper
-  :straight t)
+  :straight t
+  :bind
+  ("M-s s" . swiper))
 #+end_src
 ** Consult
 #+begin_src emacs-lisp
@@ -631,11 +617,6 @@
   :straight t
   :init
   (marginalia-mode))
-#+end_src
-** Helpful
-#+begin_src emacs-lisp
-  (use-package helpful
-      :straight t)
 #+end_src
 * Programming Languages
 ** Haskell
