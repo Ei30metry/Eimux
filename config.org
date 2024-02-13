@@ -594,7 +594,7 @@ In other words, \"undo\" changes in window configuration."
             (display-line-numbers-mode 0))))
     ;; (add-hook 'org-mode-hook
     ;;       (lambda ()
-    ;;         (rainbow-delimiters-mode -1))))
+    ;;         (rainbow-delimiters-mode -1)))
 #+end_src
 *** Org-Capture
 #+begin_src emacs-lisp
@@ -743,13 +743,57 @@ In other words, \"undo\" changes in window configuration."
 (setq which-key-idle-delay 0.2)
 #+end_src
 * Media
-** EMMC
+** emms
 #+begin_src emacs-lisp
 (use-package emms :straight t :defer t)
 #+end_src
 ** empv
 #+begin_src emacs-lisp
-(use-package empv :straight t :defer t)
+  (use-package empv :straight t :defer nil)
+
+  ;; These functions
+  ;; One just logs to the file with the same name at (Note Dir)
+  ;; One that stops the music and asks for the description and then logs the timestamp with the issue
+  ;; It should also have this variables:
+  ;; (podcast-dir)
+  ;; (default-description)
+  (setq episodes-audio-directory "/Users/artin/Podcast/Haskell Interlude/Episodes/"
+        episodes-notes-directory "/Users/artin/Podcast/Haskell Interlude/Notes/"
+        default-description "Volume drop")
+
+  ;; (message episodes-notes-directory)
+
+  ;; TODO Check to see if the file exists, if it doesn't, create it first
+  ;; TODO Write a range, instead of an absolute timestamp like 52:00 -- 52:01 : Blah
+  ;; NOTE Remmber to re-read the buffer in the end
+
+  (defun timestamp-to-MM-SS (timestamp)
+     "Convert seconds to MM:SS format"
+     (let* ((seconds (% timestamp 60))
+            (minutes (/ (- timestamp seconds) 60))
+            (prettify-time (lambda (x) (if (< x 10) (concat "0" (number-to-string x)) (number-to-string x))))
+            (seconds-pretty (funcall prettify-time seconds))
+            (minutes-pretty (funcall prettify-time minutes)))
+      (concat minutes-pretty ":" seconds-pretty)))
+
+  (defun write-timerange (file &optional description)
+      "Write the timestamp of the currently playing episode to its note file"
+      (interactive)
+      (let* ((timestamp (empv--send-command-sync (list 'get_property 'time-pos)))
+            (timestamp-range (concat (timestamp-to-MM-SS (- (truncate timestamp) 1))
+                                     " -- "
+                                     (timestamp-to-MM-SS (+ (truncate timestamp) 1)))))
+          (if description
+                 (write-region (concat timestamp-range " : " description "\n") nil file 'append)
+                 (write-region (concat timestamp-range " : " default-description "\n") nil file 'append)
+                 (revert-buffer-quick file)))) ;; TODO This is a hack, fix this
+
+
+  (defun write-to-episode-note-file ()
+     (interactive)
+     (let ((current-episode (empv--send-command-sync (list 'get_property 'filename/no-ext))))
+     (write-timerange--with
+            (expand-file-name (concat current-episode ".txt") episodes-notes-directory))))
 #+end_src
 * Document
 ** nov
