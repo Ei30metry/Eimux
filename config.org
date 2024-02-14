@@ -22,7 +22,7 @@
 #+end_src
 * Disabling default buffers and backup files
 #+begin_src emacs-lisp
-(setq-default message-log-max nil)
+(setq-default message-log-max t)
 
 (add-hook 'minibuffer-exit-hook
       #'(lambda ()
@@ -32,7 +32,7 @@
 
 (setq-default warning-minimum-level nil)
 (setq make-backup-files nil)
-(setq aut-save-default nil)
+(setq auto-save-default nil)
 (setq auto-save-list-file-prefix nil)
 
 ;; TODO Fix this
@@ -41,10 +41,6 @@
 * UI
 ** Theme
 #+begin_src emacs-lisp
-  (use-package reverse-theme
-     :straight t
-     :defer t)
-
    (use-package doom-themes
    :straight t
    :config
@@ -53,8 +49,6 @@
          doom-themes-enable-italic t)
    (doom-themes-visual-bell-config)
    (doom-themes-org-config))
-
-   (use-package grayscale-theme :straight t)
 
    (load-theme 'doom-sourcerer t)
 #+end_src
@@ -90,13 +84,13 @@
   (use-package dashboard
   :straight t
   :init
-  (setq dashboard-set-heading-icons nil)
-  (setq dashboard-icon-type 'all-the-icons)
-  (setq dashboard-set-file-icons t)
-  (setq dashboard-banner-logo-title "It's good to have an end to journey toward; but it's the journey that matters in the end.")
-  (setq dashboard-startup-banner "~/.emacs.d/images/lambda.png")
-  (setq dashboard-center-content t)
-  (setq dashboard-items '((agenda . 15)))
+  (setq dashboard-set-heading-icons nil
+        dashboard-icon-type 'all-the-icons
+        dashboard-set-file-icons t
+        dashboard-banner-logo-title "It's good to have an end to journey toward; but it's the journey that matters in the end."
+        dashboard-startup-banner "~/.emacs.d/images/lambda.png"
+        dashboard-center-content t
+        dashboard-items '((agenda . 15)))
   :config
   (dashboard-setup-startup-hook)
   (dashboard-modify-heading-icons '((recents . "file-text")
@@ -116,75 +110,77 @@
 #+end_src
 ** Prevent Emacs from closing
 #+begin_src emacs-lisp
+(global-set-key (kbd "M-q") 'kill-emacs)
 (setq confirm-kill-emacs 'y-or-n-p)
 #+end_src
 * Keybidings
 ** Functions
 #+begin_src emacs-lisp
-(global-set-key (kbd "C-x C-o") '(lambda () (interactive) (find-file "~/.emacs.d/config.org")))
-(global-set-key (kbd "C-x C-r") '(lambda () (interactive) (load-file "~/.emacs.d/init.el")))
-;;;###autpoload
-  (defun +company-has-completion-p ()
-    "Return non-nil if a completion candidate exists at point."
-    (when company-mode
-      (unless company-candidates-length
-        (company-manual-begin))
-      (= company-candidates-length 1)))
+  (global-set-key (kbd "C-x C-o") #'(lambda () (interactive) (find-file "~/.emacs.d/config.org")))
+  (global-set-key (kbd "C-x C-r") #'(lambda () (interactive) (load-file "~/.emacs.d/init.el")))
 
-  (defun kill-all-buffers (&optional buffer-list interactive)
-    "Kill all buffers and closes their windows.
+  ;;;###autpoload
+    (defun +company-has-completion-p ()
+      "Return non-nil if a completion candidate exists at point."
+      (when company-mode
+        (unless company-candidates-length
+          (company-manual-begin))
+        (= company-candidates-length 1)))
 
-  If the prefix arg is passed, doesn't close windows and only kill buffers that
-  belong to the current project."
-    (interactive
-     (list (if current-prefix-arg
-               (doom-project-buffer-list)
-             (doom-buffer-list))
-           t))
-    (if (null buffer-list)
-        (message "No buffers to kill")
-      (save-some-buffers)
-      (delete-other-windows)
-      (when (memq (current-buffer) buffer-list)
-        (switch-to-buffer (doom-fallback-buffer)))
-      (mapc #'kill-buffer buffer-list)
-      (doom--message-or-count
-       interactive "Killed %d buffers"
-       (- (length buffer-list)
-          (length (cl-remove-if-not #'buffer-live-p buffer-list))))))
+    (defun kill-all-buffers (&optional buffer-list interactive)
+      "Kill all buffers and closes their windows.
 
-  ;;;###autoload
-  (defun +company/toggle-auto-completion ()
-    "Toggle as-you-type code completion."
-    (interactive)
-    (require 'company)
-    (setq company-idle-delay (unless company-idle-delay 0.2))
-    (message "Auto completion %s"
-             (if company-idle-delay "enabled" "disabled")))
+    If the prefix arg is passed, doesn't close windows and only kill buffers that
+    belong to the current project."
+      (interactive
+       (list (if current-prefix-arg
+                 (doom-project-buffer-list)
+               (doom-buffer-list))
+             t))
+      (if (null buffer-list)
+          (message "No buffers to kill")
+        (save-some-buffers)
+        (delete-other-windows)
+        (when (memq (current-buffer) buffer-list)
+          (switch-to-buffer (doom-fallback-buffer)))
+        (mapc #'kill-buffer buffer-list)
+        (doom--message-or-count
+         interactive "Killed %d buffers"
+         (- (length buffer-list)
+            (length (cl-remove-if-not #'buffer-live-p buffer-list))))))
+
+    ;;;###autoload
+    (defun +company/toggle-auto-completion ()
+      "Toggle as-you-type code completion."
+      (interactive)
+      (require 'company)
+      (setq company-idle-delay (unless company-idle-delay 0.2))
+      (message "Auto completion %s"
+               (if company-idle-delay "enabled" "disabled")))
 
 
-  ;;;###autoload
-  (defun +company/complete ()
-    "Bring up the completion popup. If only one result, complete it."
-    (interactive)
-    (require 'company)
-    (when (ignore-errors
-            (/= (point)
-                (cdr (bounds-of-thing-at-point 'symbol))))
-      (save-excursion (insert " ")))
-    (when (and (company-manual-begin)
-               (= company-candidates-length 1))
-      (company-complete-common)))
+    ;;;###autoload
+    (defun +company/complete ()
+      "Bring up the completion popup. If only one result, complete it."
+      (interactive)
+      (require 'company)
+      (when (ignore-errors
+              (/= (point)
+                  (cdr (bounds-of-thing-at-point 'symbol))))
+        (save-excursion (insert " ")))
+      (when (and (company-manual-begin)
+                 (= company-candidates-length 1))
+        (company-complete-common)))
 
-  ;;;###autoload
-  (defun +company/dabbrev ()
-    "Invokes `company-dabbrev-code' in prog-mode buffers and `company-dabbrev'
-  everywhere else."
-    (interactive)
-    (call-interactively
-     (if (derived-mode-p 'prog-mode)
-         #'company-dabbrev-code
-       #'company-dabbrev)))
+    ;;;###autoload
+    (defun +company/dabbrev ()
+      "Invokes `company-dabbrev-code' in prog-mode buffers and `company-dabbrev'
+    everywhere else."
+      (interactive)
+      (call-interactively
+       (if (derived-mode-p 'prog-mode)
+           #'company-dabbrev-code
+         #'company-dabbrev)))
 #+end_src
 ** macOS
 #+begin_src emacs-lisp
@@ -237,19 +233,6 @@
   (require 'ox-extra)
   (ox-extras-activate '(latex-header-blocks ignore-headlines)))
 #+end_src
-*** Evil-org
-#+begin_src emacs-lisp
-(use-package evil-org
-  :straight t
-  :hook (org-mode . evil-org-mode)
-  :config
-  (add-hook 'evil-org-mode-hook
-	    #'(lambda ()
-	      (evil-org-set-key-theme '(navigation insert textobjects additional calendar todo))))
-  (add-to-list 'evil-emacs-state-modes 'org-agenda-mode)
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys))
-#+end_src
 *** Org-bullets
 #+begin_src emacs-lisp
 (use-package org-bullets
@@ -270,7 +253,6 @@
         ("rs" . "src rust")
         ("c" . "src c"))))
 #+end_src
-
 *** TOC-org
 #+begin_src emacs-lisp
 (use-package toc-org
@@ -581,9 +563,7 @@
 (setq-default indent-tabs-mode nil)
 (setq-default default-tab-width 4)
 (setq-default tab-width 4)
-(setq-default evil-indent-convert-tabs nil)
 (setq-default indent-tabs-mode nil)
-(setq-default evil-shift-round nil)
 #+end_src
 
 ** Imenu
@@ -627,9 +607,8 @@
     :config
     (setq haskell-font-lock-symbols t)
     (setq haskell-stylish-on-save nil)
-    (custom-set-variables haskell-process-log t)
+    (setq haskell-process-log nil)
     :hook
-    (haskell-mode . (lambda () (setq evil-auto-indent nil)))
     (haskell-mode . interactive-haskell-mode)
     (haskell-mode . haskell-auto-insert-module-template)
     (haskell-mode . haskell-decl-scan-mode)
@@ -700,15 +679,7 @@
     :straight t
     :defer t)
 #+end_src
-*** LSP-Sourcekit
-#+begin_src emacs-lisp
-(use-package lsp-sourcekit
-    :straight t
-    :after swift-mode
-    :defer t
-    :config
-    (setq lsp-sourcekit-executable "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"))
-#+end_src
+
 * Data Serialization
 ** JSON
 #+begin_src emacs-lisp
@@ -745,7 +716,7 @@
   :straight t)
 #+end_src
 
-* Chat
+* Messaging and mail
 ** Ement
 #+begin_src emacs-lisp
 (use-package ement
@@ -768,7 +739,11 @@
   ;;   (replace-regexp-in-string "\n$" "" (shell-command-to-string "nix-store -q --outputs $(nix-instantiate '<nixpkgs>' -A tdlib)")))
 
 #+end_src
-
+** mu4e
+#+begin_src emacs-lisp
+  ;; (use-package mu4e
+  ;; :straight t)
+#+end_src
 * Profiling
 #+begin_src emacs-lisp
 (use-package esup
