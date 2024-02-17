@@ -9,7 +9,7 @@
 
 ;; (setq jit-lock-stealth-time nil)
 ;; (setq jit-lock-defer-time nil)
-;; (setq jit-lock-defer-time 0.05)
+;; (setq jit-lock-defer-time 0.0)
 ;; (setq jit-lock-stealth-load 200)
 
 (provide 'early-init)

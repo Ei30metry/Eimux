@@ -1,9 +1,13 @@
-#+title: My Emacs config
-#+AUTHOR: Artin Ghasivand
+#+title: Emacs config
+#+author: Artin Ghasivand
 
+* Initial modes
+#+begin_src emacs-lisp
+(winner-mode 1)
+#+end_src
 * GUI settings
 #+begin_src emacs-lisp
-   (setq scroll-conservatively 101)
+(setq scroll-conservatively 101)
    (if (display-graphic-p)
        (menu-bar-mode 1)
        (menu-bar-mode -1))
@@ -16,13 +20,9 @@
    (setq display-line-numbers-type 'relative)
 #+end_src
 
-* Initial modes
-#+begin_src emacs-lisp
-(winner-mode 1)
-#+end_src
 * Disabling default buffers and backup files
 #+begin_src emacs-lisp
-(setq-default message-log-max t)
+(setq-default message-log-max :error)
 
 (add-hook 'minibuffer-exit-hook
       #'(lambda ()
@@ -30,13 +30,11 @@
            (and (get-buffer buffer)
             (kill-buffer buffer)))))
 
-(setq-default warning-minimum-level nil)
-(setq make-backup-files nil)
-(setq auto-save-default nil)
-(setq auto-save-list-file-prefix nil)
-
-;; TODO Fix this
 (setq-default show-trailing-whitespace nil)
+(setq-default warning-minimum-level nil)
+(setq make-backup-files nil
+      auto-save-default nil
+      auto-save-list-file-prefix nil)
 #+end_src
 * UI
 ** Theme
@@ -44,7 +42,6 @@
    (use-package doom-themes
    :straight t
    :config
-   ;; Global settings (defaults)
    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
          doom-themes-enable-italic t)
    (doom-themes-visual-bell-config)
@@ -56,19 +53,16 @@
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
                     :font "Andale Mono 14"
-                    ;;:font "Jetbrains Mono 14"
                     :weight 'medium)
 
 (set-face-attribute 'variable-pitch nil
-                    ;;:font "Jetbrains Mono 14"
                     :font "Andale Mono 14"
                     :weight 'medium)
 
 (set-face-attribute 'fixed-pitch nil
-                    ;;:font "Jetbrains Mono 14"
                     :font "Andale Mono 14"
                     :weight 'medium)
-;; needed for emacsclient
+
 (add-to-list 'default-frame-alist '(font . "Andale Mono 14"))
 #+end_src
 
@@ -106,85 +100,24 @@
 ** osx-plist
 #+begin_src emacs-lisp
 (use-package osx-plist
-  :straight t)
+  :straight t
+  :defer t)
 #+end_src
 ** Prevent Emacs from closing
 #+begin_src emacs-lisp
-(global-set-key (kbd "M-q") 'kill-emacs)
 (setq confirm-kill-emacs 'y-or-n-p)
 #+end_src
 * Keybidings
 ** Functions
 #+begin_src emacs-lisp
+  (global-set-key (kbd "M-q") 'kill-emacs)
   (global-set-key (kbd "C-x C-o") #'(lambda () (interactive) (find-file "~/.emacs.d/config.org")))
   (global-set-key (kbd "C-x C-r") #'(lambda () (interactive) (load-file "~/.emacs.d/init.el")))
-
-  ;;;###autpoload
-    (defun +company-has-completion-p ()
-      "Return non-nil if a completion candidate exists at point."
-      (when company-mode
-        (unless company-candidates-length
-          (company-manual-begin))
-        (= company-candidates-length 1)))
-
-    (defun kill-all-buffers (&optional buffer-list interactive)
-      "Kill all buffers and closes their windows.
-
-    If the prefix arg is passed, doesn't close windows and only kill buffers that
-    belong to the current project."
-      (interactive
-       (list (if current-prefix-arg
-                 (doom-project-buffer-list)
-               (doom-buffer-list))
-             t))
-      (if (null buffer-list)
-          (message "No buffers to kill")
-        (save-some-buffers)
-        (delete-other-windows)
-        (when (memq (current-buffer) buffer-list)
-          (switch-to-buffer (doom-fallback-buffer)))
-        (mapc #'kill-buffer buffer-list)
-        (doom--message-or-count
-         interactive "Killed %d buffers"
-         (- (length buffer-list)
-            (length (cl-remove-if-not #'buffer-live-p buffer-list))))))
-
-    ;;;###autoload
-    (defun +company/toggle-auto-completion ()
-      "Toggle as-you-type code completion."
-      (interactive)
-      (require 'company)
-      (setq company-idle-delay (unless company-idle-delay 0.2))
-      (message "Auto completion %s"
-               (if company-idle-delay "enabled" "disabled")))
-
-
-    ;;;###autoload
-    (defun +company/complete ()
-      "Bring up the completion popup. If only one result, complete it."
-      (interactive)
-      (require 'company)
-      (when (ignore-errors
-              (/= (point)
-                  (cdr (bounds-of-thing-at-point 'symbol))))
-        (save-excursion (insert " ")))
-      (when (and (company-manual-begin)
-                 (= company-candidates-length 1))
-        (company-complete-common)))
-
-    ;;;###autoload
-    (defun +company/dabbrev ()
-      "Invokes `company-dabbrev-code' in prog-mode buffers and `company-dabbrev'
-    everywhere else."
-      (interactive)
-      (call-interactively
-       (if (derived-mode-p 'prog-mode)
-           #'company-dabbrev-code
-         #'company-dabbrev)))
-#+end_src
+  (global-set-key (kbd "C-x O") 'window-swap-states)
+  #+end_src
 ** macOS
 #+begin_src emacs-lisp
-(setq mac-option-key-is-meta nil 
+(setq mac-option-key-is-meta nil
       mac-command-key-is-meta t
       mac-command-modifier 'meta
       mac-option-modifier 'super)
@@ -197,47 +130,41 @@
   (use-package org
     :straight t
     :init
-    (setq org-directory "~/Journal")
     (unless (file-exists-p org-directory)
       (mkdir org-directory t))
     :config
-    (setq org-startup-indented t)
-    (setq org-log-into-drawer t)
-    (setq org-treat-insert-todo-heading-as-state-change t)
-    (setq org-return-follows-link t)
-    (setq org-src-tab-acts-natively nil)
-    (setq org-agenda-files '("~/Agenda/todo.org" "~/Agenda/habits.org"))
-    (add-hook 'org-mode-hook 'smartparens-mode)
-    (add-hook 'org-agenda-mode-hook
-          #'(lambda ()
-            (visual-line-mode -1)
-            (toggle-truncate-lines 1)
-            (display-line-numbers-mode 0))))
-    ;; (add-hook 'org-mode-hook
-    ;;       (lambda ()
-    ;;         (rainbow-delimiters-mode -1)))
+    (setq org-startup-indented t
+          org-directory "~/Journal"
+          org-log-into-drawer t
+          org-treat-insert-todo-heading-as-state-change t
+          org-return-follows-link t
+          org-src-tab-acts-natively nil
+          org-agenda-files '("~/Agenda/todo.org" "~/Agenda/habits.org"))
+    :hook
+    (org-agenda-mode . (lambda () (visual-line-mode -1) (toggle-truncate-lines 1) (display-line-numbers-mode 0))))
 #+end_src
 *** Org-Capture
 #+begin_src emacs-lisp
+(global-set-key (kbd "C-x c") 'org-capture)
 (setq org-capture-templates
-      '(("t" "Todo" entry (file+headline "~/Agenda/todo.org" "Inbox")
-         "* TODO %?\n  %i\n")))
+     '(("t" "Todo" entry (file+headline "~/Agenda/todo.org" "Inbox")
+        "* TODO %?\n  %i\n")))
 #+end_src
 *** Org-contrib
 #+begin_src emacs-lisp
 (use-package org-contrib
-  :straight t
-  :defer t
-  :after org
-  :config
-  (require 'ox-extra)
-  (ox-extras-activate '(latex-header-blocks ignore-headlines)))
+ :straight t
+ :defer t
+ :after org
+ :config
+ (require 'ox-extra)
+ (ox-extras-activate '(latex-header-blocks ignore-headlines)))
 #+end_src
 *** Org-bullets
 #+begin_src emacs-lisp
 (use-package org-bullets
-   :straight t
-   :after org)
+  :straight t
+  :after org)
 
 (add-hook 'org-mode-hook #'(lambda () (org-bullets-mode 1)))
 #+end_src
@@ -246,95 +173,59 @@
 (with-eval-after-load 'org
 (require 'org-tempo)
 (setq org-structure-template-alist
-      '(("el" . "src emacs-lisp")
-        ("py" . "src python")
-        ("sq" . "src sql")
-        ("hs" . "src haskell")
-        ("rs" . "src rust")
-        ("c" . "src c"))))
+     '(("el" . "src emacs-lisp")
+       ("py" . "src python")
+       ("sq" . "src sql")
+       ("hs" . "src haskell")
+       ("rs" . "src rust")
+       ("c"  . "src c"))))
 #+end_src
 *** TOC-org
 #+begin_src emacs-lisp
 (use-package toc-org
-  :straight t
-  :after org
-  :config
-  (add-hook 'org-mode-hook 'toc-org-mode))
+ :straight t
+ :after org
+ :hook
+ (org-mode . toc-org-mode))
 #+end_src
 ** Productivity
-*** Org-super-agenda
-#+begin_src emacs-lisp
-  ;; (use-package org-super-agenda
-  ;;    :straight t
-  ;;    :after org
-  ;;    :defer t)
-#+end_src
 *** Books
 #+begin_src emacs-lisp
 (use-package org-books
-  :straight t
-  :after org
+ :straight t
   :defer t
-  :config
-  (setq org-books-file "~/Agenda/books.org"))
+ :config
+ (setq org-books-file "~/Agenda/books.org"))
 #+end_src
 *** Deft
 #+begin_src emacs-lisp
 (use-package deft
-    :straight t
-    :config
-    (setq deft-directory "~/Journal"
-          deft-extensions '("md" "org" "txt")
-          deft-recursive t))
-
-(setq deft-directory "~/Journal"
-      deft-extensions '("md" "org" "txt")
-      deft-recursive t)
+   :straight t
+   :config
+   (setq deft-directory "~/Journal"
+         deft-extensions '("md" "org" "txt")
+         deft-recursive t))
 #+end_src
 *** Org-journal
 #+begin_src emacs-lisp
 (use-package org-journal
-    :straight t
-    :after org)
-
-(setq org-journal-date-prefix "#+TITLE: "
-      org-journal-dir "~/Journal"
-      org-journal-time-prefix "* "
-      org-journal-date-format "%a, %Y-%m-%d"
-      org-journal-file-format "%Y-%m-%d.org")
-
-
-
-(setq org-directory "~/Journal")
-
-#+end_src
-*** Org-roam
-#+begin_src emacs-lisp
-
-#+end_src
-
-(setq org-roam-directory "~/Research")
-*** helm-bibtex
-#+begin_src emacs-lisp
-  ;; (use-package helm-bibtex
-  ;;   :ensure t)
-#+end_src
-*** Org-ql
-#+begin_src emacs-lisp
-  ;; (use-package org-ql
-  ;;   :ensure t)
-  ;; (add-to-list 'load-path "~/.config/haskmacs/org-ql")
-  ;; (add-to-list 'load-path "~/.config/haskmacs/peg")
-  ;; (require 'org-ql)
+   :straight t
+   :after org
+   :config
+   (setq org-journal-date-prefix "#+TITLE: "
+         org-journal-dir "~/Journal"
+         org-journal-time-prefix "* "
+         org-journal-date-format "%a, %Y-%m-%d"
+         org-journal-file-format "%Y-%m-%d.org"))
 #+end_src
 * Which key
 #+begin_src emacs-lisp
 (use-package which-key
-  :straight t
-  :config
-  (setq which-key-allow-imprecise-window-fit t)
-  :init
-  (which-key-mode))
+ :straight t
+ :config
+ (setq which-key-allow-imprecise-window-fit t)
+ :init
+ (which-key-mode))
 
 (setq which-key-idle-delay 0.2)
 #+end_src
@@ -345,51 +236,71 @@
 #+end_src
 ** empv
 #+begin_src emacs-lisp
-  (use-package empv :straight t :defer nil)
+   (use-package empv :straight t :defer nil)
 
-  ;; These functions
-  ;; One just logs to the file with the same name at (Note Dir)
-  ;; One that stops the music and asks for the description and then logs the timestamp with the issue
-  ;; It should also have this variables:
-  ;; (podcast-dir)
-  ;; (default-description)
-  (setq episodes-audio-directory "/Users/artin/Podcast/Haskell Interlude/Episodes/"
-        episodes-notes-directory "/Users/artin/Podcast/Haskell Interlude/Notes/"
-        default-description "Volume drop")
+   ;; These functions
+   ;; One just logs to the file with the same name at (Note Dir)
+   ;; One that stops the music and asks for the description and then logs the timestamp with the issue
+   ;; It should also have this variables:
+   ;; (podcast-dir)
+   ;; (default-description)
+   (setq episodes-audio-directory "/Users/artin/Podcast/Haskell Interlude/Episodes/"
+         episodes-notes-directory "/Users/artin/Podcast/Haskell Interlude/Notes/"
+         default-description "Volume drop")
 
-  ;; (message episodes-notes-directory)
+   ;; (message episodes-notes-directory)
 
-  ;; TODO Check to see if the file exists, if it doesn't, create it first
-  ;; TODO Write a range, instead of an absolute timestamp like 52:00 -- 52:01 : Blah
-  ;; NOTE Remmber to re-read the buffer in the end
+   ;; TODO Check to see if the file exists, if it doesn't, create it first
+   ;; TODO Write a range, instead of an absolute timestamp like 52:00 -- 52:01 : Blah
+   ;; NOTE Remmber to re-read the buffer in the end
 
-  (defun timestamp-to-MM-SS (timestamp)
-     "Convert seconds to MM:SS format"
-     (let* ((seconds (% timestamp 60))
-            (minutes (/ (- timestamp seconds) 60))
-            (prettify-time (lambda (x) (if (< x 10) (concat "0" (number-to-string x)) (number-to-string x))))
-            (seconds-pretty (funcall prettify-time seconds))
-            (minutes-pretty (funcall prettify-time minutes)))
-      (concat minutes-pretty ":" seconds-pretty)))
+   (defun timestamp-to-MM-SS (timestamp)
+      "Convert seconds to MM:SS format"
+      (let* ((seconds (% timestamp 60))
+             (minutes (/ (- timestamp seconds) 60))
+             (prettify-time (lambda (x) (if (< x 10) (concat "0" (number-to-string x)) (number-to-string x))))
+             (seconds-pretty (funcall prettify-time seconds))
+             (minutes-pretty (funcall prettify-time minutes)))
+       (concat minutes-pretty ":" seconds-pretty)))
 
-  (defun write-timerange (file &optional description)
-      "Write the timestamp of the currently playing episode to its note file"
-      (interactive)
-      (let* ((timestamp (empv--send-command-sync (list 'get_property 'time-pos)))
-            (timestamp-range (concat (timestamp-to-MM-SS (- (truncate timestamp) 1))
-                                     " -- "
-                                     (timestamp-to-MM-SS (+ (truncate timestamp) 1)))))
-          (if description
-                 (write-region (concat timestamp-range " : " description "\n") nil file 'append)
-                 (write-region (concat timestamp-range " : " default-description "\n") nil file 'append)
-                 (revert-buffer-quick file)))) ;; TODO This is a hack, fix this
+   ;; NOTE You don't need to revert the buffer or anything. just set is as the buffer, use save-excursion, and swich back to the current buffer. Very easy.
+   (defun write-timerange (buffer &optional description)
+       "Write the timestamp of the currently playing episode to its note file"
+       (interactive)
+       (let* ((timestamp (empv--send-command-sync (list 'get_property 'time-pos)))
+             (timestamp-range (concat (timestamp-to-MM-SS (- (truncate timestamp) 1))
+                                      " -- "
+                                      (timestamp-to-MM-SS (+ (truncate timestamp) 1)))))
+
+           (save-excursion (with-current-buffer (get-buffer-create buffer)
+                                (if description
+                                   (insert (concat timestamp-range " : " description "\n"))
+                                   (insert (concat timestamp-range " : " default-description "\n")))))))
 
 
-  (defun write-to-episode-note-file ()
+   ;; NOTE I think it would be ever better to just write it at (point)
+
+   (defun timestamp-of-episode ()
+     (let ((timestamp (empv--send-command-sync (list 'get_property 'time-pos))))
+                (timestamp-to-MM-SS (truncate timestamp))))
+
+   (defun episode-note-buffer ()
+     (file-name-nondirectory (empv--send-command-sync (list 'get_property 'filename/no-ext))))
+
+   (defun write-to-episode-note-buffer ()
      (interactive)
-     (let ((current-episode (empv--send-command-sync (list 'get_property 'filename/no-ext))))
-     (write-timerange--with
-            (expand-file-name (concat current-episode ".txt") episodes-notes-directory))))
+     (write-timerange (episode-note-buffer)))
+
+   ;; NOTE Should pause the track and bring a prompt. After I press <RET>, it should resume the track again.
+   (defun write-to-episode-note-buffer-prompt () (write-to-episode-note-buffer))
+
+
+  (defun my-echo (blah) (interactive "Cause of the error M\n") (message "%s" (concat blah " was the cause of error")))
+  (defun open-episode-note-buffer () (interactive) (switch-to-buffer (episode-note-buffer)))
+
+  (global-set-key (kbd "M-s i") 'write-to-episode-note-buffer)
+  (global-set-key (kbd "M-s p") #'(lambda () (interactive) (message (timestamp-of-episode))))
+  (global-set-key (kbd "M-s O") 'open-episode-note-buffer)
 #+end_src
 * Document
 ** nov
@@ -402,32 +313,40 @@
 
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 #+end_src
-** PDF tools
+** pdf-tools
 #+begin_src emacs-lisp
 (use-package pdf-tools
   :straight t
   :defer t
+  :hook
+  (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
   :config
-  (add-hook 'pdf-view-mode-hook #'(lambda () (display-line-numbers-mode -1)))
+  (setq pdf-view-use-scaling t)
   (pdf-tools-install))
 #+end_src
 * Tools
-** Perspective
+** perspective
 #+begin_src emacs-lisp
 (use-package perspective
   :straight t
-  :config
+  :bind
+  ("C-x , ]" . persp-next)
+  ("C-x , [" . persp-prev)
+  ("C-x , ," . persp-switch)
+  ("C-x , r" . persp-rename)
+  ("C-x , k" . persp-kill)
+  ("C-x , K" . persp-kill-other)
   :init
   (setq persp-suppress-no-prefix-key-warning t)
   (persp-mode))
 #+end_src
-** Rainbow delimiters
+** transpose
 #+begin_src emacs-lisp
-;; (add-to-list 'load-path "~/.config/haskmacs/rainbow-delimiters")
-;; (require 'rainbow-delimiters)
-;; (use-package rainbow-delimiters
-;;   :ensure t)
-;; (add-hook 'lisp-mode #'rainbow-delimiters-mode)
+(use-package transpose-frame :straight t)
+#+end_src
+** avy
+#+begin_src emacs-lisp
+(use-package avy :straight t :config (avy-setup-default))
 #+end_src
 ** magit
 #+begin_src emacs-lisp
@@ -441,7 +360,6 @@
   (setq gc-cons-threshold 100000000)
   (use-package eglot
     :straight t
-    :defer t
     :commands eglot
     :config
     (setq-default eglot-workspace-configuration
@@ -455,8 +373,7 @@
 	     :host github
 	     :repo "jdtsmith/eglot-booster"
 	     :files ("*.el"))
-  :after eglot
-  :config (eglot-booster-mode-mode))
+  :after eglot)
 #+end_src
 ** Smartparens
 #+begin_src emacs-lisp
@@ -464,6 +381,7 @@
   :straight t
   :init
   (smartparens-global-mode))
+
 #+end_src
 ** hl-todo
 #+begin_src emacs-lisp
@@ -493,7 +411,6 @@
 #+end_src
 ** Company
 #+begin_src emacs-lisp
-
 (use-package company
   :straight t
   :config
@@ -530,15 +447,15 @@
 (use-package vterm
   :straight t
   :defer t
+  :bind
+  ("s-\\" . vterm)
+  ("s-<return>" . vterm-other-window)
   :config
   (add-hook 'vterm-mode-hook #'(lambda () (display-line-numbers-mode -1))))
 #+end_src
 
 *** eshell
 #+begin_src emacs-lisp
-  ;; (use-package eshell
-  ;;   :straight t
-  ;;   (add-hook 'eshell-mode-hook #'(lambda () (display-line-numbers-mode -1))))
   (add-hook 'eshell-mode-hook #'(lambda () (display-line-numbers-mode -1)))
 #+end_src
 
@@ -546,6 +463,14 @@
 #+begin_src emacs-lisp
 (use-package projectile
   :straight t
+  :bind
+  ("C-x p t" . projectile-run-vterm-other-window)
+  ("C-x p T" . projectile-run-vterm)
+  ("C-x p c" . projectile-compile-project)
+  ("C-x p f" . projectile-find-file)
+  ("C-x p o" . projectile-find-file-other-window)
+  ("C-x p p" . projectile-switch-project)
+  ("C-x p /" . consult-ripgrep)
   :config
   (setq projectile-enable-caching t
         projectile-auto-update-cache t
@@ -605,14 +530,17 @@
   (use-package haskell-mode
     :straight t
     :config
-    (setq haskell-font-lock-symbols t)
-    (setq haskell-stylish-on-save nil)
-    (setq haskell-process-log nil)
+    (setq haskell-font-lock-symbols t
+          haskell-stylish-on-save nil
+          haskell-process-log nil)
+    :bind
+    (:map haskell-mode-map
+          ("C-c h" . hoogle))
     :hook
     (haskell-mode . interactive-haskell-mode)
     (haskell-mode . haskell-auto-insert-module-template)
-    (haskell-mode . haskell-decl-scan-mode)
-    (haskell-mode . turn-on-haskell-indentation))
+    (haskell-mode . haskell-indentation-mode)
+    (haskell-mode . haskell-decl-scan-mode))
 #+end_src
 
 ** Agda
@@ -642,7 +570,6 @@
     :after tuareg-mode)
 
 #+end_src
-** C
 ** Lean
 #+begin_src emacs-lisp
 (use-package lean4-mode
@@ -652,6 +579,7 @@
 	     :repo "leanprover/lean4-mode"
 	     :files ("*.el" "data"))
   ;; to defer loading the package until required
+  :defer t
   :commands (lean4-mode))
 #+end_src
 ** Nix
@@ -660,6 +588,11 @@
    :straight t
    :defer t)
 
+; TODO
+(defun open-nix-config () ())
+(defun darwin-rebuild-switch () ())
+(defun nix-channel-update () ())
+(defun nix-collect-garbage-d () ())
 #+end_src
 ** Javascript
 #+begin_src emacs-lisp
@@ -702,7 +635,10 @@
 ** Latex mode
 #+begin_src emacs-lisp
 (use-package tex-mode
-  :straight t)
+  :straight t
+  :mode
+  ("\\.tex\\'" . tex-mode)
+  ("\\.mng\\'" . tex-mode))
 #+end_src
 ** Ott
 #+begin_src emacs-lisp
@@ -734,15 +670,6 @@
       :hook
       (telega-chat-mode . (lambda () (display-line-numbers-mode -1)))
       (telega-root-mode . (lambda () (display-line-numbers-mode -1))))
-
-  ;; (defun get-tdlib-path ()
-  ;;   (replace-regexp-in-string "\n$" "" (shell-command-to-string "nix-store -q --outputs $(nix-instantiate '<nixpkgs>' -A tdlib)")))
-
-#+end_src
-** mu4e
-#+begin_src emacs-lisp
-  ;; (use-package mu4e
-  ;; :straight t)
 #+end_src
 * Profiling
 #+begin_src emacs-lisp
