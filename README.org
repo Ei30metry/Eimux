@@ -1,0 +1,2 @@
+* Haskmacs
+My personal Emacs config. (Still in progress)

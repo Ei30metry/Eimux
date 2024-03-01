@@ -73,22 +73,39 @@
     :if (display-graphic-p))
 #+end_src
 
-** Dashboard
+** dashboard
 #+begin_src emacs-lisp
   (use-package dashboard
   :straight t
   :init
   (setq dashboard-set-heading-icons nil
-        dashboard-icon-type 'all-the-icons
         dashboard-set-file-icons t
         dashboard-banner-logo-title "It's good to have an end to journey toward; but it's the journey that matters in the end."
         dashboard-startup-banner "~/.emacs.d/images/lambda.png"
         dashboard-center-content t
-        dashboard-items '((agenda . 15)))
+        dashboard-set-footer nil
+        dashboard-items nil)
   :config
-  (dashboard-setup-startup-hook)
-  (dashboard-modify-heading-icons '((recents . "file-text")
-                                    (bookmarks . "book"))))
+  (dashboard-setup-startup-hook))
+
+#+end_src
+* Keybidings
+** MISC
+I like to distinguish betweeen C-m and RET.
+#+begin_src emacs-lisp
+(define-key input-decode-map [?\C-m] [C-m])
+(global-set-key (kbd "<C-m>") 'back-to-indentation)
+(global-set-key (kbd "C-x C-o") #'(lambda () (interactive) (find-file "~/.emacs.d/config.org")))
+(global-set-key (kbd "C-x C-r") #'(lambda () (interactive) (load-file "~/.emacs.d/init.el")))
+(global-set-key (kbd "C-x B p") 'previous-buffer)
+(global-set-key (kbd "C-x B n") 'next-buffer)
+#+end_src
+** macOS
+#+begin_src emacs-lisp
+(setq mac-option-key-is-meta nil
+      mac-command-key-is-meta t
+      mac-command-modifier 'meta
+      mac-option-modifier 'super)
 
 #+end_src
 * OS packages
@@ -107,22 +124,6 @@
 #+begin_src emacs-lisp
 (setq confirm-kill-emacs 'y-or-n-p)
 #+end_src
-* Keybidings
-** Functions
-#+begin_src emacs-lisp
-  (global-set-key (kbd "M-q") 'kill-emacs)
-  (global-set-key (kbd "C-x C-o") #'(lambda () (interactive) (find-file "~/.emacs.d/config.org")))
-  (global-set-key (kbd "C-x C-r") #'(lambda () (interactive) (load-file "~/.emacs.d/init.el")))
-  (global-set-key (kbd "C-x O") 'window-swap-states)
-  #+end_src
-** macOS
-#+begin_src emacs-lisp
-(setq mac-option-key-is-meta nil
-      mac-command-key-is-meta t
-      mac-command-modifier 'meta
-      mac-option-modifier 'super)
-
-#+end_src
 * Org-mode
 ** Improving upon org-mode
 *** Org-mode
@@ -130,8 +131,6 @@
   (use-package org
     :straight t
     :init
-    (unless (file-exists-p org-directory)
-      (mkdir org-directory t))
     :config
     (setq org-startup-indented t
           org-directory "~/Journal"
@@ -223,11 +222,10 @@
 (use-package which-key
  :straight t
  :config
- (setq which-key-allow-imprecise-window-fit t)
+ (setq which-key-allow-imprecise-window-fit t
+       which-key-idle-delay 0.5)
  :init
  (which-key-mode))
-
-(setq which-key-idle-delay 0.2)
 #+end_src
 * Media
 ** emms
@@ -236,7 +234,7 @@
 #+end_src
 ** empv
 #+begin_src emacs-lisp
-   (use-package empv :straight t :defer nil)
+   (use-package empv :straight t :defer t)
 
    ;; These functions
    ;; One just logs to the file with the same name at (Note Dir)
@@ -287,19 +285,24 @@
    (defun episode-note-buffer ()
      (file-name-nondirectory (empv--send-command-sync (list 'get_property 'filename/no-ext))))
 
-   (defun write-to-episode-note-buffer ()
+   (defun write-to-episode-note-buffer (&optional description)
      (interactive)
-     (write-timerange (episode-note-buffer)))
-
-   ;; NOTE Should pause the track and bring a prompt. After I press <RET>, it should resume the track again.
-   (defun write-to-episode-note-buffer-prompt () (write-to-episode-note-buffer))
+     (write-timerange (episode-note-buffer) description))
 
 
-  (defun my-echo (blah) (interactive "Cause of the error M\n") (message "%s" (concat blah " was the cause of error")))
+  (defun my-echo (blah) (interactive "MCause of the error \n") (message "%s" (concat blah " was the cause of error")))
   (defun open-episode-note-buffer () (interactive) (switch-to-buffer (episode-note-buffer)))
 
+  ;; (defun write-to-episode-note-buffer-prompt (reason)
+  ;;        (empv-pause)
+  ;;        (interactive "MProblem: \n")
+  ;;        (write-to-episode-note-buffer reason)
+  ;;        (empv-resume))
+
+
   (global-set-key (kbd "M-s i") 'write-to-episode-note-buffer)
-  (global-set-key (kbd "M-s p") #'(lambda () (interactive) (message (timestamp-of-episode))))
+  (global-set-key (kbd "M-s t") #'(lambda () (interactive) (message (timestamp-of-episode))))
+  (global-set-key (kbd "M-s p") 'write-to-episode-note-buffer-prompt)
   (global-set-key (kbd "M-s O") 'open-episode-note-buffer)
 #+end_src
 * Document
@@ -321,8 +324,7 @@
   :hook
   (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
   :config
-  (setq pdf-view-use-scaling t)
-  (pdf-tools-install))
+  (setq pdf-view-use-scaling t))
 #+end_src
 * Tools
 ** perspective
@@ -330,23 +332,45 @@
 (use-package perspective
   :straight t
   :bind
-  ("C-x , ]" . persp-next)
-  ("C-x , [" . persp-prev)
-  ("C-x , ," . persp-switch)
-  ("C-x , r" . persp-rename)
-  ("C-x , k" . persp-kill)
-  ("C-x , K" . persp-kill-other)
+  ("C-x , n"  . persp-next)
+  ("C-x , p"  . persp-prev)
+  ("C-x , ,"  . persp-switch)
+  ("C-x , B"  . persp-ibuffer)
+  ("C-x , r"  . persp-rename)
+  ("C-x , k"  . persp-kill)
+  ("C-x , K"  . persp-kill-other)
   :init
   (setq persp-suppress-no-prefix-key-warning t)
   (persp-mode))
 #+end_src
 ** transpose
 #+begin_src emacs-lisp
-(use-package transpose-frame :straight t)
+(use-package transpose-frame :straight t :bind ("C-x T" . transpose-frame))
+#+end_src
+** ace-window
+#+begin_src emacs-lisp
+(use-package ace-window
+        :straight t
+        :config
+        (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+        :bind ("C-x o" . ace-window))
 #+end_src
 ** avy
 #+begin_src emacs-lisp
-(use-package avy :straight t :config (avy-setup-default))
+(use-package avy :straight t
+                 :config (avy-setup-default)
+                 :bind ("C-;" . avy-goto-char-2)
+                       ("C-'" . avy-goto-char)
+                       ("M-g w" . avy-goto-word-1)
+                       ("M-g W" . avy-goto-word-0))
+#+end_src
+** multiple-cursors
+#+begin_src emacs-lisp
+(use-package multiple-cursors :straight t)
+#+end_src
+** vundo
+#+begin_src emacs-lisp
+(use-package vundo :straight t)
 #+end_src
 ** magit
 #+begin_src emacs-lisp
@@ -388,7 +412,7 @@
 (use-package hl-todo
   :straight t
   :init
-  (hl-todo-mode))
+  (global-hl-todo-mode))
 #+end_src
 ** Vertico
 #+begin_src emacs-lisp
@@ -535,7 +559,8 @@
           haskell-process-log nil)
     :bind
     (:map haskell-mode-map
-          ("C-c h" . hoogle))
+          ("C-c h" . hoogle)
+          ("C-c f" . haskell-mode-stylish-buffer))
     :hook
     (haskell-mode . interactive-haskell-mode)
     (haskell-mode . haskell-auto-insert-module-template)
@@ -588,8 +613,8 @@
    :straight t
    :defer t)
 
-; TODO
-(defun open-nix-config () ())
+(global-set-key (kbd "C-x N o") #'(lambda () (interactive) (find-file "~/.nixpkgs/darwin-configuration.nix")))
+
 (defun darwin-rebuild-switch () ())
 (defun nix-channel-update () ())
 (defun nix-collect-garbage-d () ())
@@ -632,7 +657,8 @@
 #+end_src
 
 * Markup languages
-** Latex mode
+** Latex
+*** tex-mode
 #+begin_src emacs-lisp
 (use-package tex-mode
   :straight t
@@ -640,18 +666,26 @@
   ("\\.tex\\'" . tex-mode)
   ("\\.mng\\'" . tex-mode))
 #+end_src
+*** math-preview
+#+begin_src emacs-lisp
+(use-package math-preview :straight t :defer t)
+#+end_src
 ** Ott
 #+begin_src emacs-lisp
 (use-package ott-mode
     :ensure nil
     :load-path "~/.emacs.d/ott-mode")
 #+end_src
-** Markdown mode
+** markdown-mode
 #+begin_src emacs-lisp
 (use-package markdown-mode
   :straight t)
 #+end_src
-
+** rst-mode
+#+begin_src emacs-lisp
+  ;; (setq rst-pdf-program "/Applications/Preview.app/Contents/MacOS/Preview")
+  (setq rst-pdf-program "/Applications/Skim.app/Contents/MacOS/Skim")
+#+end_src
 * Messaging and mail
 ** Ement
 #+begin_src emacs-lisp
