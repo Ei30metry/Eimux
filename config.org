@@ -1,12 +1,9 @@
-#+title: Emacs config
+#+title: Emacs Config
 #+author: Artin Ghasivand
 
-* Initial modes
-#+begin_src emacs-lisp
-(winner-mode 1)
-#+end_src
 * GUI settings
 #+begin_src emacs-lisp
+(winner-mode 1)
 (setq scroll-conservatively 101)
    (if (display-graphic-p)
        (menu-bar-mode 1)
@@ -17,7 +14,7 @@
    (pixel-scroll-precision-mode 1)
    (global-display-line-numbers-mode 1)
    (global-visual-line-mode 1)
-   (setq display-line-numbers-type 'relative)
+(setq display-line-numbers-type 'relative)
 #+end_src
 
 * Disabling default buffers and backup files
@@ -65,14 +62,6 @@
 
 (add-to-list 'default-frame-alist '(font . "Andale Mono 14"))
 #+end_src
-
-** Icons
-#+begin_src emacs-lisp
-  (use-package all-the-icons
-    :straight t
-    :if (display-graphic-p))
-#+end_src
-
 ** dashboard
 #+begin_src emacs-lisp
   (use-package dashboard
@@ -304,27 +293,6 @@ I like to distinguish betweeen C-m and RET.
   (global-set-key (kbd "M-s p") 'write-to-episode-note-buffer-prompt)
   (global-set-key (kbd "M-s O") 'open-episode-note-buffer)
 #+end_src
-* Document
-** nov
-#+begin_src emacs-lisp
-(use-package nov
-   :straight t
-   :defer t
-   :hook
-   (nov-mode . (lambda () (display-line-numbers-mode -1))))
-
-(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-#+end_src
-** pdf-tools
-#+begin_src emacs-lisp
-(use-package pdf-tools
-  :straight t
-  :defer t
-  :hook
-  (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
-  :config
-  (setq pdf-view-use-scaling t))
-#+end_src
 * Tools
 ** perspective
 #+begin_src emacs-lisp
@@ -381,17 +349,7 @@ I like to distinguish betweeen C-m and RET.
     (setq-default eglot-workspace-configuration
           '((haskell (plugin (stan (globalOn . :json-false)))))))
 #+end_src
-** eglot-booster
-#+begin_src emacs-lisp
-(use-package eglot-booster
-  :straight (eglot-booster
-	     :type git
-	     :host github
-	     :repo "jdtsmith/eglot-booster"
-	     :files ("*.el"))
-  :after eglot)
-#+end_src
-** Smartparens
+** smartparens
 #+begin_src emacs-lisp
 (use-package smartparens
   :straight t
@@ -406,7 +364,7 @@ I like to distinguish betweeen C-m and RET.
   :init
   (global-hl-todo-mode))
 #+end_src
-** Vertico
+** vertico
 #+begin_src emacs-lisp
 (use-package vertico
   :straight t
@@ -418,32 +376,14 @@ I like to distinguish betweeen C-m and RET.
   :init
   (vertico-mode))
 #+end_src
-** Savehist
+** savehist
 #+begin_src emacs-lisp
 (use-package savehist
-  :straight t
-  :init
-  (savehist-mode))
+    :straight t
+    :init
+    (savehist-mode))
 #+end_src
-** Company
-#+begin_src emacs-lisp
-(use-package company
-  :straight t
-  :config
-  (setq company-idle-delay 0.20)
-  (setq company-minimum-prefix-length 2)
-  (setq company-show-number t))
-
-(add-hook 'after-init-hook 'global-company-mode)
-
-#+end_src
-** Company-Box
-#+begin_src emacs-lisp
-(use-package company-box
-  :straight t
-  :after company-mode)
-#+end_src
-** Orderless
+** orderless
 #+begin_src emacs-lisp
 (use-package orderless
   :straight t
@@ -451,7 +391,6 @@ I like to distinguish betweeen C-m and RET.
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
 #+end_src
-
 ** Terminal
 *** term
 #+begin_src emacs-lisp
@@ -469,20 +408,19 @@ I like to distinguish betweeen C-m and RET.
   :config
   (add-hook 'vterm-mode-hook #'(lambda () (display-line-numbers-mode -1))))
 #+end_src
-
 *** eshell
 #+begin_src emacs-lisp
   (add-hook 'eshell-mode-hook #'(lambda () (display-line-numbers-mode -1)))
 #+end_src
 
-** Projectile
+** projectile
 #+begin_src emacs-lisp
 (use-package projectile
   :straight t
   :bind
   ("C-x p t" . projectile-run-vterm-other-window)
   ("C-x p T" . projectile-run-vterm)
-  ("C-x p c" . projectile-compile-project)
+  ;; ("C-x p c" . projectile-compile-project)
   ("C-x p f" . projectile-find-file)
   ("C-x p o" . projectile-find-file-other-window)
   ("C-x p p" . projectile-switch-project)
@@ -494,12 +432,16 @@ I like to distinguish betweeen C-m and RET.
   :init
   (projectile-mode 1))
 #+end_src
-** Xref
+
+** compilation
+#+begin_src emacs-lisp
+#+end_src
+** xref
 #+begin_src emacs-lisp
 (use-package xref
   :straight t)
 #+end_src
-** Tab management
+** tab
 #+begin_src emacs-lisp
 (setq-default indent-tabs-mode nil)
 (setq-default default-tab-width 4)
@@ -507,26 +449,26 @@ I like to distinguish betweeen C-m and RET.
 (setq-default indent-tabs-mode nil)
 #+end_src
 
-** Imenu
+** imenu
 #+begin_src emacs-lisp
 (use-package imenu
   :straight t)
 #+end_src
-** Swiper
+** swiper
 #+begin_src emacs-lisp
 (use-package swiper
   :straight t
   :bind
   ("M-s s" . swiper))
 #+end_src
-** Consult
+** consult
 #+begin_src emacs-lisp
 (use-package consult
    :straight t
    :bind
    ("M-g i" . consult-imenu))
 #+end_src
-*** Consult-eglot
+*** consult-eglot
 #+begin_src emacs-lisp
 (use-package consult-eglot
   :straight t
@@ -539,25 +481,48 @@ I like to distinguish betweeen C-m and RET.
   :init
   (marginalia-mode))
 #+end_src
+* Document
+** nov
+#+begin_src emacs-lisp
+(use-package nov
+   :straight t
+   :defer t
+   :hook
+   (nov-mode . (lambda () (display-line-numbers-mode -1))))
+
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+#+end_src
+** pdf-tools
+#+begin_src emacs-lisp
+(use-package pdf-tools
+  :straight t
+  :defer t
+  :hook
+  (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
+  :config
+  (setq pdf-view-use-scaling t))
+#+end_src
 * Programming Languages
 ** Haskell
 *** Haskell-mode
 #+begin_src emacs-lisp
-  (use-package haskell-mode
-    :straight t
-    :config
-    (setq haskell-font-lock-symbols t
-          haskell-stylish-on-save nil
-          haskell-process-log nil)
-    :bind
-    (:map haskell-mode-map
-          ("C-c h" . hoogle)
-          ("C-c f" . haskell-mode-stylish-buffer))
-    :hook
-    (haskell-mode . interactive-haskell-mode)
-    (haskell-mode . haskell-auto-insert-module-template)
-    (haskell-mode . haskell-indentation-mode)
-    (haskell-mode . haskell-decl-scan-mode))
+    (use-package haskell-mode
+      :straight t
+      :config
+      (setq haskell-font-lock-symbols t
+            haskell-stylish-on-save nil
+            haskell-process-log nil)
+      :bind
+      (:map haskell-mode-map
+            ("C-c h" . hoogle)
+            ("C-c f" . haskell-mode-stylish-buffer)
+            ("C-x p C" . haskell-compile))
+
+      :hook
+      (haskell-mode . haskell-auto-insert-module-template)
+      (haskell-mode . interactive-haskell-mode)
+      (haskell-mode . haskell-indentation-mode)
+      (haskell-mode . haskell-decl-scan-mode))
 #+end_src
 
 ** Agda
@@ -642,7 +607,7 @@ I like to distinguish betweeen C-m and RET.
 (use-package yaml-mode
   :straight t)
 #+end_src
-** CSV
+** csv
 #+begin_src emacs-lisp
 (use-package csv-mode
   :straight t)
@@ -662,7 +627,7 @@ I like to distinguish betweeen C-m and RET.
 #+begin_src emacs-lisp
 (use-package math-preview :straight t :defer t)
 #+end_src
-** Ott
+** ott
 #+begin_src emacs-lisp
 (use-package ott-mode
     :ensure nil
