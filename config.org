@@ -130,7 +130,6 @@ I like to distinguish betweeen C-m and RET.
 #+begin_src emacs-lisp
   (use-package org
     :straight t
-    :init
     :config
     (setq org-startup-indented t
           org-directory "~/Journal"
@@ -170,14 +169,14 @@ I like to distinguish betweeen C-m and RET.
 *** Org-tempo
 #+begin_src emacs-lisp
 (with-eval-after-load 'org
-(require 'org-tempo)
-(setq org-structure-template-alist
-     '(("el" . "src emacs-lisp")
-       ("py" . "src python")
-       ("sq" . "src sql")
-       ("hs" . "src haskell")
-       ("rs" . "src rust")
-       ("c"  . "src c"))))
+    (require 'org-tempo)
+    (setq org-structure-template-alist
+         '(("el" . "src emacs-lisp")
+           ("py" . "src python")
+           ("sq" . "src sql")
+           ("hs" . "src haskell")
+           ("rs" . "src rust")
+           ("c"  . "src c"))))
 #+end_src
 *** TOC-org
 #+begin_src emacs-lisp
@@ -329,19 +328,12 @@ I like to distinguish betweeen C-m and RET.
 * Tools
 ** perspective
 #+begin_src emacs-lisp
-(use-package perspective
-  :straight t
-  :bind
-  ("C-x , n"  . persp-next)
-  ("C-x , p"  . persp-prev)
-  ("C-x , ,"  . persp-switch)
-  ("C-x , B"  . persp-ibuffer)
-  ("C-x , r"  . persp-rename)
-  ("C-x , k"  . persp-kill)
-  ("C-x , K"  . persp-kill-other)
-  :init
-  (setq persp-suppress-no-prefix-key-warning t)
-  (persp-mode))
+  (use-package perspective
+    :straight t
+    :custom
+    (persp-mode-prefix-key (kbd "C-x C-,"))
+    :init
+    (persp-mode))
 #+end_src
 ** transpose
 #+begin_src emacs-lisp
