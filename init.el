@@ -7,22 +7,16 @@
 ;; Created: August 05, 2022
 ;; Modified: August 05, 2022
 ;; Version: 0.0.1
-;; Keywords: abbrev bib c calendar comm convenience data docs emulations extensions faces files frames games hardware help hypermedia i18n internal languages lisp local maint mail matching mouse multimedia news outlines processes terminals tex tools unix vc wp
-;; Homepage: https://github.com/artin/init
-;; Package-Requires: ((emacs "24.3"))
-;;
-;; This file is not part of GNU Emacs.
-;;
-;;; Commentary:
-;;
-;;  Description
-;;
+
 ;;; Code:
 (setq gc-cons-threshold (* 50 1000 1000))
 (defvar bootstrap-version)
 (let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 6))
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
         (url-retrieve-synchronously
@@ -47,3 +41,16 @@
        "config.org"
        user-emacs-directory))
 (put 'narrow-to-region 'disabled nil)
+
+(setq read-process-output-max (* 1024 1024))
+
+(setq emacs-started nil)
+
+(add-hook 'emacs-startup-hook
+	  (lambda ()
+	    (message "Emacs loaded in %s with %d garbage collections."
+		     (format "%.3f seconds"
+			     (float-time
+			      (time-subtract after-init-time before-init-time)))
+		     gcs-done)
+	    (setq emacs-started t)))

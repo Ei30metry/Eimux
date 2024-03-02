@@ -3,6 +3,10 @@
 
 * GUI settings
 #+begin_src emacs-lisp
+(setq inhibit-startup-screen t
+      inhibit-startup-message t
+      initial-scratch-message ";; It's good to have an end to journey toward; but it's the journey that matters in the end.")
+
 (winner-mode 1)
 (setq scroll-conservatively 101)
    (if (display-graphic-p)
@@ -61,22 +65,6 @@
                     :weight 'medium)
 
 (add-to-list 'default-frame-alist '(font . "Andale Mono 14"))
-#+end_src
-** dashboard
-#+begin_src emacs-lisp
-  (use-package dashboard
-  :straight t
-  :init
-  (setq dashboard-set-heading-icons nil
-        dashboard-set-file-icons t
-        dashboard-banner-logo-title "It's good to have an end to journey toward; but it's the journey that matters in the end."
-        dashboard-startup-banner "~/.emacs.d/images/lambda.png"
-        dashboard-center-content t
-        dashboard-set-footer nil
-        dashboard-items nil)
-  :config
-  (dashboard-setup-startup-hook))
-
 #+end_src
 * Keybidings
 ** MISC
