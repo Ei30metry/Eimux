@@ -303,6 +303,13 @@ I like to distinguish betweeen C-m and RET.
     :init
     (persp-mode))
 #+end_src
+** diredfl
+#+begin_src emacs-lisp
+(use-package diredfl
+  :straight t
+  :init
+  (diredfl-global-mode))
+#+end_src
 ** transpose
 #+begin_src emacs-lisp
 (use-package transpose-frame :straight t :bind ("C-x T" . transpose-frame))
@@ -353,8 +360,10 @@ I like to distinguish betweeen C-m and RET.
 #+begin_src emacs-lisp
 (use-package smartparens
   :straight t
+  :config
+  (require 'smartparens-config)
   :init
-  (smartparens-global-mode))
+  (smartparens-global-strict-mode))
 
 #+end_src
 ** hl-todo
@@ -415,22 +424,22 @@ I like to distinguish betweeen C-m and RET.
 
 ** projectile
 #+begin_src emacs-lisp
-(use-package projectile
-  :straight t
-  :bind
-  ("C-x p t" . projectile-run-vterm-other-window)
-  ("C-x p T" . projectile-run-vterm)
-  ;; ("C-x p c" . projectile-compile-project)
-  ("C-x p f" . projectile-find-file)
-  ("C-x p o" . projectile-find-file-other-window)
-  ("C-x p p" . projectile-switch-project)
-  ("C-x p /" . consult-ripgrep)
-  :config
-  (setq projectile-enable-caching t
-        projectile-auto-update-cache t
-        projectile-discover-projects-in-directory "~/Programming/projects/")
-  :init
-  (projectile-mode 1))
+  (use-package projectile
+    :straight t
+    :bind
+    ("C-x p t" . projectile-run-vterm-other-window)
+    ("C-x p T" . projectile-run-vterm)
+    ("C-x p c" . projectile-compile-project)
+    ("C-x p f" . projectile-find-file)
+    ("C-x p o" . projectile-find-file-other-window)
+    ("C-x p p" . projectile-switch-project)
+    ("C-x p /" . consult-ripgrep)
+    :config
+    (setq projectile-enable-caching t
+          projectile-auto-update-cache t
+          projectile-discover-projects-in-directory "~/Programming/projects/")
+    :init
+    (projectile-mode 1))
 #+end_src
 
 ** compilation
