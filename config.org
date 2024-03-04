@@ -350,9 +350,25 @@ I like to distinguish betweeen C-m and RET.
   :straight t
   :config
   (require 'smartparens-config)
+  :bind
+  ("C-M-a" . sp-beginning-of-sexp)
+  ("C-M-e" . sp-end-of-sexp)
+  ("C-M-j" . sp-down-sexp)
+  ("C-M-k" . sp-up-sexp)
+  ("C-M-K" . sp-backward-up-sexp)
+  ("C-M-J" . sp-backward-down-sexp)
+  ("C-M-f" . sp-forward-sexp)
+  ("C-M-b" . sp-backward-sexp)
+  ("C-M-n" . sp-next-sexp)
+  ("C-M-p" . sp-previous-sexp)
+  ("C-s-b" . sp-backward-symbol)
+  ("C-s-f" . sp-forward-symbol)
+  ("C-c (" . sp-wrap-round)
+  ("C-c (" . sp-wrap-round)
+  ("C-c [" . sp-wrap-square)
+  ("C-c {" . sp-wrap-curly)
   :init
   (smartparens-global-strict-mode))
-
 #+end_src
 ** hl-todo
 #+begin_src emacs-lisp
@@ -464,6 +480,13 @@ I like to distinguish betweeen C-m and RET.
    :straight t
    :bind
    ("M-g i" . consult-imenu))
+
+(setq completion-in-region-function
+      (lambda (&rest args)
+        (apply (if vertico-mode
+                   #'consult-completion-in-region
+                 #'completion--in-region)
+               args)))
 #+end_src
 *** consult-eglot
 #+begin_src emacs-lisp
@@ -494,6 +517,8 @@ I like to distinguish betweeen C-m and RET.
 (use-package pdf-tools
   :straight t
   :defer t
+  :init
+  (pdf-tools-install)
   :hook
   (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
   :config
