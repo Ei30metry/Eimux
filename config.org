@@ -192,16 +192,6 @@ I like to distinguish betweeen C-m and RET.
          org-journal-date-format "%a, %Y-%m-%d"
          org-journal-file-format "%Y-%m-%d.org"))
 #+end_src
-* Which key
-#+begin_src emacs-lisp
-(use-package which-key
- :straight t
- :config
- (setq which-key-allow-imprecise-window-fit t
-       which-key-idle-delay 0.5)
- :init
- (which-key-mode))
-#+end_src
 * Media
 ** emms
 #+begin_src emacs-lisp
@@ -307,6 +297,7 @@ I like to distinguish betweeen C-m and RET.
         :straight t
         :config
         (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+        (setq aw-dispatch-always t)
         :bind ("C-x o" . ace-window))
 #+end_src
 ** avy
@@ -468,7 +459,10 @@ I like to distinguish betweeen C-m and RET.
 #+end_src
 ** embark
 #+begin_src emacs-lisp
-(use-package embark :straight t)
+(use-package embark
+    :straight t
+    :config
+    (setq prefix-help-command #'embark-prefix-help-command))
 #+end_src
 ** consult
 #+begin_src emacs-lisp
