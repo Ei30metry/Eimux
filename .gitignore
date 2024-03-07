@@ -27,3 +27,5 @@ url/
 nov-places
 tutorial/
 games/
+.mcemacs-rest
+.mc-lists.el

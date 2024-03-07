@@ -4,8 +4,7 @@
 * GUI settings
 #+begin_src emacs-lisp
 (setq inhibit-startup-screen t
-      inhibit-startup-message t
-      initial-scratch-message ";; It's good to have an end to journey toward; but it's the journey that matters in the end.")
+      inhibit-startup-message t)
 
 (winner-mode 1)
 (setq scroll-conservatively 101)
@@ -319,6 +318,10 @@ I like to distinguish betweeen C-m and RET.
                        ("M-g w" . avy-goto-word-1)
                        ("M-g W" . avy-goto-word-0))
 #+end_src
+** hydra
+#+begin_src emacs-lisp
+(use-package hydra :straight t :defer t)
+#+end_src
 ** multiple-cursors
 #+begin_src emacs-lisp
 (use-package multiple-cursors :straight t)
@@ -343,6 +346,7 @@ I like to distinguish betweeen C-m and RET.
     :config
     (setq-default eglot-workspace-configuration
           '((haskell (plugin (stan (globalOn . :json-false)))))))
+
 #+end_src
 ** smartparens
 #+begin_src emacs-lisp
@@ -368,7 +372,8 @@ I like to distinguish betweeen C-m and RET.
   ("C-c [" . sp-wrap-square)
   ("C-c {" . sp-wrap-curly)
   :init
-  (smartparens-global-strict-mode))
+  (smartparens-global-mode))
+
 #+end_src
 ** hl-todo
 #+begin_src emacs-lisp
@@ -461,25 +466,17 @@ I like to distinguish betweeen C-m and RET.
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 #+end_src
-
-** imenu
+** embark
 #+begin_src emacs-lisp
-(use-package imenu
-  :straight t)
-#+end_src
-** swiper
-#+begin_src emacs-lisp
-(use-package swiper
-  :straight t
-  :bind
-  ("M-s s" . swiper))
+(use-package embark :straight t)
 #+end_src
 ** consult
 #+begin_src emacs-lisp
 (use-package consult
    :straight t
    :bind
-   ("M-g i" . consult-imenu))
+   ("M-g i" . consult-imenu)
+   ("M-s s" . consult-line))
 
 (setq completion-in-region-function
       (lambda (&rest args)
@@ -493,6 +490,10 @@ I like to distinguish betweeen C-m and RET.
 (use-package consult-eglot
   :straight t
   :after eglot)
+#+end_src
+*** embark-consult
+#+begin_src emacs-lisp
+(use-package embark-consult :straight t)
 #+end_src
 ** Marginalia
 #+begin_src emacs-lisp
