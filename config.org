@@ -39,7 +39,7 @@
 * UI
 ** Theme
 #+begin_src emacs-lisp
-   (use-package doom-themes
+(use-package doom-themes
    :straight t
    :config
    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
@@ -47,7 +47,7 @@
    (doom-themes-visual-bell-config)
    (doom-themes-org-config))
 
-   (load-theme 'doom-sourcerer t)
+(load-theme 'doom-sourcerer t)
 #+end_src
 ** Font
 #+begin_src emacs-lisp
@@ -161,6 +161,12 @@ I like to distinguish betweeen C-m and RET.
  :after org
  :hook
  (org-mode . toc-org-mode))
+#+end_src
+*** org-roam
+#+begin_src emacs-lisp
+(use-package org-roam
+   :straight t
+   :after org )
 #+end_src
 ** Productivity
 *** Books
@@ -442,13 +448,21 @@ I like to distinguish betweeen C-m and RET.
     (projectile-mode 1))
 #+end_src
 
-** compilation
+** dumb-jump
 #+begin_src emacs-lisp
+(use-package dumb-jump
+    :straight t
+    :config
+    (setq dumb-jump-force-searcher 'ag)) ;; TODO Use rg and write your custom rules
 #+end_src
 ** xref
 #+begin_src emacs-lisp
 (use-package xref
-  :straight t)
+  :straight t
+  :config
+  (setq xref-prompt-for-identifier nil))
+
+(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 #+end_src
 ** tab
 #+begin_src emacs-lisp
@@ -461,6 +475,9 @@ I like to distinguish betweeen C-m and RET.
 #+begin_src emacs-lisp
 (use-package embark
     :straight t
+    :bind
+    (:map minibuffer-mode-map
+    ("C-." . embark-act))
     :config
     (setq prefix-help-command #'embark-prefix-help-command))
 #+end_src
@@ -478,6 +495,9 @@ I like to distinguish betweeen C-m and RET.
                    #'consult-completion-in-region
                  #'completion--in-region)
                args)))
+
+(setq xref-show-xrefs-function #'consult-xref
+      xref-show-definitions-function #'consult-xref)
 #+end_src
 *** consult-eglot
 #+begin_src emacs-lisp
@@ -661,13 +681,14 @@ I like to distinguish betweeen C-m and RET.
   (setq rst-pdf-program "/Applications/Skim.app/Contents/MacOS/Skim")
 #+end_src
 * Messaging and mail
-** Ement
+** ement
 #+begin_src emacs-lisp
 (use-package ement
     :straight t
     :defer t)
 #+end_src
-** Telega
+** mu4e
+** telega
 #+begin_src emacs-lisp
   (use-package telega
       :straight t
