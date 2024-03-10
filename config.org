@@ -73,8 +73,12 @@ I like to distinguish betweeen C-m and RET.
 (global-set-key (kbd "<C-m>") 'back-to-indentation)
 (global-set-key (kbd "C-x C-o") #'(lambda () (interactive) (find-file "~/.emacs.d/config.org")))
 (global-set-key (kbd "C-x C-r") #'(lambda () (interactive) (load-file "~/.emacs.d/init.el")))
-(global-set-key (kbd "C-x B p") 'previous-buffer)
-(global-set-key (kbd "C-x B n") 'next-buffer)
+
+(global-unset-key (kbd "C-x C-b"))
+(global-set-key (kbd "C-x C-b p") 'previous-buffer)
+(global-set-key (kbd "C-x C-b n") 'next-buffer)
+(global-set-key (kbd "C-x C-b l") 'persp-ibuffer)
+(global-set-key (kbd "C-x C-b s") 'consult-buffer)
 #+end_src
 ** macOS
 #+begin_src emacs-lisp
@@ -304,7 +308,7 @@ I like to distinguish betweeen C-m and RET.
         :config
         (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
         (setq aw-dispatch-always t)
-        :bind ("C-x o" . ace-window))
+        :bind ("M-o" . ace-window))
 #+end_src
 ** avy
 #+begin_src emacs-lisp
@@ -355,8 +359,8 @@ I like to distinguish betweeen C-m and RET.
   ("C-M-a" . sp-beginning-of-sexp)
   ("C-M-e" . sp-end-of-sexp)
   ("C-M-j" . sp-down-sexp)
-  ("C-M-k" . sp-up-sexp)
-  ("C-M-K" . sp-backward-up-sexp)
+  ;; ("C-M-k" . sp-up-sexp)
+  ;; ("C-M-K" . sp-backward-up-sexp)
   ("C-M-J" . sp-backward-down-sexp)
   ("C-M-f" . sp-forward-sexp)
   ("C-M-b" . sp-backward-sexp)
