@@ -538,10 +538,14 @@ I like to distinguish betweeen C-m and RET.
   :defer t
   :init
   (pdf-tools-install)
+  :bind
+  (:map pdf-view-mode-map ("g" . revert-buffer-quick))
   :hook
   (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
   :config
-  (setq pdf-view-use-scaling t))
+  (auto-revert-mode 1)
+  (setq auto-revert-verbose nil
+        pdf-view-use-scaling t))
 #+end_src
 * Programming Languages
 ** Haskell
@@ -655,18 +659,22 @@ I like to distinguish betweeen C-m and RET.
 #+end_src
 
 * Markup languages
-** Latex
-*** tex-mode
+** Tex
+*** cdlatex
 #+begin_src emacs-lisp
-(use-package tex-mode
-  :straight t
-  :mode
-  ("\\.tex\\'" . tex-mode)
-  ("\\.mng\\'" . tex-mode))
+(use-package cdlatex
+    :straight t)
 #+end_src
-*** math-preview
+*** auctex
 #+begin_src emacs-lisp
-(use-package math-preview :straight t :defer t)
+(use-package auctex
+    :straight t
+    :hook
+    (LaTeX-mode . reftex-mode)
+    (LaTeX-mode . cdlatex-mode)
+    :mode
+    ("\\.tex\\'" . LaTeX-mode)
+    ("\\.mng\\'" . LaTeX-mode))
 #+end_src
 ** ott
 #+begin_src emacs-lisp
@@ -681,8 +689,7 @@ I like to distinguish betweeen C-m and RET.
 #+end_src
 ** rst-mode
 #+begin_src emacs-lisp
-  ;; (setq rst-pdf-program "/Applications/Preview.app/Contents/MacOS/Preview")
-  (setq rst-pdf-program "/Applications/Skim.app/Contents/MacOS/Skim")
+(setq rst-pdf-program "/Applications/Skim.app/Contents/MacOS/Skim")
 #+end_src
 * Messaging and mail
 ** ement
