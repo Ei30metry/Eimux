@@ -7,7 +7,8 @@
       inhibit-startup-message t)
 
 (winner-mode 1)
-(setq scroll-conservatively 101)
+(setq display-line-numbers-type 'relative
+      scroll-conservatively 101)
    (if (display-graphic-p)
        (menu-bar-mode 1)
        (menu-bar-mode -1))
@@ -17,10 +18,11 @@
    (pixel-scroll-precision-mode 1)
    (global-display-line-numbers-mode 1)
    (global-visual-line-mode 1)
-(setq display-line-numbers-type 'relative)
+
 #+end_src
 
-* Disabling default buffers and backup files
+* Changing default behaviour
+** Buffer
 #+begin_src emacs-lisp
 (setq-default message-log-max :error)
 
@@ -36,6 +38,12 @@
       auto-save-default nil
       auto-save-list-file-prefix nil)
 #+end_src
+** Register
+#+begin_src emacs-lisp
+(setq register-preview-delay nil)
+(global-set-key (kbd "C-x r v") 'consult-register)
+#+end_src
+** Window
 * UI
 ** Theme
 #+begin_src emacs-lisp
@@ -45,9 +53,9 @@
    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
          doom-themes-enable-italic t)
    (doom-themes-visual-bell-config)
-   (doom-themes-org-config))
-
-(load-theme 'doom-sourcerer t)
+   (doom-themes-org-config)
+   :init
+   (load-theme 'doom-sourcerer t))
 #+end_src
 ** Font
 #+begin_src emacs-lisp
@@ -71,8 +79,8 @@ I like to distinguish betweeen C-m and RET.
 #+begin_src emacs-lisp
 (define-key input-decode-map [?\C-m] [C-m])
 (global-set-key (kbd "<C-m>") 'back-to-indentation)
-(global-set-key (kbd "C-x C-o") #'(lambda () (interactive) (find-file "~/.emacs.d/config.org")))
-(global-set-key (kbd "C-x C-r") #'(lambda () (interactive) (load-file "~/.emacs.d/init.el")))
+(global-set-key (kbd "C-x C-. C-e o") #'(lambda () (interactive) (find-file "~/.emacs.d/config.org")))
+(global-set-key (kbd "C-x C-. C-e r") #'(lambda () (interactive) (load-file "~/.emacs.d/init.el")))
 
 (global-unset-key (kbd "C-x C-b"))
 (global-set-key (kbd "C-x C-b p") 'previous-buffer)
@@ -158,7 +166,7 @@ I like to distinguish betweeen C-m and RET.
            ("rs" . "src rust")
            ("c"  . "src c"))))
 #+end_src
-*** TOC-org
+*** toc-org
 #+begin_src emacs-lisp
 (use-package toc-org
  :straight t
@@ -181,7 +189,8 @@ I like to distinguish betweeen C-m and RET.
  :config
  (setq org-books-file "~/Agenda/books.org"))
 #+end_src
-*** Deft
+*** Journaling
+**** deft
 #+begin_src emacs-lisp
 (use-package deft
    :straight t
@@ -190,11 +199,15 @@ I like to distinguish betweeen C-m and RET.
          deft-extensions '("md" "org" "txt")
          deft-recursive t))
 #+end_src
-*** Org-journal
+**** org-journal
 #+begin_src emacs-lisp
+(global-unset-key (kbd "C-x C-d"))
 (use-package org-journal
    :straight t
    :after org
+   :bind
+   ("C-x C-d N" . org-journal-new-entry)
+   ("C-x C-d s" . org-journal-search)
    :config
    (setq org-journal-date-prefix "#+TITLE: "
          org-journal-dir "~/Journal"
@@ -615,7 +628,7 @@ I like to distinguish betweeen C-m and RET.
    :straight t
    :defer t)
 
-(global-set-key (kbd "C-x N o") #'(lambda () (interactive) (find-file "~/.nixpkgs/darwin-configuration.nix")))
+(global-set-key (kbd "C-x C-. C-n o") #'(lambda () (interactive) (find-file "~/.nixpkgs/darwin-configuration.nix")))
 
 (defun darwin-rebuild-switch () ())
 (defun nix-channel-update () ())

@@ -26,7 +26,11 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(straight-use-package 'org)
+(use-package org
+  :straight t
+  :bind
+  (:map org-mode-map
+        ("M-g i" . consult-org-heading)))
 
 ;; TODO don't load the interactive stuff in .zshrc
 (use-package exec-path-from-shell
