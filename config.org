@@ -40,7 +40,12 @@
 ** Register
 #+begin_src emacs-lisp
 (setq register-preview-delay nil)
-(global-set-key (kbd "C-x r v") 'consult-register)
+(global-set-key (kbd "C-x r j") 'consult-register)
+
+
+;; TODO Write (next-register) and (previous-register)
+;; (global-set-key (kbd "C-x r w i") 'window-configuration-to-register)
+;; global-set-key (kbd "C-x"))
 #+end_src
 ** Window
 #+begin_src emacs-lisp
@@ -48,6 +53,7 @@
 #+end_src
 * UI
 ** Theme
+*** Global theme
 #+begin_src emacs-lisp
 (use-package doom-themes
    :straight t
@@ -58,6 +64,12 @@
    (doom-themes-org-config)
    :init
    (load-theme 'doom-sourcerer t))
+#+end_src
+*** per-buffer-theme
+#+begin_src emacs-lisp
+(use-package per-buffer-theme
+   :straight t
+   :after nov-mode)
 #+end_src
 ** Font
 #+begin_src emacs-lisp
@@ -75,6 +87,7 @@
 
 (add-to-list 'default-frame-alist '(font . "Andale Mono 14"))
 #+end_src
+
 * Keybidings
 ** MISC
 I like to distinguish betweeen C-m and RET.
@@ -362,16 +375,16 @@ I like to distinguish betweeen C-m and RET.
   :bind
   ("C-M-a" . sp-beginning-of-sexp)
   ("C-M-e" . sp-end-of-sexp)
-  ("C-M-j" . sp-down-sexp)
-  ;; ("C-M-k" . sp-up-sexp)
-  ;; ("C-M-K" . sp-backward-up-sexp)
-  ("C-M-J" . sp-backward-down-sexp)
+  ("M-["   . sp-up-sexp)
+  ("C-M-[" . sp-backward-up-sexp)
+  ("M-]"   . sp-down-sexp)
+  ("C-M-]" . sp-backward-down-sexp)
   ("C-M-f" . sp-forward-sexp)
   ("C-M-b" . sp-backward-sexp)
   ("C-M-n" . sp-next-sexp)
   ("C-M-p" . sp-previous-sexp)
-  ("C-s-b" . sp-backward-symbol)
-  ("C-s-f" . sp-forward-symbol)
+  ("C-S-b" . sp-backward-symbol)
+  ("C-S-f" . sp-forward-symbol)
   ("C-c (" . sp-wrap-round)
   ("C-c (" . sp-wrap-round)
   ("C-c [" . sp-wrap-square)
@@ -524,6 +537,10 @@ I like to distinguish betweeen C-m and RET.
   (marginalia-mode))
 #+end_src
 * Document
+** olivetti
+#+begin_src emacs-lisp
+(use-package olivetti :straight t)
+#+end_src
 ** nov
 #+begin_src emacs-lisp
 (use-package nov
@@ -532,7 +549,8 @@ I like to distinguish betweeen C-m and RET.
    :mode
    (("\\.epub\\'" . nov-mode))
    :hook
-   (nov-mode . (lambda () (display-line-numbers-mode -1))))
+   (nov-mode . (lambda () (display-line-numbers-mode -1)))
+   (nov-mode . olivetti-mode))
 #+end_src
 ** pdf-tools
 #+begin_src emacs-lisp
@@ -581,20 +599,24 @@ I like to distinguish betweeen C-m and RET.
   (haskell-mode . interactive-haskell-mode)
   (haskell-mode . haskell-indentation-mode)
   (haskell-mode . haskell-decl-scan-mode)
-  (haskell-mode . hindent-mode)
-  (haskell-mode . flymake-mode)
-  (haskell-mode . flymake-hlint-load))
+  (haskell-mode . hindent-mode))
+  ;; (haskell-mode . flymake-mode)
+  ;; (haskell-mode . flymake-hlint-load))
 #+end_src
 ** Agda
 #+begin_src elisp
-(let ((agda-mode-directory (file-name-directory
-                             (substring
-                               (shell-command-to-string "agda-mode locate") 0 -1))))
-    (use-package agda2-mode
-      :load-path agda-mode-directory
-      :commands agda2-mode
-      :mode (("\\.agda\\'" . agda2-mode)
-             ("\\.lagda.md\\'" . agda2-mode))))
+(setq agda-mode-directory
+      (file-name-directory (substring (shell-command-to-string "agda-mode locate") 0 -1)))
+
+;; Add the directory containing agda2-mode.el to load-path
+(add-to-list 'load-path agda-mode-directory)
+
+;; Use-package configuration for agda2-mode
+(use-package agda2-mode
+  :ensure nil
+  :commands agda2-mode
+  :mode (("\\.agda\\'" . agda2-mode)
+         ("\\.lagda.md\\'" . agda2-mode)))
 #+end_src
 ** ELisp
 #+begin_src emacs-lisp
@@ -676,6 +698,12 @@ I like to distinguish betweeen C-m and RET.
   :straight t
   :commands pass)
 #+end_src
+* Shell
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-x C-. C-z r") #'(lambda () (interactive) (find-file "~/.zshrc")))
+(global-set-key (kbd "C-x C-. C-z p") #'(lambda () (interactive) (find-file "~/.zprofile")))
+(global-set-key (kbd "C-x C-. C-z e") #'(lambda () (interactive) (find-file "~/.zshenv")))
+#+end_src
 * Markup languages
 ** Tex
 *** cdlatex
@@ -692,7 +720,8 @@ I like to distinguish betweeen C-m and RET.
     (LaTeX-mode . cdlatex-mode)
     :mode
     ("\\.tex\\'" . LaTeX-mode)
-    ("\\.mng\\'" . LaTeX-mode))
+    ("\\.mng\\'" . LaTeX-mode)
+    ("\\.lhs\\'" . LaTeX-mode))
 #+end_src
 ** ott
 #+begin_src emacs-lisp
@@ -728,6 +757,15 @@ I like to distinguish betweeen C-m and RET.
       :hook
       (telega-chat-mode . (lambda () (display-line-numbers-mode -1)))
       (telega-root-mode . (lambda () (display-line-numbers-mode -1))))
+#+end_src
+* RSS
+** elfeed
+#+begin_src emacs-lisp
+(use-package elfeed
+  :straight t
+  :config
+  :defer t
+  (setq elfeed-feeds nil))
 #+end_src
 * Profiling
 #+begin_src emacs-lisp
