@@ -20,7 +20,6 @@
    (global-visual-line-mode 1)
 
 #+end_src
-
 * Changing default behaviour
 ** Buffer
 #+begin_src emacs-lisp
@@ -44,6 +43,9 @@
 (global-set-key (kbd "C-x r v") 'consult-register)
 #+end_src
 ** Window
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-x w s") 'shrink-window)
+#+end_src
 * UI
 ** Theme
 #+begin_src emacs-lisp
@@ -264,9 +266,7 @@ I like to distinguish betweeen C-m and RET.
                                    (insert (concat timestamp-range " : " default-description "\n")))))))
 
 
-   ;; NOTE I think it would be ever better to just write it at (point)
-
-   (defun timestamp-of-episode ()
+      (defun timestamp-of-episode ()
      (let ((timestamp (empv--send-command-sync (list 'get_property 'time-pos))))
                 (timestamp-to-MM-SS (truncate timestamp))))
 
@@ -277,16 +277,7 @@ I like to distinguish betweeen C-m and RET.
      (interactive)
      (write-timerange (episode-note-buffer) description))
 
-
-  (defun my-echo (blah) (interactive "MCause of the error \n") (message "%s" (concat blah " was the cause of error")))
-  (defun open-episode-note-buffer () (interactive) (switch-to-buffer (episode-note-buffer)))
-
-  ;; (defun write-to-episode-note-buffer-prompt (reason)
-  ;;        (empv-pause)
-  ;;        (interactive "MProblem: \n")
-  ;;        (write-to-episode-note-buffer reason)
-  ;;        (empv-resume))
-
+    (defun open-episode-note-buffer () (interactive) (switch-to-buffer (episode-note-buffer)))
 
   (global-set-key (kbd "M-s i") 'write-to-episode-note-buffer)
   (global-set-key (kbd "M-s t") #'(lambda () (interactive) (message (timestamp-of-episode))))
@@ -444,7 +435,6 @@ I like to distinguish betweeen C-m and RET.
 #+begin_src emacs-lisp
   (add-hook 'eshell-mode-hook #'(lambda () (display-line-numbers-mode -1)))
 #+end_src
-
 ** projectile
 #+begin_src emacs-lisp
   (use-package projectile
@@ -470,7 +460,7 @@ I like to distinguish betweeen C-m and RET.
 (use-package dumb-jump
     :straight t
     :config
-    (setq dumb-jump-force-searcher 'ag)) ;; TODO Use rg and write your custom rules
+    (setq dumb-jump-force-searcher 'ag)) ;; TODO Use rg with custom rules for faster search results
 #+end_src
 ** xref
 #+begin_src emacs-lisp
@@ -562,27 +552,39 @@ I like to distinguish betweeen C-m and RET.
 #+end_src
 * Programming Languages
 ** Haskell
-*** Haskell-mode
+*** flymake-hlint
 #+begin_src emacs-lisp
-    (use-package haskell-mode
-      :straight t
-      :config
-      (setq haskell-font-lock-symbols t
-            haskell-stylish-on-save nil
-            haskell-process-log nil)
-      :bind
-      (:map haskell-mode-map
-            ("C-c h" . hoogle)
-            ("C-c f" . haskell-mode-stylish-buffer)
-            ("C-x p C" . haskell-compile))
-
-      :hook
-      (haskell-mode . haskell-auto-insert-module-template)
-      (haskell-mode . interactive-haskell-mode)
-      (haskell-mode . haskell-indentation-mode)
-      (haskell-mode . haskell-decl-scan-mode))
+(use-package flymake-hlint :straight t)
 #+end_src
+*** hindent
+#+begin_src emacs-lisp
+(use-package hindent
+  :straight t
+  :after haskell-mode)
+#+end_src
+*** haskell-mode
+#+begin_src emacs-lisp
+(use-package haskell-mode
+  :straight t
+  :config
+  (setq haskell-font-lock-symbols t
+        haskell-stylish-on-save nil
+        haskell-process-log nil)
+  :bind
+  (:map haskell-mode-map
+        ("C-c h" . hoogle)
+        ("C-c f" . haskell-mode-stylish-buffer)
+        ("C-x p C" . haskell-compile))
 
+  :hook
+  (haskell-mode . haskell-auto-insert-module-template)
+  (haskell-mode . interactive-haskell-mode)
+  (haskell-mode . haskell-indentation-mode)
+  (haskell-mode . haskell-decl-scan-mode)
+  (haskell-mode . hindent-mode)
+  (haskell-mode . flymake-mode)
+  (haskell-mode . flymake-hlint-load))
+#+end_src
 ** Agda
 #+begin_src elisp
 ;; Get the directory containing agda2-mode.el using agda-mode locate
@@ -598,6 +600,9 @@ I like to distinguish betweeen C-m and RET.
   :commands agda2-mode
   :mode (("\\.agda\\'" . agda2-mode)
          ("\\.lagda.md\\'" . agda2-mode)))
+#+end_src
+** ELisp
+#+begin_src emacs-lisp
 #+end_src
 ** OCaml
 #+begin_src emacs-lisp
@@ -652,7 +657,6 @@ I like to distinguish betweeen C-m and RET.
     :straight t
     :defer t)
 #+end_src
-
 * Data Serialization
 ** JSON
 #+begin_src emacs-lisp
@@ -670,7 +674,13 @@ I like to distinguish betweeen C-m and RET.
 (use-package csv-mode
   :straight t)
 #+end_src
-
+* Password management
+** pass
+#+begin_src emacs-lisp
+(use-package pass
+  :straight t
+  :commands pass)
+#+end_src
 * Markup languages
 ** Tex
 *** cdlatex
