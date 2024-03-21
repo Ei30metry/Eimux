@@ -48,12 +48,14 @@
 #+end_src
 * Mark
 #+begin_src emacs-lisp
-(setq mark-mark-command-repeat-mode t)
+(setq set-mark-command-repeat-pop t)
 #+end_src
 * Window
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-x w s") 'shrink-window)
+(global-set-key (kbd "C-x w m") 'maximize-window)
 #+end_src
+*
 * UI
 ** Theme
 *** Global theme
@@ -98,7 +100,6 @@
 (global-unset-key (kbd "C-x C-v"))
 #+end_src
 ** MISC
-I like to distinguish betweeen C-m and RET.
 #+begin_src emacs-lisp
 (when (display-graphic-p)
         (define-key input-decode-map [?\C-m] [C-m])
