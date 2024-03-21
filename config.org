@@ -18,10 +18,9 @@
    (pixel-scroll-precision-mode 1)
    (global-display-line-numbers-mode 1)
    (global-visual-line-mode 1)
-
 #+end_src
 * Changing default behaviour
-** Buffer
+* Buffer
 #+begin_src emacs-lisp
 (setq-default message-log-max :error)
 
@@ -36,18 +35,22 @@
 (setq make-backup-files nil
       auto-save-default nil
       auto-save-list-file-prefix nil)
+
+(save-place-mode 1)
 #+end_src
-** Register
+* Register
 #+begin_src emacs-lisp
 (setq register-preview-delay nil)
-(global-set-key (kbd "C-x r j") 'consult-register)
-
+(global-set-key (kbd "C-x r j") 'consult-register-load)
 
 ;; TODO Write (next-register) and (previous-register)
 ;; (global-set-key (kbd "C-x r w i") 'window-configuration-to-register)
-;; global-set-key (kbd "C-x"))
 #+end_src
-** Window
+* Mark
+#+begin_src emacs-lisp
+(setq mark-mark-command-repeat-mode t)
+#+end_src
+* Window
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-x w s") 'shrink-window)
 #+end_src
@@ -89,15 +92,23 @@
 #+end_src
 
 * Keybidings
+** Unsetting some default prefix-keys
+#+begin_src emacs-lisp
+(global-unset-key (kbd "C-x C-b"))
+(global-unset-key (kbd "C-x C-v"))
+#+end_src
 ** MISC
 I like to distinguish betweeen C-m and RET.
 #+begin_src emacs-lisp
-(define-key input-decode-map [?\C-m] [C-m])
+(when (display-graphic-p)
+        (define-key input-decode-map [?\C-m] [C-m])
+        (global-set-key (kbd "<C-m>") 'back-to-indentation))
+
 (global-set-key (kbd "<C-m>") 'back-to-indentation)
 (global-set-key (kbd "C-x C-. C-e o") #'(lambda () (interactive) (find-file "~/.emacs.d/config.org")))
 (global-set-key (kbd "C-x C-. C-e r") #'(lambda () (interactive) (load-file "~/.emacs.d/init.el")))
 
-(global-unset-key (kbd "C-x C-b"))
+
 (global-set-key (kbd "C-x C-b p") 'previous-buffer)
 (global-set-key (kbd "C-x C-b n") 'next-buffer)
 (global-set-key (kbd "C-x C-b l") 'persp-ibuffer)
@@ -140,7 +151,9 @@ I like to distinguish betweeen C-m and RET.
           org-treat-insert-todo-heading-as-state-change t
           org-return-follows-link t
           org-src-tab-acts-natively nil
-          org-agenda-files '("~/Agenda/todo.org" "~/Agenda/habits.org"))
+          org-agenda-files '("~/Agenda/todo.org" "~/Agenda/habits.org")
+          org-todo-keywords
+          '((sequence "TODO" "FIX" "VERIFY" "REVIEW" "|" "DONE" "DELEGATED" )))
     :hook
     (org-agenda-mode . (lambda () (visual-line-mode -1) (toggle-truncate-lines 1) (display-line-numbers-mode 0))))
 #+end_src
@@ -148,7 +161,9 @@ I like to distinguish betweeen C-m and RET.
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-x c") 'org-capture)
 (setq org-capture-templates
-     '(("t" "Todo" entry (file+headline "~/Agenda/todo.org" "Inbox")
+     '(("t" "ToDo" entry (file+headline "~/Agenda/todo.org" "Inbox")
+        "* TODO %?\n  %i\n")
+        ("h" "Haskell Spec ToDo" entry (file+headline "~/Research/GHC/haskell-specification/note.org" "Tasks")
         "* TODO %?\n  %i\n")))
 #+end_src
 *** Org-contrib
@@ -223,6 +238,7 @@ I like to distinguish betweeen C-m and RET.
    :bind
    ("C-x C-d N" . org-journal-new-entry)
    ("C-x C-d s" . org-journal-search)
+   ("C-x C-d e" . (lambda () (interactive) (find-file "~/Journal/emacs.org")))
    :config
    (setq org-journal-date-prefix "#+TITLE: "
          org-journal-dir "~/Journal"
@@ -763,8 +779,8 @@ I like to distinguish betweeen C-m and RET.
 #+begin_src emacs-lisp
 (use-package elfeed
   :straight t
-  :config
   :defer t
+  :config
   (setq elfeed-feeds nil))
 #+end_src
 * Profiling

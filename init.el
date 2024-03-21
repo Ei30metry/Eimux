@@ -58,3 +58,4 @@
 			      (time-subtract after-init-time before-init-time)))
 		     gcs-done)
 	    (setq emacs-started t)))
+(put 'dired-find-alternate-file 'disabled nil)
