@@ -19,6 +19,10 @@
    (global-display-line-numbers-mode 1)
    (global-visual-line-mode 1)
 #+end_src
+* mode-line
+#+begin_src emacs-lisp
+(column-number-mode 1)
+#+end_src
 * Changing default behaviour
 * Buffer
 #+begin_src emacs-lisp
@@ -324,6 +328,10 @@
     :init
     (persp-mode))
 #+end_src
+** project
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-x p /") 'consult-ripgrep)
+#+end_src
 ** diredfl
 #+begin_src emacs-lisp
 (use-package diredfl
@@ -466,26 +474,6 @@
 #+begin_src emacs-lisp
   (add-hook 'eshell-mode-hook #'(lambda () (display-line-numbers-mode -1)))
 #+end_src
-** projectile
-#+begin_src emacs-lisp
-  (use-package projectile
-    :straight t
-    :bind
-    ("C-x p t" . projectile-run-vterm-other-window)
-    ("C-x p T" . projectile-run-vterm)
-    ("C-x p c" . projectile-compile-project)
-    ("C-x p f" . projectile-find-file)
-    ("C-x p o" . projectile-find-file-other-window)
-    ("C-x p p" . projectile-switch-project)
-    ("C-x p /" . consult-ripgrep)
-    :config
-    (setq projectile-enable-caching t
-          projectile-auto-update-cache t
-          projectile-discover-projects-in-directory "~/Programming/projects/")
-    :init
-    (projectile-mode 1))
-#+end_src
-
 ** dumb-jump
 #+begin_src emacs-lisp
 (use-package dumb-jump
