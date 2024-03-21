@@ -346,12 +346,13 @@
 #+end_src
 ** avy
 #+begin_src emacs-lisp
-(use-package avy :straight t
-                 :config (avy-setup-default)
-                 :bind ("C-;" . avy-goto-char-2)
-                       ("C-'" . avy-goto-char)
-                       ("M-g w" . avy-goto-word-1)
-                       ("M-g W" . avy-goto-word-0))
+(use-package avy
+    :straight t
+    :config (avy-setup-default)
+    :bind ("C-;" . avy-goto-char-in-line)
+          ("M-g M-c" . avy-goto-char-2)
+          ("M-g M-l" . avy-goto-line)
+          ("M-g M-w" . avy-goto-word-1))
 #+end_src
 ** hydra
 #+begin_src emacs-lisp
