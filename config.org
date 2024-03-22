@@ -242,6 +242,8 @@
    :after org
    :bind
    ("C-x C-d N" . org-journal-new-entry)
+   ("C-x C-d n" . org-journal-next-entry)
+   ("C-x C-d p" . org-journal-previous-entry)
    ("C-x C-d s" . org-journal-search)
    ("C-x C-d e" . (lambda () (interactive) (find-file "~/Journal/emacs.org")))
    :config
@@ -260,21 +262,11 @@
 #+begin_src emacs-lisp
    (use-package empv :straight t :defer t)
 
-   ;; These functions
-   ;; One just logs to the file with the same name at (Note Dir)
-   ;; One that stops the music and asks for the description and then logs the timestamp with the issue
-   ;; It should also have this variables:
-   ;; (podcast-dir)
-   ;; (default-description)
+
    (setq episodes-audio-directory "/Users/artin/Podcast/Haskell Interlude/Episodes/"
          episodes-notes-directory "/Users/artin/Podcast/Haskell Interlude/Notes/"
          default-description "Volume drop")
 
-   ;; (message episodes-notes-directory)
-
-   ;; TODO Check to see if the file exists, if it doesn't, create it first
-   ;; TODO Write a range, instead of an absolute timestamp like 52:00 -- 52:01 : Blah
-   ;; NOTE Remmber to re-read the buffer in the end
 
    (defun timestamp-to-MM-SS (timestamp)
       "Convert seconds to MM:SS format"
@@ -313,11 +305,11 @@
 
     (defun open-episode-note-buffer () (interactive) (switch-to-buffer (episode-note-buffer)))
 
-  (global-set-key (kbd "M-s i") 'write-to-episode-note-buffer)
-  (global-set-key (kbd "M-s t") #'(lambda () (interactive) (message (timestamp-of-episode))))
-  (global-set-key (kbd "M-s p") 'write-to-episode-note-buffer-prompt)
-  (global-set-key (kbd "M-s O") 'open-episode-note-buffer)
-#+end_src
+  (global-set-key (kbd "C-x C-v i") 'write-to-episode-note-buffer)
+  (global-set-key (kbd "C-x C-v t") #'(lambda () (interactive) (message (timestamp-of-episode))))
+  (global-set-key (kbd "C-x C-v p") 'write-to-episode-note-buffer-prompt)
+  (global-set-key (kbd "C-x C-v o") 'open-episode-note-buffer)
+#+end_srcf
 * Tools
 ** perspective
 #+begin_src emacs-lisp
