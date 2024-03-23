@@ -397,10 +397,10 @@
   :bind
   ("C-M-a" . sp-beginning-of-sexp)
   ("C-M-e" . sp-end-of-sexp)
-  ("M-["   . sp-up-sexp)
+  ("M-["   . sp-backward-down-sexp)
   ("C-M-[" . sp-backward-up-sexp)
   ("M-]"   . sp-down-sexp)
-  ("C-M-]" . sp-backward-down-sexp)
+  ("C-M-]" . sp-up-sexp)
   ("C-M-f" . sp-forward-sexp)
   ("C-M-b" . sp-backward-sexp)
   ("C-M-n" . sp-next-sexp)
