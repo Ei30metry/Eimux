@@ -125,7 +125,6 @@
       mac-command-key-is-meta t
       mac-command-modifier 'meta
       mac-option-modifier 'super)
-
 #+end_src
 * OS packages
 ** osx-lib
@@ -309,7 +308,7 @@
   (global-set-key (kbd "C-x C-v t") #'(lambda () (interactive) (message (timestamp-of-episode))))
   (global-set-key (kbd "C-x C-v p") 'write-to-episode-note-buffer-prompt)
   (global-set-key (kbd "C-x C-v o") 'open-episode-note-buffer)
-#+end_srcf
+#+end_src
 * Tools
 ** perspective
 #+begin_src emacs-lisp
@@ -368,10 +367,10 @@
 #+end_src
 ** magit
 #+begin_src emacs-lisp
-  (use-package magit
-    :straight t
-    :defer t
-    :commands magit-status)
+(use-package magit
+  :straight t
+  :defer t
+  :commands magit-status)
 #+end_src
 ** eglot
 #+begin_src emacs-lisp
@@ -386,9 +385,14 @@
 #+end_src
 ** smartparens
 #+begin_src emacs-lisp
+(global-unset-key (kbd "C-M-u"))
+(global-unset-key (kbd "C-M-m"))
+
+
 (use-package smartparens
   :straight t
   :config
+  (require 'smartparens-haskell)
   (require 'smartparens-config)
   :bind
   ("C-M-a" . sp-beginning-of-sexp)
@@ -403,13 +407,21 @@
   ("C-M-p" . sp-previous-sexp)
   ("C-S-b" . sp-backward-symbol)
   ("C-S-f" . sp-forward-symbol)
-  ("C-c (" . sp-wrap-round)
+  ("C-M-k" . sp-kill-sexp)
+  ("C-M-u" . sp-forward-slurp-sexp)
+  ("C-S-u" . sp-backward-slurp-sexp)
+  ("C-M-y" . sp-forward-barf-sexp)
+  ("C-S-y" . sp-backward-barf-sexp)
+  ("C-M-w" . sp-copy-sexp)
   ("C-c (" . sp-wrap-round)
   ("C-c [" . sp-wrap-square)
   ("C-c {" . sp-wrap-curly)
+  ("C-c u" . sp-unwrap-sexp)
+  ("C-M-j" . sp-join-sexp)
+  ("C-M-g" . sp-split-sexp)
+  ("C-c U" . sp-backward-unwrap-sexp)
   :init
   (smartparens-global-mode))
-
 #+end_src
 ** hl-todo
 #+begin_src emacs-lisp
