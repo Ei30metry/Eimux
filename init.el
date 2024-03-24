@@ -10,6 +10,7 @@
 
 ;;; Code:
 (setq gc-cons-threshold (* 50 1000 1000))
+
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name
@@ -32,19 +33,16 @@
   (:map org-mode-map
         ("M-g i" . consult-org-heading)))
 
-;; TODO don't load the interactive stuff in .zshrc
 (use-package exec-path-from-shell
  :straight t
  :config
  (setq exec-path-from-shell-arguments nil)
  (exec-path-from-shell-initialize))
 
-
 (org-babel-load-file
      (expand-file-name
        "config.org"
        user-emacs-directory))
-(put 'narrow-to-region 'disabled nil)
 
 (setq read-process-output-max (* 1024 1024))
 
@@ -58,4 +56,3 @@
 			      (time-subtract after-init-time before-init-time)))
 		     gcs-done)
 	    (setq emacs-started t)))
-(put 'dired-find-alternate-file 'disabled nil)

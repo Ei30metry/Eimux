@@ -23,7 +23,10 @@
 #+begin_src emacs-lisp
 (column-number-mode 1)
 #+end_src
-* Changing default behaviour
+* MISC
+#+begin_src emacs-lisp
+(setq disabled-command-function nil)
+#+end_src
 * Buffer
 #+begin_src emacs-lisp
 (setq-default message-log-max :error)
@@ -59,7 +62,6 @@
 (global-set-key (kbd "C-x w s") 'shrink-window)
 (global-set-key (kbd "C-x w m") 'maximize-window)
 #+end_src
-*
 * UI
 ** Theme
 *** Global theme
@@ -97,11 +99,12 @@
 (add-to-list 'default-frame-alist '(font . "Andale Mono 14"))
 #+end_src
 
-* Keybidings
+* Keybindings
 ** Unsetting some default prefix-keys
 #+begin_src emacs-lisp
 (global-unset-key (kbd "C-x C-b"))
 (global-unset-key (kbd "C-x C-v"))
+(global-unset-key (kbd "C-x C-o"))
 #+end_src
 ** MISC
 #+begin_src emacs-lisp
@@ -420,8 +423,10 @@
   ("C-M-j" . sp-join-sexp)
   ("C-M-g" . sp-split-sexp)
   ("C-c U" . sp-backward-unwrap-sexp)
+  :hook
+  (prog-mode . smartparens-strict-mode)
   :init
-  (smartparens-global-mode))
+  (show-smartparens-global-mode))
 #+end_src
 ** hl-todo
 #+begin_src emacs-lisp
