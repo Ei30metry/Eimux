@@ -44,6 +44,12 @@
       auto-save-list-file-prefix nil)
 
 (save-place-mode 1)
+
+(global-set-key (kbd "C-x 4 x g") 'revert-other-buffer-quick)
+
+(defun revert-other-buffer-quick ()
+  (interactive)
+  (message "TODO"))
 #+end_src
 * Register
 #+begin_src emacs-lisp
@@ -105,6 +111,9 @@
 (global-unset-key (kbd "C-x C-b"))
 (global-unset-key (kbd "C-x C-v"))
 (global-unset-key (kbd "C-x C-o"))
+(global-unset-key (kbd "C-x C-w"))
+(global-unset-key (kbd "C-z"))
+(global-unset-key (kbd "M-j"))
 #+end_src
 ** MISC
 #+begin_src emacs-lisp
@@ -116,17 +125,22 @@
 (global-set-key (kbd "C-x C-. C-e o") #'(lambda () (interactive) (find-file "~/.emacs.d/config.org")))
 (global-set-key (kbd "C-x C-. C-e r") #'(lambda () (interactive) (load-file "~/.emacs.d/init.el")))
 
+;; TODO  Fix this so that it deletes up to the last space character
+(defun zap-up-to-space ()
+  (interactive)
+  (zap-up-to-char 1 ?\s))
 
 (global-set-key (kbd "C-x C-b p") 'previous-buffer)
 (global-set-key (kbd "C-x C-b n") 'next-buffer)
 (global-set-key (kbd "C-x C-b l") 'persp-ibuffer)
 (global-set-key (kbd "C-x C-b s") 'consult-buffer)
+(global-set-key (kbd "C-S-z") 'zap-up-to-space)
+(global-set-key (kbd "M-j") 'join-line)
+(global-set-key (kbd "M-RET") 'default-indent-new-line)
 #+end_src
 ** macOS
 #+begin_src emacs-lisp
-(setq mac-option-key-is-meta nil
-      mac-command-key-is-meta t
-      mac-command-modifier 'meta
+(setq mac-command-modifier 'meta
       mac-option-modifier 'super)
 #+end_src
 * OS packages
@@ -325,6 +339,7 @@
 ** project
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-x p /") 'consult-ripgrep)
+(global-set-key (kbd "C-x p b") 'consult-project-buffer)
 #+end_src
 ** diredfl
 #+begin_src emacs-lisp
@@ -426,7 +441,8 @@
   :hook
   (prog-mode . smartparens-strict-mode)
   :init
-  (show-smartparens-global-mode))
+  (show-smartparens-global-mode)
+  (smartparens-global-mode))
 #+end_src
 ** hl-todo
 #+begin_src emacs-lisp
