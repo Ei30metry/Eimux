@@ -30,3 +30,4 @@ games/
 .mcemacs-rest
 .mc-lists.el
 places
+auto-save-list/

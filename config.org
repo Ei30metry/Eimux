@@ -638,7 +638,7 @@
         ("C-S-b" . subword-backward)
         ("C-S-k" . subword-kill)
         ("C-S-t" . subword-transpose)
-        ("C-S-<backspace>" . subword-backward-kill)
+        ("C-<backspace>" . subword-backward-kill)
         ("M-S-<backspace>" . subword-backward-kill))
 
   :hook
