@@ -114,6 +114,7 @@
 (global-unset-key (kbd "C-x C-w"))
 (global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "M-j"))
+(global-unset-key (kbd "C-x C-r"))
 #+end_src
 ** MISC
 #+begin_src emacs-lisp
@@ -144,11 +145,6 @@
       mac-option-modifier 'super)
 #+end_src
 * OS packages
-** osx-lib
-#+begin_src emacs-lisp
-(use-package osx-lib
-  :straight t)
-#+end_src
 ** osx-plist
 #+begin_src emacs-lisp
 (use-package osx-plist
@@ -165,6 +161,8 @@
 #+begin_src emacs-lisp
   (use-package org
     :straight t
+    :bind
+    ("C-x A" . org-agenda)
     :config
     (setq org-startup-indented t
           org-directory "~/Journal"
@@ -180,12 +178,13 @@
 #+end_src
 *** Org-Capture
 #+begin_src emacs-lisp
-(global-set-key (kbd "C-x c") 'org-capture)
+(global-set-key (kbd "C-x C") 'org-capture)
 (setq org-capture-templates
      '(("t" "ToDo" entry (file+headline "~/Agenda/todo.org" "Inbox")
         "* TODO %?\n  %i\n")
         ("h" "Haskell Spec ToDo" entry (file+headline "~/Research/GHC/haskell-specification/note.org" "Tasks")
-        "* TODO %?\n  %i\n")))
+        "* TODO %?\n  %i\n")
+        ("e" "Emacs IDEA" entry (file+headline "~/Journal/emacs.org" "MISC") "* IDEA %?\n %i\n")))
 #+end_src
 *** Org-contrib
 #+begin_src emacs-lisp
@@ -276,55 +275,62 @@
 #+end_src
 ** empv
 #+begin_src emacs-lisp
-   (use-package empv :straight t :defer t)
+(use-package empv :straight t :defer t)
+
+(setq episodes-audio-directory "/Users/artin/Podcast/Haskell Interlude/Episodes/"
+      episodes-notes-directory "/Users/artin/Podcast/Haskell Interlude/Notes/"
+      default-description "Volume drop")
 
 
-   (setq episodes-audio-directory "/Users/artin/Podcast/Haskell Interlude/Episodes/"
-         episodes-notes-directory "/Users/artin/Podcast/Haskell Interlude/Notes/"
-         default-description "Volume drop")
+(defun timestamp-to-MM-SS (timestamp)
+   "Convert seconds to MM:SS format"
+   (let* ((seconds (% timestamp 60))
+          (minutes (/ (- timestamp seconds) 60))
+          (prettify-time (lambda (x) (if (< x 10)
+                                       (concat "0" (number-to-string x))
+                                       (number-to-string x))))
+          (seconds-pretty (funcall prettify-time seconds))
+          (minutes-pretty (funcall prettify-time minutes)))
+    (concat minutes-pretty ":" seconds-pretty)))
+
+;; NOTE You don't need to revert the buffer or anything. just set is as the buffer, use save-excursion, and switch back to the current buffer. Very easy.
+(defun write-timerange (buffer &optional description)
+    "Write the timestamp of the currently playing episode to its note file"
+    (interactive)
+    (let* ((timestamp (empv--send-command-sync (list 'get_property 'time-pos)))
+          (timestamp-range (concat (timestamp-to-MM-SS (- (truncate timestamp) 1))
+                                   " -- "
+                                   (timestamp-to-MM-SS (+ (truncate timestamp) 1)))))
+
+        (save-excursion (with-current-buffer (get-buffer-create buffer)
+                             (if description
+                                (insert (concat timestamp-range " : " description "\n"))
+                                (insert (concat timestamp-range " : " default-description "\n")))))))
 
 
-   (defun timestamp-to-MM-SS (timestamp)
-      "Convert seconds to MM:SS format"
-      (let* ((seconds (% timestamp 60))
-             (minutes (/ (- timestamp seconds) 60))
-             (prettify-time (lambda (x) (if (< x 10) (concat "0" (number-to-string x)) (number-to-string x))))
-             (seconds-pretty (funcall prettify-time seconds))
-             (minutes-pretty (funcall prettify-time minutes)))
-       (concat minutes-pretty ":" seconds-pretty)))
-
-   ;; NOTE You don't need to revert the buffer or anything. just set is as the buffer, use save-excursion, and swich back to the current buffer. Very easy.
-   (defun write-timerange (buffer &optional description)
-       "Write the timestamp of the currently playing episode to its note file"
-       (interactive)
-       (let* ((timestamp (empv--send-command-sync (list 'get_property 'time-pos)))
-             (timestamp-range (concat (timestamp-to-MM-SS (- (truncate timestamp) 1))
-                                      " -- "
-                                      (timestamp-to-MM-SS (+ (truncate timestamp) 1)))))
-
-           (save-excursion (with-current-buffer (get-buffer-create buffer)
-                                (if description
-                                   (insert (concat timestamp-range " : " description "\n"))
-                                   (insert (concat timestamp-range " : " default-description "\n")))))))
+(defun timestamp-of-episode ()
+  (let ((timestamp (empv--send-command-sync (list 'get_property 'time-pos))))
+             (timestamp-to-MM-SS (truncate timestamp))))
 
 
-      (defun timestamp-of-episode ()
-     (let ((timestamp (empv--send-command-sync (list 'get_property 'time-pos))))
-                (timestamp-to-MM-SS (truncate timestamp))))
+(defun episode-note-buffer ()
+  (file-name-nondirectory (empv--send-command-sync (list 'get_property 'filename/no-ext))))
 
-   (defun episode-note-buffer ()
-     (file-name-nondirectory (empv--send-command-sync (list 'get_property 'filename/no-ext))))
 
-   (defun write-to-episode-note-buffer (&optional description)
-     (interactive)
-     (write-timerange (episode-note-buffer) description))
+(defun write-to-episode-note-buffer (&optional description)
+  (interactive)
+  (write-timerange (episode-note-buffer) description))
 
-    (defun open-episode-note-buffer () (interactive) (switch-to-buffer (episode-note-buffer)))
 
-  (global-set-key (kbd "C-x C-v i") 'write-to-episode-note-buffer)
-  (global-set-key (kbd "C-x C-v t") #'(lambda () (interactive) (message (timestamp-of-episode))))
-  (global-set-key (kbd "C-x C-v p") 'write-to-episode-note-buffer-prompt)
-  (global-set-key (kbd "C-x C-v o") 'open-episode-note-buffer)
+(defun open-episode-note-buffer () (interactive) (switch-to-buffer (episode-note-buffer)))
+
+;; This should be a hydra.
+(global-set-key (kbd "C-x C-v C-v") 'write-to-episode-note-buffer)
+(global-set-key (kbd "C-x C-v t") #'(lambda () (interactive) (message (timestamp-of-episode))))
+(global-set-key (kbd "C-x C-v p") 'empv-pause)
+(global-set-key (kbd "C-x C-v r") 'empv-resume)
+(global-set-key (kbd "C-x C-v s") 'empv-seek)
+(global-set-key (kbd "C-x C-v o") 'open-episode-note-buffer)
 #+end_src
 * Tools
 ** perspective
@@ -425,6 +431,7 @@
   ("C-M-p" . sp-previous-sexp)
   ("C-S-b" . sp-backward-symbol)
   ("C-S-f" . sp-forward-symbol)
+  ("C-S-d" . sp-delete-symbol)
   ("C-M-k" . sp-kill-sexp)
   ("C-M-u" . sp-forward-slurp-sexp)
   ("C-S-u" . sp-backward-slurp-sexp)
