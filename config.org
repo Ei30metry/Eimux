@@ -431,7 +431,9 @@
   ("C-M-p" . sp-previous-sexp)
   ("C-S-b" . sp-backward-symbol)
   ("C-S-f" . sp-forward-symbol)
-  ("C-S-d" . sp-delete-symbol)
+  ("C-S-k" . sp-kill-symbol)
+  ("C-S-<backspace>" . sp-backward-kill-symbol)
+  ("M-S-<backspace>" . sp-backward-kill-sexp)
   ("C-M-k" . sp-kill-sexp)
   ("C-M-u" . sp-forward-slurp-sexp)
   ("C-S-u" . sp-backward-slurp-sexp)
@@ -630,7 +632,14 @@
   (:map haskell-mode-map
         ("C-c h" . hoogle)
         ("C-c f" . haskell-mode-stylish-buffer)
-        ("C-x p C" . haskell-compile))
+        ("C-x p C" . haskell-compile)
+        ("M-g M-w" . avy-goto-subword-1)
+        ("C-S-f" . subword-forward)
+        ("C-S-b" . subword-backward)
+        ("C-S-k" . subword-kill)
+        ("C-S-t" . subword-transpose)
+        ("C-S-<backspace>" . subword-backward-kill)
+        ("M-S-<backspace>" . subword-backward-kill))
 
   :hook
   (haskell-mode . haskell-auto-insert-module-template)
@@ -638,8 +647,6 @@
   (haskell-mode . haskell-indentation-mode)
   (haskell-mode . haskell-decl-scan-mode)
   (haskell-mode . hindent-mode))
-  ;; (haskell-mode . flymake-mode)
-  ;; (haskell-mode . flymake-hlint-load))
 #+end_src
 ** Agda
 #+begin_src elisp
