@@ -119,10 +119,8 @@
 ** MISC
 #+begin_src emacs-lisp
 (when (display-graphic-p)
-        (define-key input-decode-map [?\C-m] [C-m])
-        (global-set-key (kbd "<C-m>") 'back-to-indentation))
+        (define-key input-decode-map [?\C-m] [C-m]))
 
-(global-set-key (kbd "<C-m>") 'back-to-indentation)
 (global-set-key (kbd "C-x C-. C-e o") #'(lambda () (interactive) (find-file "~/.emacs.d/config.org")))
 (global-set-key (kbd "C-x C-. C-e r") #'(lambda () (interactive) (load-file "~/.emacs.d/init.el")))
 
@@ -138,6 +136,10 @@
 (global-set-key (kbd "C-S-z") 'zap-up-to-space)
 (global-set-key (kbd "M-j") 'join-line)
 (global-set-key (kbd "M-RET") 'default-indent-new-line)
+#+end_src
+** C-x C-m as execute-extended-command
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-x <C-m>") 'execute-extended-command)
 #+end_src
 ** macOS
 #+begin_src emacs-lisp
@@ -356,7 +358,7 @@
 #+end_src
 ** transpose
 #+begin_src emacs-lisp
-(use-package transpose-frame :straight t :bind ("C-x T" . transpose-frame))
+(use-package transpose-frame :straight t :bind ("C-x w t" . transpose-frame)) ;; NOTE remove this and use the functionality provided by ace-window
 #+end_src
 ** ace-window
 #+begin_src emacs-lisp
@@ -373,9 +375,9 @@
     :straight t
     :config (avy-setup-default)
     :bind ("C-;" . avy-goto-char-in-line)
-          ("M-g M-c" . avy-goto-char-2)
-          ("M-g M-l" . avy-goto-line)
-          ("M-g M-w" . avy-goto-word-1))
+          ("<C-m> C-c" . avy-goto-char-2)
+          ("<C-m> C-l" . avy-goto-line)
+          ("<C-m> C-w" . avy-goto-word-1))
 #+end_src
 ** hydra
 #+begin_src emacs-lisp
@@ -546,8 +548,8 @@
 (use-package consult
    :straight t
    :bind
-   ("M-g i" . consult-imenu)
-   ("M-s s" . consult-line))
+   ("<C-m> C-i" . consult-imenu)
+   ("<C-m> C-s" . consult-line))
 
 (setq completion-in-region-function
       (lambda (&rest args)
@@ -592,15 +594,19 @@
    (nov-mode . (lambda () (display-line-numbers-mode -1)))
    (nov-mode . olivetti-mode))
 #+end_src
+** doc-view-mode
+#+begin_src emacs-lisp
+(add-hook 'doc-view-mode-hook #'(lambda () (display-line-numbers-mode -1)))
+#+end_src
 ** pdf-tools
 #+begin_src emacs-lisp
 (use-package pdf-tools
   :straight t
   :defer t
-  :init
-  (pdf-tools-install)
   :bind
   (:map pdf-view-mode-map ("g" . revert-buffer-quick))
+  :mode
+  (("\\.pdf\\'" . pdf-view-mode))
   :hook
   (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
   :config
@@ -630,6 +636,7 @@
         haskell-process-log nil)
   :bind
   (:map haskell-mode-map
+        ("<C-m> C-w" . avy-goto-subword-1)
         ("C-c h" . hoogle)
         ("C-c f" . haskell-mode-stylish-buffer)
         ("C-x p C" . haskell-compile)
@@ -729,7 +736,7 @@
 ** YAML
 #+begin_src emacs-lisp
 (use-package yaml-mode
-  :straight t)
+   :straight t)
 #+end_src
 ** csv
 #+begin_src emacs-lisp
@@ -763,6 +770,14 @@
     :hook
     (LaTeX-mode . reftex-mode)
     (LaTeX-mode . cdlatex-mode)
+    :bind
+    (:map LaTeX-mode-map
+     ("<C-m> C-w" . avy-goto-subword-1)
+     ("C-S-f" . subword-forward)
+     ("C-S-b" . subword-backward)
+     ("C-S-k" . subword-kill)
+     ("C-S-t" . subword-transpose)
+     ("C-<backspace>" . subword-backward-kill))
     :mode
     ("\\.tex\\'" . LaTeX-mode)
     ("\\.mng\\'" . LaTeX-mode)
