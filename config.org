@@ -42,26 +42,27 @@
         ("\\*\\(Help\\|haskell-compilation\\|compilation\\).*"
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)
-          (window-height . 25)
+          (window-height . 20)
           (dedicated . t))
 
         ("\\*Occur\\*"
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)
-         (window-height . 25)
+         (window-height . 20)
          (dedicated . t)
          (body-function . select-window))
 
         ("\\*Org Select\\*"
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)
-         (window-height . 25)
+         (window-height . 20)
          (body-function . select-window))
         ("Capture-*"
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)
-         (window-height . 25)
-         (nil . t))))
+         (window-height . 20)
+         (nil . t))
+        ))
 
 (add-hook 'minibuffer-exit-hook
       #'(lambda ()
@@ -265,7 +266,9 @@ And probably some more.
            ("sq" . "src sql")
            ("hs" . "src haskell")
            ("rs" . "src rust")
-           ("c"  . "src c"))))
+           ("c"  . "src c")
+           ("t" . "src txt")
+           ("o" . "src ott"))))
 #+end_src
 *** toc-org
 #+begin_src emacs-lisp
@@ -281,7 +284,23 @@ And probably some more.
    :straight t
    :after org
    :bind
-   ("C-x C-r C-r" . org-roam-capture))
+   ("C-x C-r C-r"     . org-roam-capture)
+   ("C-x C-r C-t"     . org-roam-dailies-capture-today)
+   ("C-x C-r C-j t"   . org-roam-dailies-goto-today)
+   ("C-x C-r w"       . org-roam-refile)
+   ("C-x C-r C-j y"   . org-roam-dailies-goto-yesterday)
+   ("C-x C-r C-j C-d" . org-roam-dailies-find-directory)
+   ("C-x C-r C-j n"   . org-roam-dailies-goto-next-note)
+   ("C-x C-r C-j p"   . org-roam-dailies-goto-previous-note)
+   ("C-x C-r C-j d"   . org-roam-dailies-goto-date)
+   ("C-x C-r b"       . org-roam-buffer-display-dedicated)
+   ("C-x C-r C-i r"   . org-roam-ref-add)
+   ("C-x C-r C-i t"   . org-roam-tag-add)
+   ("C-x C-r C-i a"   . org-roam-alias-add)
+   ("C-x C-r C-f"     . org-roam-node-find)
+   (:map org-roam-mode-map ("M-." . org-roam-ref-find))
+   :config
+   (setq org-roam-directory "~/Roam"))
 #+end_src
 *** org-roam-ui
 #+begin_src emacs-lisp
@@ -289,6 +308,8 @@ And probably some more.
   :straight
     (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
     :after org-roam
+    :bind
+    ("C-x C-r C-u" . org-roam-ui-open)
     :config
     (setq org-roam-ui-sync-theme t
           org-roam-ui-follow t
@@ -371,12 +392,14 @@ And probably some more.
 * Tools
 ** perspective
 #+begin_src emacs-lisp
-  (use-package perspective
-    :straight t
-    :custom
-    (persp-mode-prefix-key (kbd "C-x C-,"))
-    :init
-    (persp-mode))
+(use-package perspective
+  :straight t
+  :custom
+  (persp-mode-prefix-key (kbd "C-x C-,"))
+  :bind
+  ("C-x k" . persp-kill-buffer*)
+  :init
+  (persp-mode))
 #+end_src
 ** project
 #+begin_src emacs-lisp
