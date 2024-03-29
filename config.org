@@ -891,3 +891,7 @@ And probably some more.
 (use-package esup
   :straight t)
 #+end_src
+* Fun!
+#+begin_src emacs-lisp
+(use-package typit :straight t :defer t)
+#+end_src
