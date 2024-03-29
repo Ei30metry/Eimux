@@ -31,6 +31,33 @@
 #+begin_src emacs-lisp
 (setq-default message-log-max :error)
 
+;; (defun fit-window-to-buffer-if-huge-n (n window)
+;;   "Fit WINDOW to buffer if it has less than N lines"
+;;   (if (< n (window-height)))
+;;       (fit-window-to-buffer window)
+;;       ()))
+
+(setq display-buffer-alist
+      '(
+        ("\\*\\(Help\\|haskell-compilation\\|compilation\\).*"
+         (display-buffer-reuse-mode-window
+          display-buffer-below-selected)
+          (window-height . 25)
+          (dedicated . t))
+
+        ("\\*Occur\\*"
+         (display-buffer-reuse-mode-window
+          display-buffer-below-selected)
+         (window-height . 25)
+         (dedicated . t)
+         (body-function . select-window))
+
+        ("\\*Org Select\\*"
+         (display-buffer-reuse-mode-window
+          display-buffer-below-selected)
+         (window-height . 35)
+         (body-function . select-window))))
+
 (add-hook 'minibuffer-exit-hook
       #'(lambda ()
          (let ((buffer "*Completions*"))
@@ -560,7 +587,9 @@ And probably some more.
                args)))
 
 (setq xref-show-xrefs-function #'consult-xref
-      xref-show-definitions-function #'consult-xref)
+      xref-show-definitions-
+
+      function #'consult-xref)
 #+end_src
 *** consult-eglot
 #+begin_src emacs-lisp
