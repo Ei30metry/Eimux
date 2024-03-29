@@ -107,8 +107,20 @@
 
 * Keybindings
 ** Unsetting some default prefix-keys
+Some prefix keys that are still available:
+- C-x C-d
+- C-x C-n
+- C-x C-'
+- C-x C-r
+- C-x C-/
+- C-x C-y
+- C-x C-w
+- C-x C-]
+And probably some more.
 #+begin_src emacs-lisp
 (global-unset-key (kbd "C-x C-b"))
+(global-unset-key (kbd "C-'"))
+(global-unset-key (kbd "C-x C-n"))
 (global-unset-key (kbd "C-x C-v"))
 (global-unset-key (kbd "C-x C-o"))
 (global-unset-key (kbd "C-x C-w"))
@@ -168,6 +180,8 @@
     :straight t
     :bind
     ("C-x A" . org-agenda)
+    ("C-'" . org-capture)
+    (:map org-mode-map ("C-'" . org-capture))
     :config
     (setq org-startup-indented t
           org-directory "~/Agenda"
@@ -183,7 +197,6 @@
 #+end_src
 *** Org-Capture
 #+begin_src emacs-lisp
-(global-set-key (kbd "C-x C") 'org-capture)
 (setq org-capture-templates
      '(("t" "ToDo" entry (file+headline "~/Agenda/todo.org" "Inbox")
         "* TODO %?\n  %i\n")
@@ -243,10 +256,6 @@
   :straight
     (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
     :after org-roam
-;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
-;;         a hookable mode anymore, you're advised to pick something yourself
-;;         if you don't care about startup time, use
-;;  :hook (after-init . org-roam-ui-mode)
     :config
     (setq org-roam-ui-sync-theme t
           org-roam-ui-follow t
@@ -539,7 +548,9 @@
    :straight t
    :bind
    ("<C-m> C-i" . consult-imenu)
-   ("<C-m> C-s" . consult-line))
+   ("<C-m> C-s" . consult-line)
+   (:map org-mode-map
+   ("<C-m> C-i" . consult-org-heading)))
 
 (setq completion-in-region-function
       (lambda (&rest args)
