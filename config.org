@@ -62,7 +62,9 @@
           display-buffer-below-selected)
          (window-height . 20)
          (nil . t))
-        ))
+        ("\\*Async Shell Command\\*"
+         (delete-window))
+       ))
 
 (add-hook 'minibuffer-exit-hook
       #'(lambda ()
@@ -80,6 +82,7 @@
 (save-place-mode 1)
 
 (global-set-key (kbd "C-x 4 x g") 'revert-other-buffer-quick)
+(global-set-key (kbd "C-.") 'persp-switch-to-buffer)
 
 (defun revert-other-buffer-quick ()
   (interactive)
@@ -616,9 +619,7 @@ And probably some more.
                args)))
 
 (setq xref-show-xrefs-function #'consult-xref
-      xref-show-definitions-
-
-      function #'consult-xref)
+      xref-show-definitions-function #'consult-xref)
 #+end_src
 *** consult-eglot
 #+begin_src emacs-lisp
