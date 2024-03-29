@@ -55,14 +55,20 @@
         ("\\*Org Select\\*"
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)
-         (window-height . 35)
-         (body-function . select-window))))
+         (window-height . 25)
+         (body-function . select-window))
+        ("Capture-*"
+         (display-buffer-reuse-mode-window
+          display-buffer-below-selected)
+         (window-height . 25)
+         (nil . t))))
 
 (add-hook 'minibuffer-exit-hook
       #'(lambda ()
          (let ((buffer "*Completions*"))
            (and (get-buffer buffer)
             (kill-buffer buffer)))))
+
 
 (setq-default show-trailing-whitespace nil)
 (setq-default warning-minimum-level nil)
