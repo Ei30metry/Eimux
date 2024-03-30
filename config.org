@@ -399,7 +399,7 @@ And probably some more.
   (persp-mode-prefix-key (kbd "C-x C-,"))
   :bind
   ("C-x k" . persp-kill-buffer*)
-  ("C-\"" . persp-switch-to-buffer)
+  ("C-." . persp-switch-to-buffer)
   :init
   (persp-mode))
 #+end_src
