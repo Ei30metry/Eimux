@@ -82,7 +82,6 @@
 (save-place-mode 1)
 
 (global-set-key (kbd "C-x 4 x g") 'revert-other-buffer-quick)
-(global-set-key (kbd "C-.") 'persp-switch-to-buffer)
 
 (defun revert-other-buffer-quick ()
   (interactive)
@@ -147,7 +146,6 @@
 Some prefix keys that are still available:
 - C-x C-d
 - C-x C-n
-- C-x C-'
 - C-x C-r
 - C-x C-/
 - C-x C-y
@@ -156,7 +154,6 @@ Some prefix keys that are still available:
 And probably some more.
 #+begin_src emacs-lisp
 (global-unset-key (kbd "C-x C-b"))
-(global-unset-key (kbd "C-'"))
 (global-unset-key (kbd "C-x C-n"))
 (global-unset-key (kbd "C-x C-v"))
 (global-unset-key (kbd "C-x C-o"))
@@ -181,10 +178,10 @@ And probably some more.
   (interactive)
   (zap-up-to-char 1 ?\s))
 
-(global-set-key (kbd "C-x C-b p") 'previous-buffer)
-(global-set-key (kbd "C-x C-b n") 'next-buffer)
-(global-set-key (kbd "C-x C-b l") 'persp-ibuffer)
-(global-set-key (kbd "C-x C-b s") 'consult-buffer)
+(global-set-key (kbd "C-x C-' p") 'previous-buffer)
+(global-set-key (kbd "C-x C-' n") 'next-buffer)
+(global-set-key (kbd "C-x C-' l") 'persp-ibuffer)
+(global-set-key (kbd "C-x C-' s") 'consult-buffer)
 (global-set-key (kbd "C-S-z") 'zap-up-to-space)
 (global-set-key (kbd "M-j") 'join-line)
 (global-set-key (kbd "M-RET") 'default-indent-new-line)
@@ -213,24 +210,25 @@ And probably some more.
 ** Improving upon org-mode
 *** Org-mode
 #+begin_src emacs-lisp
-  (use-package org
-    :straight t
-    :bind
-    ("C-x A" . org-agenda)
-    ("C-'" . org-capture)
-    (:map org-mode-map ("C-'" . org-capture))
-    :config
-    (setq org-startup-indented t
-          org-directory "~/Agenda"
-          org-log-into-drawer t
-          org-treat-insert-todo-heading-as-state-change t
-          org-return-follows-link t
-          org-src-tab-acts-natively nil
-          org-agenda-files '("~/Agenda/todo.org" "~/Agenda/habits.org")
-          org-todo-keywords
-          '((sequence "TODO" "FIX" "VERIFY" "REVIEW" "|" "DONE" "DELEGATED" )))
-    :hook
-    (org-agenda-mode . (lambda () (visual-line-mode -1) (toggle-truncate-lines 1) (display-line-numbers-mode 0))))
+(use-package org
+  :straight t
+  :bind
+  ("C-x A" . org-agenda)
+  ("C-S-c" . org-capture)
+  (:map org-mode-map ("C-S-c" . org-capture))
+  :config
+  (setq org-startup-indented t
+        org-directory "~/Agenda"
+        org-log-into-drawer t
+        org-treat-insert-todo-heading-as-state-change t
+        org-return-follows-link t
+        org-src-tab-acts-natively nil
+        org-agenda-files '("~/Agenda/todo.org" "~/Agenda/habits.org")
+        org-todo-keywords
+        '((sequence "TODO" "FIX" "VERIFY" "REVIEW" "|" "DONE" "DELEGATED" )))
+  :hook
+  (org-agenda-mode . (lambda () (visual-line-mode -1) (toggle-truncate-lines 1) (display-line-numbers-mode 0))))
+(global-unset-key (kbd "C-'"))
 #+end_src
 *** Org-Capture
 #+begin_src emacs-lisp
@@ -401,6 +399,7 @@ And probably some more.
   (persp-mode-prefix-key (kbd "C-x C-,"))
   :bind
   ("C-x k" . persp-kill-buffer*)
+  ("C-\"" . persp-switch-to-buffer)
   :init
   (persp-mode))
 #+end_src
@@ -694,12 +693,12 @@ And probably some more.
   (setq haskell-font-lock-symbols t
         haskell-stylish-on-save nil
         haskell-process-log nil)
+
   :bind
   (:map haskell-mode-map
         ("<C-m> C-w" . avy-goto-subword-1)
         ("C-c h" . hoogle)
         ("C-c f" . haskell-mode-stylish-buffer)
-        ("C-x p C" . haskell-compile)
         ("M-g M-w" . avy-goto-subword-1)
         ("C-S-f" . subword-forward)
         ("C-S-b" . subword-backward)
@@ -707,13 +706,16 @@ And probably some more.
         ("C-S-t" . subword-transpose)
         ("C-<backspace>" . subword-backward-kill)
         ("M-S-<backspace>" . subword-backward-kill))
-
   :hook
   (haskell-mode . haskell-auto-insert-module-template)
   (haskell-mode . interactive-haskell-mode)
   (haskell-mode . haskell-indentation-mode)
   (haskell-mode . haskell-decl-scan-mode)
   (haskell-mode . hindent-mode))
+
+(with-eval-after-load 'haskell-interactive-mode
+ (define-key haskell-interactive-mode-map (kbd "C-c C-c") 'haskell-compile)
+ (define-key haskell-interactive-mode-map  (kbd "C-c C-b") 'haskell-interactive-switch-back))
 #+end_src
 ** Agda
 #+begin_src elisp
