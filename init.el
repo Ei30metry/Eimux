@@ -28,10 +28,7 @@
   (load bootstrap-file nil 'nomessage))
 
 (use-package org
-  :straight t
-  :bind
-  (:map org-mode-map
-        ("M-g i" . consult-org-heading)))
+  :straight t)
 
 (use-package exec-path-from-shell
  :straight t

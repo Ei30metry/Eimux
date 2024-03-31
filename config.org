@@ -167,6 +167,7 @@ And probably some more.
 #+end_src
 ** MISC
 #+begin_src emacs-lisp
+;; NOTE This is not working correctly in emacsclient. I need to manually reload init.el for this to take effect
 (define-key input-decode-map [?\C-m] [C-m])
 
 (global-set-key (kbd "C-x C-. C-e o") #'(lambda () (interactive) (find-file "~/.emacs.d/config.org")))
@@ -198,8 +199,7 @@ And probably some more.
 ** osx-plist
 #+begin_src emacs-lisp
 (use-package osx-plist
-  :straight t
-  :defer t)
+  :straight t)
 #+end_src
 ** Prevent Emacs from closing
 #+begin_src emacs-lisp
@@ -242,7 +242,6 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package org-contrib
  :straight t
- :defer t
  :after org
  :config
  (require 'ox-extra)
@@ -322,18 +321,18 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package org-books
  :straight t
-  :defer t
+ :after org
  :config
  (setq org-books-file "~/Agenda/books.org"))
 #+end_src
 * Media
 ** emms
 #+begin_src emacs-lisp
-(use-package emms :straight t :defer t)
+(use-package emms :straight t)
 #+end_src
 ** empv
 #+begin_src emacs-lisp
-(use-package empv :straight t :defer t)
+(use-package empv :straight t)
 
 (setq episodes-audio-directory "/Users/artin/Podcast/Haskell Interlude/Episodes/"
       episodes-notes-directory "/Users/artin/Podcast/Haskell Interlude/Notes/"
@@ -441,7 +440,7 @@ And probably some more.
 #+end_src
 ** hydra
 #+begin_src emacs-lisp
-(use-package hydra :straight t :defer t)
+(use-package hydra :straight t)
 #+end_src
 ** multiple-cursors
 #+begin_src emacs-lisp
@@ -455,7 +454,6 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package magit
   :straight t
-  :defer t
   :commands magit-status)
 #+end_src
 ** eglot
@@ -557,7 +555,6 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package vterm
   :straight t
-  :defer t
   :bind
   ("s-\\" . vterm)
   ("s-<return>" . vterm-other-window)
@@ -647,7 +644,6 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package nov
    :straight t
-   :defer t
    :mode
    (("\\.epub\\'" . nov-mode))
    :hook
@@ -662,7 +658,6 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package pdf-tools
   :straight t
-  :defer t
   :bind
   (:map pdf-view-mode-map ("g" . revert-buffer-quick))
   :mode
@@ -740,13 +735,12 @@ And probably some more.
 #+end_src
 ** OCaml
 #+begin_src emacs-lisp
-(use-package tuareg-mode
-    :straight t
-    :defer t)
+(use-package tuareg
+    :straight t)
 
 (use-package merlin
     :straight t
-    :after tuareg-mode)
+    :after tuareg)
 
 #+end_src
 ** Lean
@@ -758,14 +752,12 @@ And probably some more.
 	     :repo "leanprover/lean4-mode"
 	     :files ("*.el" "data"))
   ;; to defer loading the package until required
-  :defer t
   :commands (lean4-mode))
 #+end_src
 ** Nix
 #+begin_src emacs-lisp
 (use-package nix-mode
-   :straight t
-   :defer t)
+   :straight t)
 
 (global-set-key (kbd "C-x C-. C-n o") #'(lambda () (interactive) (find-file "~/.nixpkgs/darwin-configuration.nix")))
 
@@ -776,8 +768,7 @@ And probably some more.
 ** Javascript
 #+begin_src emacs-lisp
 (use-package js2-mode
-    :straight t
-    :defer t)
+    :straight t)
 #+end_src
 ** Python
 #+begin_src emacs-lisp
@@ -788,15 +779,13 @@ And probably some more.
 ** Swift
 #+begin_src emacs-lisp
 (use-package swift-mode
-    :straight t
-    :defer t)
+    :straight t)
 #+end_src
 * Data Serialization
 ** JSON
 #+begin_src emacs-lisp
 (use-package json-mode
-  :straight t
-  :defer t)
+  :straight t)
 #+end_src
 ** YAML
 #+begin_src emacs-lisp
@@ -812,8 +801,7 @@ And probably some more.
 ** pass
 #+begin_src emacs-lisp
 (use-package pass
-  :straight t
-  :commands pass)
+  :straight t)
 #+end_src
 * Shell
 #+begin_src emacs-lisp
@@ -867,30 +855,25 @@ And probably some more.
 ** ement
 #+begin_src emacs-lisp
 (use-package ement
-    :straight t
-    :defer t)
+    :straight t)
 #+end_src
 ** mu4e
 ** telega
 #+begin_src emacs-lisp
-  (use-package telega
-      :straight t
-      :defer t
-      :config
-      (setq telega-chat-bidi-display-reordering t)
-      (setq telega-server-libs-prefix "/usr/local")
-      :hook
-      (telega-chat-mode . (lambda () (display-line-numbers-mode -1)))
-      (telega-root-mode . (lambda () (display-line-numbers-mode -1))))
+(use-package telega
+    :straight t
+    :config
+    (setq telega-chat-bidi-display-reordering t)
+    (setq telega-server-libs-prefix "/usr/local")
+    :hook
+    (telega-chat-mode . (lambda () (display-line-numbers-mode -1)))
+    (telega-root-mode . (lambda () (display-line-numbers-mode -1))))
 #+end_src
 * RSS
 ** elfeed
 #+begin_src emacs-lisp
 (use-package elfeed
-  :straight t
-  :defer t
-  :config
-  (setq elfeed-feeds nil))
+   :straight t)
 #+end_src
 * Profiling
 #+begin_src emacs-lisp
@@ -901,7 +884,6 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package speed-type
     :straight t
-    :defer t
     :bind
     (:map speed-type-mode-map
      ("C-i" . speed-type--replay)))
