@@ -167,8 +167,7 @@ And probably some more.
 #+end_src
 ** MISC
 #+begin_src emacs-lisp
-(when (display-graphic-p)
-        (define-key input-decode-map [?\C-m] [C-m]))
+(define-key input-decode-map [?\C-m] [C-m])
 
 (global-set-key (kbd "C-x C-. C-e o") #'(lambda () (interactive) (find-file "~/.emacs.d/config.org")))
 (global-set-key (kbd "C-x C-. C-e r") #'(lambda () (interactive) (load-file "~/.emacs.d/init.el")))
@@ -181,7 +180,7 @@ And probably some more.
 (global-set-key (kbd "C-x C-' p") 'previous-buffer)
 (global-set-key (kbd "C-x C-' n") 'next-buffer)
 (global-set-key (kbd "C-x C-' l") 'persp-ibuffer)
-(global-set-key (kbd "C-x C-' s") 'consult-buffer)
+(global-set-key (kbd "C-x C-' s") 'scratch-buffer)
 (global-set-key (kbd "C-S-z") 'zap-up-to-space)
 (global-set-key (kbd "M-j") 'join-line)
 (global-set-key (kbd "M-RET") 'default-indent-new-line)
@@ -266,9 +265,10 @@ And probably some more.
            ("py" . "src python")
            ("sq" . "src sql")
            ("hs" . "src haskell")
+           ("t" . "src tex")
            ("rs" . "src rust")
            ("c"  . "src c")
-           ("t" . "src txt")
+           ("tx" . "src txt")
            ("o" . "src ott"))))
 #+end_src
 *** toc-org
@@ -400,6 +400,7 @@ And probably some more.
   :bind
   ("C-x k" . persp-kill-buffer*)
   ("C-." . persp-switch-to-buffer)
+  ("C-x b" . switch-to-buffer)
   :init
   (persp-mode))
 #+end_src
@@ -716,6 +717,8 @@ And probably some more.
 (with-eval-after-load 'haskell-interactive-mode
  (define-key haskell-interactive-mode-map (kbd "C-c C-c") 'haskell-compile)
  (define-key haskell-interactive-mode-map  (kbd "C-c C-b") 'haskell-interactive-switch-back))
+
+(defun haskell-scratch-buffer () (mesage "TODO implement me!"))
 #+end_src
 ** Agda
 #+begin_src elisp
@@ -896,5 +899,10 @@ And probably some more.
 #+end_src
 * Fun!
 #+begin_src emacs-lisp
-(use-package typit :straight t :defer t)
+(use-package speed-type
+    :straight t
+    :defer t
+    :bind
+    (:map speed-type-mode-map
+     ("C-i" . speed-type--replay)))
 #+end_src
