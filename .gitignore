@@ -34,3 +34,5 @@ auto-save-list/
 org-roam.db
 .org-id-locations
 speed-type
+persist/
+network-security.data

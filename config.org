@@ -72,9 +72,13 @@
            (and (get-buffer buffer)
             (kill-buffer buffer)))))
 
+(use-package mode-local
+  :straight t)
 
 (setq-default show-trailing-whitespace nil)
-(setq-default warning-minimum-level nil)
+
+(setq-mode-local show-trailing-whitespace t)
+(setq-default warning-minimum-level :error)
 (setq make-backup-files nil
       auto-save-default nil
       auto-save-list-file-prefix nil)
@@ -297,10 +301,12 @@ And probably some more.
    ("C-x C-r C-i r"   . org-roam-ref-add)
    ("C-x C-r C-i t"   . org-roam-tag-add)
    ("C-x C-r C-i a"   . org-roam-alias-add)
+   ("C-x C-r C-i n"   . org-roam-node-insert)
    ("C-x C-r C-f"     . org-roam-node-find)
    (:map org-roam-mode-map ("M-." . org-roam-ref-find))
    :config
-   (setq org-roam-directory "~/Roam"))
+   (setq org-roam-directory "~/Roam"
+         org-roam-db-autosync-mode t))
 #+end_src
 *** org-roam-ui
 #+begin_src emacs-lisp
@@ -673,7 +679,8 @@ And probably some more.
 ** Haskell
 *** flymake-hlint
 #+begin_src emacs-lisp
-(use-package flymake-hlint :straight t)
+(use-package flymake-hlint
+  :straight t)
 #+end_src
 *** hindent
 #+begin_src emacs-lisp
@@ -695,6 +702,13 @@ And probably some more.
         ("<C-m> C-w" . avy-goto-subword-1)
         ("C-c h" . hoogle)
         ("C-c f" . haskell-mode-stylish-buffer)
+        ("C-c i p" . haskell-command-insert-language-pragma)
+        ("C-c i m" . haskell-add-import)
+        ("C-c m" . haskell-navigate-imports)
+        ("C-c C-n" . haskell-ds-forward-decl)
+        ("C-c C-p" . haskell-ds-backward-decl)
+        ("M-n" . haskell-ds-forward-decl)
+        ("M-p" . haskell-ds-backward-decl)
         ("M-g M-w" . avy-goto-subword-1)
         ("C-S-f" . subword-forward)
         ("C-S-b" . subword-backward)
@@ -759,11 +773,14 @@ And probably some more.
 (use-package nix-mode
    :straight t)
 
-(global-set-key (kbd "C-x C-. C-n o") #'(lambda () (interactive) (find-file "~/.nixpkgs/darwin-configuration.nix")))
-
 (defun darwin-rebuild-switch () ())
 (defun nix-channel-update () ())
 (defun nix-collect-garbage-d () ())
+
+(global-set-key (kbd "C-x C-. C-n o") #'(lambda () (interactive) (find-file "~/.nixpkgs/darwin-configuration.nix")))
+(global-set-key (kbd "C-x C-. C-n r") #'darwin-rebuild-switch)
+(global-set-key (kbd "C-x C-. C-n u") #'nix-channel-update)
+(global-set-key (kbd "C-x C-. C-n d") #'nix-collect-garbage-d)
 #+end_src
 ** Javascript
 #+begin_src emacs-lisp
@@ -809,6 +826,13 @@ And probably some more.
 (global-set-key (kbd "C-x C-. C-z p") #'(lambda () (interactive) (find-file "~/.zprofile")))
 (global-set-key (kbd "C-x C-. C-z e") #'(lambda () (interactive) (find-file "~/.zshenv")))
 #+end_src
+* Spelling and Dictionary
+** Jinx
+#+begin_src emacs-lisp
+(use-package jinx
+  :straight t)
+#+end_src
+
 * Markup languages
 ** Tex
 *** cdlatex
@@ -823,6 +847,7 @@ And probably some more.
     :hook
     (LaTeX-mode . reftex-mode)
     (LaTeX-mode . cdlatex-mode)
+    (LaTeX-mode . jinx-mode)
     :bind
     (:map LaTeX-mode-map
      ("<C-m> C-w" . avy-goto-subword-1)
@@ -851,13 +876,16 @@ And probably some more.
 #+begin_src emacs-lisp
 (setq rst-pdf-program "/Applications/Skim.app/Contents/MacOS/Skim")
 #+end_src
-* Messaging and mail
+* Messaging and Mail
 ** ement
 #+begin_src emacs-lisp
 (use-package ement
-    :straight t)
+    :straight t
+    :hook
+    (ement-room-mode . (lambda () (display-line-numbers-mode -1)))
+    :config
+    (setq ement-auto-sync nil))
 #+end_src
-** mu4e
 ** telega
 #+begin_src emacs-lisp
 (use-package telega
@@ -869,11 +897,27 @@ And probably some more.
     (telega-chat-mode . (lambda () (display-line-numbers-mode -1)))
     (telega-root-mode . (lambda () (display-line-numbers-mode -1))))
 #+end_src
+** notmuch
+#+begin_src emacs-lisp
+(setq user-full-name "Artin Ghasivand"
+      user-mail-address "ghasivand.artin@gmail.com"
+      message-send-mail-function 'smtpmail-send-it
+      send-mail-function 'smtpmail-send-it
+      sendmail-program (executable-find "msmtp")
+      message-sendmail-envelope-from 'header
+      message-kill-buffer-on-exit t)
+
+
+(use-package notmuch
+  :straight t
+  :hook
+  (notmuch-hello-mode . (lambda () (display-line-numbers-mode -1))))
+#+end_src
 * RSS
 ** elfeed
 #+begin_src emacs-lisp
-(use-package elfeed
-   :straight t)
+;; (use-package elfeed
+;;   :straight t)
 #+end_src
 * Profiling
 #+begin_src emacs-lisp
