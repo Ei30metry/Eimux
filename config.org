@@ -31,11 +31,7 @@
 #+begin_src emacs-lisp
 (setq-default message-log-max :error)
 
-;; (defun fit-window-to-buffer-if-huge-n (n window)
-;;   "Fit WINDOW to buffer if it has less than N lines"
-;;   (if (< n (window-height)))
-;;       (fit-window-to-buffer window)
-;;       ()))
+(setq initial-major-mode 'emacs-lisp-mode)
 
 (setq display-buffer-alist
       '(
@@ -226,7 +222,7 @@ And probably some more.
         org-treat-insert-todo-heading-as-state-change t
         org-return-follows-link t
         org-src-tab-acts-natively nil
-        org-agenda-files '("~/Agenda/todo.org" "~/Agenda/habits.org")
+        org-agenda-files '("~/Agenda/tasks.org" "~/Agenda/schedule.org" "~/Agenda/projects/specification.org")
         org-todo-keywords
         '((sequence "TODO" "FIX" "VERIFY" "REVIEW" "|" "DONE" "DELEGATED" )))
   :hook
@@ -235,12 +231,37 @@ And probably some more.
 #+end_src
 *** Org-Capture
 #+begin_src emacs-lisp
+;; NOTE rewrite this using a function
+;; NOTE find a better way then putting everything under a menu
 (setq org-capture-templates
-     '(("t" "ToDo" entry (file+headline "~/Agenda/todo.org" "Inbox")
-        "* TODO %?\n  %i\n")
-        ("h" "Haskell Spec ToDo" entry (file+headline "~/Research/GHC/haskell-specification/note.org" "Tasks")
-        "* TODO %?\n  %i\n")
-        ("e" "Emacs IDEA" entry (file+headline "~/Journal/emacs.org" "MISC") "* IDEA %?\n %i\n")))
+     '(("t" "Task")
+       ("tt" "Planned" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %^t\nDEADLINE: %^t")
+       ("tT" "Today" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %t\nDEADLINE: %t")
+       ("tl" "Process later" entry (file+headline "tasks.org" "Inbox") "* TODO %?")
+       ("td" "Deadline" entry (file+headline "tasks.org" "Deadline") "* TODO %?\nDEADLINE: %^t")
+       ("ts" "Schedule"entry (file+headline "tasks.org" "Schedule") "* TODO %?\nSCHEDULED: %^t")
+       ("l" "Lookup")
+       ("lr" "Random" entry (file+headline "lookup.org" "Random") "* TODO %?")
+       ("lm" "Mathematics" entry (file+headline "lookup.org" "Math") "* TODO %?")
+       ("lc" "CS" entry (file+headline "lookup.org" "Computer Science") "* TODO %?")
+       ("lp" "Philosophy" entry (file+headline "lookup.org" "Philosophy") "* TODO %?")
+       ("le" "Emacs" entry (file+headline "lookup.org" "Emacs") "* TODO %?")
+
+       ("tp" "Project")
+       ("tps" "Specification" entry (file+headline "projects/specification.org" "Tasks") "* TODO %?")
+       ("tpg" "GHC" entry (file+headline "projects/specification.org" "Tasks") "* TODO %?")
+       ("tph" "Hygeia" entry (file+headline "projects/hygeia.org" "Tasks") "* TODO %?")
+       ("tc" "Config")
+       ("tce" "Emacs" entry (file+headline "config/emacs-config.org" "Tasks") "* TODO %?\n%i")
+       ("tcn" "Nix" entry (file+headline "config/nix.org" "Tasks") "* TODO %?\n  %i")
+       ("a" "Ask" entry (file+headline "projects/specification.org" "QUESTIONS") "* %^{Ask:|QUESTION|ASKSIMON|ASKRICHARD} %?\nSCHEDULED: %^t")
+       ("i" "Idea")
+       ("ic" "Config")
+       ("ip" "Project")
+       ("ips" "Specification" entry (file+headline "projects/specification.org" "Ideas") "* IDEA %?")
+       ("ice" "Emacs" entry (file+headline "projects/emacs-config.org" "Ideas") "* IDEA %?\n  %i\n")
+       ("icn" "Nix" entry (file+headline "config/nix.org" "Tasks") "* IDEA %?")
+     ))
 #+end_src
 *** Org-contrib
 #+begin_src emacs-lisp
@@ -411,8 +432,13 @@ And probably some more.
 #+end_src
 ** project
 #+begin_src emacs-lisp
+  ;; (defun project-note-file ()
+  ;;   (interactive)
+  ;;   (message "%s" (project-name (project-current))))
+
 (global-set-key (kbd "C-x p /") 'consult-ripgrep)
 (global-set-key (kbd "C-x p b") 'consult-project-buffer)
+(global-set-key (kbd "C-x p n") 'project-note-file)
 #+end_src
 ** diredfl
 #+begin_src emacs-lisp
@@ -677,11 +703,6 @@ And probably some more.
 #+end_src
 * Programming Languages
 ** Haskell
-*** flymake-hlint
-#+begin_src emacs-lisp
-(use-package flymake-hlint
-  :straight t)
-#+end_src
 *** hindent
 #+begin_src emacs-lisp
 (use-package hindent
@@ -826,13 +847,24 @@ And probably some more.
 (global-set-key (kbd "C-x C-. C-z p") #'(lambda () (interactive) (find-file "~/.zprofile")))
 (global-set-key (kbd "C-x C-. C-z e") #'(lambda () (interactive) (find-file "~/.zshenv")))
 #+end_src
-* Spelling and Dictionary
+* Spelling and Thesaurus
 ** Jinx
 #+begin_src emacs-lisp
 (use-package jinx
   :straight t)
 #+end_src
-
+** powerthesaurus
+#+begin_src emacs-lisp
+(use-package powerthesaurus
+  :straight t)
+#+end_src
+** define-word
+#+begin_src emacs-lisp
+(use-package define-word
+  :straight t
+  :bind
+  ("M-#" . define-word-at-point))
+#+end_src
 * Markup languages
 ** Tex
 *** cdlatex
@@ -848,6 +880,7 @@ And probably some more.
     (LaTeX-mode . reftex-mode)
     (LaTeX-mode . cdlatex-mode)
     (LaTeX-mode . jinx-mode)
+;;     (LaTeX-mode . )
     :bind
     (:map LaTeX-mode-map
      ("<C-m> C-w" . avy-goto-subword-1)
@@ -866,6 +899,16 @@ And probably some more.
 (use-package ott-mode
     :ensure nil
     :load-path "~/.emacs.d/ott-mode")
+
+(define-prefix-command 'ctl-c-map)
+
+;; (global-set-key (kbd "C-c") 'ctl-c-map)
+
+  ;; (defvar ott-mode-map)
+
+  ;; (define-keymap
+  ;;   :name ott-mode-map
+  ;;   :parent ctl-c-map)
 #+end_src
 ** markdown-mode
 #+begin_src emacs-lisp
