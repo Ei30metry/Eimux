@@ -47,6 +47,12 @@
          (window-height . 20)
          (dedicated . t)
          (body-function . select-window))
+        ;; NOTE I think we I can replace this by saying comint-mode
+        ("\\*\\(vterm\\|shell\\|eshell\\|terminal\\|ielm\\|Nix-REPL\\|haskell\\).*"
+         (display-buffer-reuse-mode-window
+          display-buffer-below-selected)
+          (window-height . 20)
+          (body-function . select-window))
 
         ("\\*Org Select\\*"
          (display-buffer-reuse-mode-window
@@ -59,7 +65,8 @@
          (window-height . 20)
          (nil . t))
         ("\\*Async Shell Command\\*"
-         (delete-window))
+         (display-buffer-no-window)
+         (allow-no-window . t))
        ))
 
 (add-hook 'minibuffer-exit-hook
@@ -178,6 +185,7 @@ And probably some more.
   (interactive)
   (zap-up-to-char 1 ?\s))
 
+(require 'ibuffer)
 (global-set-key (kbd "C-x C-' p") 'previous-buffer)
 (global-set-key (kbd "C-x C-' n") 'next-buffer)
 (global-set-key (kbd "C-x C-' l") 'persp-ibuffer)
@@ -206,8 +214,7 @@ And probably some more.
 (setq confirm-kill-emacs 'y-or-n-p)
 #+end_src
 * Org-mode
-** Improving upon org-mode
-*** Org-mode
+*** Org
 #+begin_src emacs-lisp
 (use-package org
   :straight t
@@ -259,7 +266,8 @@ And probably some more.
        ("ic" "Config")
        ("ip" "Project")
        ("ips" "Specification" entry (file+headline "projects/specification.org" "Ideas") "* IDEA %?")
-       ("ice" "Emacs" entry (file+headline "projects/emacs-config.org" "Ideas") "* IDEA %?\n  %i\n")
+       ("ice" "Emacs" entry (file+headline "projects/emacs-config.org" "
+       Ideas") "* IDEA %?\n  %i\n")
        ("icn" "Nix" entry (file+headline "config/nix.org" "Tasks") "* IDEA %?")
      ))
 #+end_src
@@ -377,7 +385,7 @@ And probably some more.
           (minutes-pretty (funcall prettify-time minutes)))
     (concat minutes-pretty ":" seconds-pretty)))
 
-;; NOTE You don't need to revert the buffer or anything. just set is as the buffer, use save-excursion, and switch back to the current buffer. Very easy.
+
 (defun write-timerange (buffer &optional description)
     "Write the timestamp of the currently playing episode to its note file"
     (interactive)
@@ -432,13 +440,23 @@ And probably some more.
 #+end_src
 ** project
 #+begin_src emacs-lisp
-  ;; (defun project-note-file ()
-  ;;   (interactive)
-  ;;   (message "%s" (project-name (project-current))))
+(defun project-note-file ()
+  (interactive)
+  (message "%s" (concat "TODO Implement me! " (project-name (project-current)))))
 
 (global-set-key (kbd "C-x p /") 'consult-ripgrep)
 (global-set-key (kbd "C-x p b") 'consult-project-buffer)
 (global-set-key (kbd "C-x p n") 'project-note-file)
+#+end_src
+** align
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-x M-a M-a") 'align)
+(global-set-key (kbd "C-x M-a M-r") 'align-regexp)
+(global-set-key (kbd "C-x M-a M-c") 'align-current)
+(global-set-key (kbd "C-x M-a M-e") 'align-entire)
+#+end_src
+** replace
+#+begin_src emacs-lisp
 #+end_src
 ** diredfl
 #+begin_src emacs-lisp
@@ -446,10 +464,6 @@ And probably some more.
   :straight t
   :init
   (diredfl-global-mode))
-#+end_src
-** transpose
-#+begin_src emacs-lisp
-(use-package transpose-frame :straight t :bind ("C-x w t" . transpose-frame)) ;; NOTE remove this and use the functionality provided by ace-window
 #+end_src
 ** ace-window
 #+begin_src emacs-lisp
@@ -501,8 +515,6 @@ And probably some more.
 #+end_src
 ** smartparens
 #+begin_src emacs-lisp
-
-
 (use-package smartparens
   :straight t
   :config
@@ -595,7 +607,7 @@ And probably some more.
 #+end_src
 *** eshell
 #+begin_src emacs-lisp
-  (add-hook 'eshell-mode-hook #'(lambda () (display-line-numbers-mode -1)))
+(add-hook 'eshell-mode-hook #'(lambda () (display-line-numbers-mode -1)))
 #+end_src
 ** dumb-jump
 #+begin_src emacs-lisp
@@ -722,6 +734,7 @@ And probably some more.
   (:map haskell-mode-map
         ("<C-m> C-w" . avy-goto-subword-1)
         ("C-c h" . hoogle)
+        ("C-C C-o" . haskell-interacrtive-bring)
         ("C-c f" . haskell-mode-stylish-buffer)
         ("C-c i p" . haskell-command-insert-language-pragma)
         ("C-c i m" . haskell-add-import)
@@ -749,6 +762,50 @@ And probably some more.
  (define-key haskell-interactive-mode-map  (kbd "C-c C-b") 'haskell-interactive-switch-back))
 
 (defun haskell-scratch-buffer () (mesage "TODO implement me!"))
+
+(with-eval-after-load 'align
+(add-to-list 'align-rules-list
+                  '(haskell-types
+                    (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
+                    (modes quote (haskell-mode haskell-literate-mode))))
+     (add-to-list 'align-rules-list
+                  '(haskell-assignment
+                    (regexp . "\\(\\s-+\\)=\\s-+")
+                    (modes quote (haskell-mode haskell-literate-mode))))
+     (add-to-list 'align-rules-list
+                  '(haskell-arrows
+                    (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
+                    (modes quote (haskell-mode haskell-literate-mode))))
+     (add-to-list 'align-rules-list
+                  '(haskell-left-arrows
+                    (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
+                    (modes quote (haskell-mode haskell-literate-mode))))
+(add-to-list 'align-rules-list
+                  '(haskell-types
+                    (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
+                    (modes quote (haskell-mode haskell-literate-mode))))
+     (add-to-list 'align-rules-list
+                  '(haskell-assignment
+                    (regexp . "\\(\\s-+\\)=\\s-+")
+                    (modes quote (haskell-mode haskell-literate-mode))))
+     (add-to-list 'align-rules-list
+                  '(haskell-arrows
+                    (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
+                    (modes quote (haskell-mode haskell-literate-mode))))
+     (add-to-list 'align-rules-list
+                  '(haskell-left-arrows
+                    (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
+                    (modes quote (haskell-mode haskell-literate-mode)))))
+#+end_src
+*** w3m-haddock
+#+begin_src emacs-lisp
+(use-package w3m :straight t)
+
+(setq w3m-mode-map (make-sparse-keymap))
+
+
+(require 'w3m-haddock)
+(add-hook 'w3m-display-hook 'w3m-haddoc-display)
 #+end_src
 ** Agda
 #+begin_src elisp
@@ -856,7 +913,9 @@ And probably some more.
 ** powerthesaurus
 #+begin_src emacs-lisp
 (use-package powerthesaurus
-  :straight t)
+  :straight t
+  :bind
+  ("M-^" . powerthesaurus-lookup-dwim))
 #+end_src
 ** define-word
 #+begin_src emacs-lisp
@@ -880,7 +939,6 @@ And probably some more.
     (LaTeX-mode . reftex-mode)
     (LaTeX-mode . cdlatex-mode)
     (LaTeX-mode . jinx-mode)
-;;     (LaTeX-mode . )
     :bind
     (:map LaTeX-mode-map
      ("<C-m> C-w" . avy-goto-subword-1)
@@ -902,13 +960,11 @@ And probably some more.
 
 (define-prefix-command 'ctl-c-map)
 
-;; (global-set-key (kbd "C-c") 'ctl-c-map)
+(setq ott-mode-map (make-sparse-keymap))
 
-  ;; (defvar ott-mode-map)
-
-  ;; (define-keymap
-  ;;   :name ott-mode-map
-  ;;   :parent ctl-c-map)
+(define-keymap
+   :name ott-mode-map
+   :parent ctl-c-map)
 #+end_src
 ** markdown-mode
 #+begin_src emacs-lisp
@@ -946,10 +1002,12 @@ And probably some more.
       user-mail-address "ghasivand.artin@gmail.com"
       message-send-mail-function 'smtpmail-send-it
       send-mail-function 'smtpmail-send-it
+      smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-stream-tyype 'tls
+      smtpmail-smtp-service 587
       sendmail-program (executable-find "msmtp")
       message-sendmail-envelope-from 'header
       message-kill-buffer-on-exit t)
-
 
 (use-package notmuch
   :straight t
