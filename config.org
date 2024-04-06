@@ -120,10 +120,11 @@
 #+begin_src emacs-lisp
 (setq set-mark-command-repeat-pop t)
 #+end_src
-* Window
+* Window and Frame
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-x w s") 'shrink-window)
 (global-set-key (kbd "C-x w m") 'maximize-window)
+(use-package transpose-frame :straight t)
 #+end_src
 * UI
 ** Theme
@@ -281,7 +282,7 @@ And probably some more.
        ("ic" "Config")
        ("ip" "Project")
        ("ips" "Specification" entry (file+headline "projects/specification.org" "Ideas") "* IDEA %?")
-       ("ice" "Emacs" entry (file+headline "projects/emacs-config.org" "
+       ("ice" "Emacs" entry (file+headline "config/emacs-config.org" "
        Ideas") "* IDEA %?\n  %i\n")
        ("icn" "Nix" entry (file+headline "config/nix.org" "Tasks") "* IDEA %?")
      ))
@@ -1050,9 +1051,8 @@ And probably some more.
       message-send-mail-function 'smtpmail-send-it
       send-mail-function 'smtpmail-send-it
       smtpmail-smtp-server "smtp.gmail.com"
-      smtpmail-stream-tyype 'tls
+      smtpmail-stream-type 'starttls
       smtpmail-smtp-service 587
-      sendmail-program (executable-find "msmtp")
       message-sendmail-envelope-from 'header
       message-kill-buffer-on-exit t)
 
