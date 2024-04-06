@@ -17,13 +17,20 @@
 (scroll-bar-mode -1)
 (pixel-scroll-precision-mode 1)
 (global-visual-line-mode 1)
-
-(add-hook 'prog-mode-hook #'(lambda () (display-line-numbers-mode 1)))
-(add-hook 'comint-mode-hook #'(lambda () (display-line-numbers-mode 1)))
 #+end_src
 * mode-line
 #+begin_src emacs-lisp
 (column-number-mode 1)
+#+end_src
+* prog-mode
+#+begin_src emacs-lisp
+(add-hook 'prog-mode-hook #'(lambda () (display-line-numbers-mode 1)))
+(global-set-key (kbd "<C-m> C-n") 'next-error)
+(global-set-key (kbd "<C-m> C-p") 'previous-error)
+#+end_src
+* comint-mode
+#+begin_src emacs-lisp
+(add-hook 'comint-mode-hook #'(lambda () (display-line-numbers-mode 1)))
 #+end_src
 * MISC
 #+begin_src emacs-lisp
@@ -34,12 +41,17 @@
 (setq-default message-log-max :error)
 
 (setq initial-major-mode 'emacs-lisp-mode)
+(setq switch-to-buffer-obey-display-actions t)
 
 (setq display-buffer-alist
       '(
         ("\\*\\(Help\\|haskell-compilation\\|compilation\\).*"
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)
+          (window-height . 20)
+          (dedicated . t))
+        ("\\*hoogle\\*"
+         (display-buffer-at-bottom)
           (window-height . 20)
           (dedicated . t))
 
@@ -50,7 +62,7 @@
          (dedicated . t)
          (body-function . select-window))
         ;; NOTE I think we I can replace this by saying comint-mode or ...
-        ("\\*\\(vterm\\|shell\\|eshell\\|terminal\\|ielm\\|Nix-REPL\\|haskell\\).*"
+        ((or . ((derived-mode . haskell-interactive-mode) "\\*\\(vterm\\|shell\\|eshell\\|terminal\\|ielm\\|Nix-REPL\\|haskell\\).*"))
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)
           (window-height . 20)
@@ -168,6 +180,7 @@ And probably some more.
 (global-unset-key (kbd "C-x C-o"))
 (global-unset-key (kbd "C-x C-w"))
 (global-unset-key (kbd "C-z"))
+(global-unset-key (kbd "C-x m"))
 (global-unset-key (kbd "M-j"))
 (global-unset-key (kbd "C-x C-r"))
 (global-unset-key (kbd "C-x C-d"))
@@ -484,7 +497,8 @@ And probably some more.
     :bind ("C-;" . avy-goto-char-in-line)
           ("<C-m> C-c" . avy-goto-char-2)
           ("<C-m> C-l" . avy-goto-line)
-          ("<C-m> C-w" . avy-goto-word-1))
+          ("<C-m> C-w" . avy-goto-word-1)
+          ("<C-m> C-," . avy-goto-word-1))
 #+end_src
 ** hydra
 #+begin_src emacs-lisp
@@ -538,6 +552,7 @@ And probably some more.
   ("C-S-k" . sp-kill-symbol)
   ("C-S-<backspace>" . sp-backward-kill-symbol)
   ("M-S-<backspace>" . sp-backward-kill-sexp)
+  ("C-M-<backspace>" . sp-delete-symbol)
   ("C-M-k" . sp-kill-sexp)
   ("C-M-u" . sp-forward-slurp-sexp)
   ("C-S-u" . sp-backward-slurp-sexp)
@@ -714,9 +729,43 @@ And probably some more.
 (use-package hindent
   :straight t
   :after haskell-mode)
+
+(defun hindent-reformat-align-decl ()
+"Re-format current declaration using hindent, then align"
+  (interactive)
+  (let ((start-end (hindent-decl-points)))
+    (when start-end
+      (let ((beg (car start-end))
+            (end (cdr start-end)))
+        (hindent-reformat-region beg end t)
+        (align beg end)))))
+
+
+(defun hindent-reformat-align-region (beg end)
+"Re-format regionn using hindent, then align"
+  (interactive "r")
+  (hindent-reformat-region beg end t)
+  (align beg end))
 #+end_src
 *** haskell-mode
 #+begin_src emacs-lisp
+(require 'newcomment)
+
+(defun comment-or-uncomment-decl ()
+"Comment or uncomment current declaration."
+  (interactive)
+  (let ((start-end (hindent-decl-points)))
+    (let ((beg (car start-end))
+          (end (cdr start-end)))
+      (comment-or-uncomment-region
+       (save-excursion
+         (goto-char beg)
+         (push-mark))
+       (save-excursion
+         (goto-char end))))
+       ))
+
+
 (use-package haskell-mode
   :straight t
   :config
@@ -727,8 +776,9 @@ And probably some more.
   :bind
   (:map haskell-mode-map
         ("<C-m> C-w" . avy-goto-subword-1)
+        ("<C-m> C-," . avy-goto-subword-1)
         ("C-c h" . hoogle)
-        ("C-C C-o" . haskell-interacrtive-bring)
+        ("C-C C-o" . haskell-interactive-bring)
         ("C-c f" . haskell-mode-stylish-buffer)
         ("C-c i p" . haskell-command-insert-language-pragma)
         ("C-c i m" . haskell-add-import)
@@ -751,9 +801,11 @@ And probably some more.
   (haskell-mode . haskell-decl-scan-mode)
   (haskell-mode . hindent-mode))
 
-(with-eval-after-load 'haskell-interactive-mode
- (define-key haskell-interactive-mode-map (kbd "C-c C-c") 'haskell-compile)
- (define-key haskell-interactive-mode-map  (kbd "C-c C-b") 'haskell-interactive-switch-back))
+;;(with-eval-after-load 'interactive-haskell-mode
+;;  (define-key interactive-haskell-mode-map (kbd "C-c C-c") 'haskell-compile)
+;;  (define-key interactive-haskell-mode-map  (kbd "C-c C-b") 'haskell-interactive-switch-back)
+;;  (define-key haskell-interactive-mode-map (kbd "C-c C-c") 'haskell-compile)
+;;  (define-key haskell-interactive-mode-map  (kbd "C-c C-b") 'haskell-interactive-switch-back))
 
 (defun haskell-scratch-buffer () (mesage "TODO implement me!"))
 
@@ -902,7 +954,11 @@ And probably some more.
 ** Jinx
 #+begin_src emacs-lisp
 (use-package jinx
-  :straight t)
+  :straight t
+  :bind
+  (:map jinx-mode-map
+    ("<C-m> C-n" . jinx-next)
+    ("<C-m> C-p" . jinx-previous)))
 #+end_src
 ** powerthesaurus
 #+begin_src emacs-lisp
@@ -933,9 +989,11 @@ And probably some more.
     (LaTeX-mode . reftex-mode)
     (LaTeX-mode . cdlatex-mode)
     (LaTeX-mode . jinx-mode)
+    (LaTeX-mode . (lambda () (display-line-numbers-mode 1)))
     :bind
     (:map LaTeX-mode-map
      ("<C-m> C-w" . avy-goto-subword-1)
+     ("<C-m> C-," . avy-goto-subword-1)
      ("C-S-f" . subword-forward)
      ("C-S-b" . subword-backward)
      ("C-S-k" . subword-kill)
@@ -1000,6 +1058,8 @@ And probably some more.
 
 (use-package notmuch
   :straight t)
+
+(global-set-key (kbd "C-x M") 'compose-mail)
 #+end_src
 * RSS
 ** elfeed
@@ -1020,3 +1080,5 @@ And probably some more.
     (:map speed-type-mode-map
      ("C-i" . speed-type--replay)))
 #+end_src
+
+
