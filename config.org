@@ -13,11 +13,13 @@
        (menu-bar-mode 1)
        (menu-bar-mode -1))
 
-   (tool-bar-mode -1)
-   (scroll-bar-mode -1)
-   (pixel-scroll-precision-mode 1)
-   (global-display-line-numbers-mode 1)
-   (global-visual-line-mode 1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(pixel-scroll-precision-mode 1)
+(global-visual-line-mode 1)
+
+(add-hook 'prog-mode-hook #'(lambda () (display-line-numbers-mode 1)))
+(add-hook 'comint-mode-hook #'(lambda () (display-line-numbers-mode 1)))
 #+end_src
 * mode-line
 #+begin_src emacs-lisp
@@ -47,7 +49,7 @@
          (window-height . 20)
          (dedicated . t)
          (body-function . select-window))
-        ;; NOTE I think we I can replace this by saying comint-mode
+        ;; NOTE I think we I can replace this by saying comint-mode or ...
         ("\\*\\(vterm\\|shell\\|eshell\\|terminal\\|ielm\\|Nix-REPL\\|haskell\\).*"
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)
@@ -233,7 +235,7 @@ And probably some more.
         org-todo-keywords
         '((sequence "TODO" "FIX" "VERIFY" "REVIEW" "|" "DONE" "DELEGATED" )))
   :hook
-  (org-agenda-mode . (lambda () (visual-line-mode -1) (toggle-truncate-lines 1) (display-line-numbers-mode 0))))
+  (org-agenda-mode . (lambda () (visual-line-mode -1) (toggle-truncate-lines 1))))
 (global-unset-key (kbd "C-'"))
 #+end_src
 *** Org-Capture
@@ -592,7 +594,6 @@ And probably some more.
 ** Terminal
 *** term
 #+begin_src emacs-lisp
-(add-hook 'term-mode-hook #'(lambda () (display-line-numbers-mode -1)))
 (setq explicit-shell-file-name "zsh")
 #+end_src
 *** vterm
@@ -601,13 +602,10 @@ And probably some more.
   :straight t
   :bind
   ("s-\\" . vterm)
-  ("s-<return>" . vterm-other-window)
-  :config
-  (add-hook 'vterm-mode-hook #'(lambda () (display-line-numbers-mode -1))))
+  ("s-<return>" . vterm-other-window))
 #+end_src
 *** eshell
 #+begin_src emacs-lisp
-(add-hook 'eshell-mode-hook #'(lambda () (display-line-numbers-mode -1)))
 #+end_src
 ** dumb-jump
 #+begin_src emacs-lisp
@@ -691,12 +689,10 @@ And probably some more.
    :mode
    (("\\.epub\\'" . nov-mode))
    :hook
-   (nov-mode . (lambda () (display-line-numbers-mode -1)))
    (nov-mode . olivetti-mode))
 #+end_src
 ** doc-view-mode
 #+begin_src emacs-lisp
-(add-hook 'doc-view-mode-hook #'(lambda () (display-line-numbers-mode -1)))
 #+end_src
 ** pdf-tools
 #+begin_src emacs-lisp
@@ -706,8 +702,6 @@ And probably some more.
   (:map pdf-view-mode-map ("g" . revert-buffer-quick))
   :mode
   (("\\.pdf\\'" . pdf-view-mode))
-  :hook
-  (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
   :config
   (auto-revert-mode 1)
   (setq auto-revert-verbose nil
@@ -980,8 +974,6 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package ement
     :straight t
-    :hook
-    (ement-room-mode . (lambda () (display-line-numbers-mode -1)))
     :config
     (setq ement-auto-sync nil))
 #+end_src
@@ -991,10 +983,7 @@ And probably some more.
     :straight t
     :config
     (setq telega-chat-bidi-display-reordering t)
-    (setq telega-server-libs-prefix "/usr/local")
-    :hook
-    (telega-chat-mode . (lambda () (display-line-numbers-mode -1)))
-    (telega-root-mode . (lambda () (display-line-numbers-mode -1))))
+    (setq telega-server-libs-prefix "/usr/local"))
 #+end_src
 ** notmuch
 #+begin_src emacs-lisp
@@ -1010,9 +999,7 @@ And probably some more.
       message-kill-buffer-on-exit t)
 
 (use-package notmuch
-  :straight t
-  :hook
-  (notmuch-hello-mode . (lambda () (display-line-numbers-mode -1))))
+  :straight t)
 #+end_src
 * RSS
 ** elfeed
