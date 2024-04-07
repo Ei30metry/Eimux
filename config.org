@@ -62,7 +62,7 @@
          (dedicated . t)
          (body-function . select-window))
         ;; NOTE I think we I can replace this by saying comint-mode or ...
-        ((or . ((derived-mode . haskell-interactive-mode) "\\*\\(vterm\\|shell\\|eshell\\|terminal\\|ielm\\|Nix-REPL\\|haskell\\).*"))
+        ((or . ((derived-mode . haskell-interactive-mode) "\\*\\(vterm\\|shell\\|eshell\\|terminal\\|ielm\\|Nix-REPL\\|haskell\\)*"))
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)
           (window-height . 20)
@@ -230,7 +230,7 @@ And probably some more.
 (setq confirm-kill-emacs 'y-or-n-p)
 #+end_src
 * Org-mode
-*** Org
+*** org
 #+begin_src emacs-lisp
 (use-package org
   :straight t
@@ -252,7 +252,7 @@ And probably some more.
   (org-agenda-mode . (lambda () (visual-line-mode -1) (toggle-truncate-lines 1))))
 (global-unset-key (kbd "C-'"))
 #+end_src
-*** Org-Capture
+*** org-capture
 #+begin_src emacs-lisp
 ;; NOTE rewrite this using a function
 ;; NOTE find a better way then putting everything under a menu
@@ -287,7 +287,7 @@ And probably some more.
        ("icn" "Nix" entry (file+headline "config/nix.org" "Tasks") "* IDEA %?")
      ))
 #+end_src
-*** Org-contrib
+*** org-contrib
 #+begin_src emacs-lisp
 (use-package org-contrib
  :straight t
@@ -296,7 +296,15 @@ And probably some more.
  (require 'ox-extra)
  (ox-extras-activate '(latex-header-blocks ignore-headlines)))
 #+end_src
-*** Org-bullets
+*** org-contacts
+#+begin_src emacs-lisp
+(use-package org-contacts :straight t)
+#+end_src
+*** org-mime
+#+begin_src emacs-lisp
+(use-package org-mime :straight t)
+#+end_src
+*** org-bullets
 #+begin_src emacs-lisp
 (use-package org-bullets
   :straight t
@@ -304,7 +312,7 @@ And probably some more.
 
 (add-hook 'org-mode-hook #'(lambda () (org-bullets-mode 1)))
 #+end_src
-*** Org-tempo
+*** org-tempo
 #+begin_src emacs-lisp
 (with-eval-after-load 'org
     (require 'org-tempo)
@@ -811,134 +819,134 @@ And probably some more.
 (defun haskell-scratch-buffer () (mesage "TODO implement me!"))
 
 (with-eval-after-load 'align
-(add-to-list 'align-rules-list
-                  '(haskell-types
-                    (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
-                    (modes quote (haskell-mode haskell-literate-mode))))
-     (add-to-list 'align-rules-list
-                  '(haskell-assignment
-                    (regexp . "\\(\\s-+\\)=\\s-+")
-                    (modes quote (haskell-mode haskell-literate-mode))))
-     (add-to-list 'align-rules-list
-                  '(haskell-arrows
-                    (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
-                    (modes quote (haskell-mode haskell-literate-mode))))
-     (add-to-list 'align-rules-list
-                  '(haskell-left-arrows
-                    (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
-                    (modes quote (haskell-mode haskell-literate-mode))))
-(add-to-list 'align-rules-list
-                  '(haskell-types
-                    (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
-                    (modes quote (haskell-mode haskell-literate-mode))))
-     (add-to-list 'align-rules-list
-                  '(haskell-assignment
-                    (regexp . "\\(\\s-+\\)=\\s-+")
-                    (modes quote (haskell-mode haskell-literate-mode))))
-     (add-to-list 'align-rules-list
-                  '(haskell-arrows
-                    (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
-                    (modes quote (haskell-mode haskell-literate-mode))))
-     (add-to-list 'align-rules-list
-                  '(haskell-left-arrows
-                    (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
-                    (modes quote (haskell-mode haskell-literate-mode)))))
+  (add-to-list 'align-rules-list
+                    '(haskell-types
+                      (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
+                      (modes quote (haskell-mode haskell-literate-mode))))
+       (add-to-list 'align-rules-list
+                    '(haskell-assignment
+                      (regexp . "\\(\\s-+\\)=\\s-+")
+                      (modes quote (haskell-mode haskell-literate-mode))))
+       (add-to-list 'align-rules-list
+                    '(haskell-arrows
+                      (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
+                      (modes quote (haskell-mode haskell-literate-mode))))
+       (add-to-list 'align-rules-list
+                    '(haskell-left-arrows
+                      (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
+                      (modes quote (haskell-mode haskell-literate-mode))))
+       (add-to-list 'align-rules-list
+                    '(haskell-types
+                      (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
+                      (modes quote (haskell-mode haskell-literate-mode))))
+       (add-to-list 'align-rules-list
+                    '(haskell-assignment
+                      (regexp . "\\(\\s-+\\)=\\s-+")
+                      (modes quote (haskell-mode haskell-literate-mode))))
+       (add-to-list 'align-rules-list
+                    '(haskell-arrows
+                      (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
+                      (modes quote (haskell-mode haskell-literate-mode))))
+       (add-to-list 'align-rules-list
+                    '(haskell-left-arrows
+                      (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
+                      (modes quote (haskell-mode haskell-literate-mode)))))
 #+end_src
-*** w3m-haddock
-#+begin_src emacs-lisp
-(use-package w3m :straight t)
+         *** w3m-haddock
+         #+begin_src emacs-lisp
+         (use-package w3m :straight t)
 
-(setq w3m-mode-map (make-sparse-keymap))
+         (setq w3m-mode-map (make-sparse-keymap))
 
 
-(require 'w3m-haddock)
-(add-hook 'w3m-display-hook 'w3m-haddoc-display)
-#+end_src
-** Agda
-#+begin_src elisp
-(setq agda-mode-directory
-      (file-name-directory (substring (shell-command-to-string "agda-mode locate") 0 -1)))
+         (require 'w3m-haddock)
+         (add-hook 'w3m-display-hook 'w3m-haddoc-display)
+         #+end_src
+         ** Agda
+         #+begin_src elisp
+         (setq agda-mode-directory
+               (file-name-directory (substring (shell-command-to-string "agda-mode locate") 0 -1)))
 
-;; Add the directory containing agda2-mode.el to load-path
-(add-to-list 'load-path agda-mode-directory)
+         ;; Add the directory containing agda2-mode.el to load-path
+         (add-to-list 'load-path agda-mode-directory)
 
-;; Use-package configuration for agda2-mode
-(use-package agda2-mode
-  :ensure nil
-  :commands agda2-mode
-  :mode (("\\.agda\\'" . agda2-mode)
-         ("\\.lagda.md\\'" . agda2-mode)))
-#+end_src
-** ELisp
-#+begin_src emacs-lisp
-#+end_src
-** OCaml
-#+begin_src emacs-lisp
-(use-package tuareg
-    :straight t)
+         ;; Use-package configuration for agda2-mode
+         (use-package agda2-mode
+           :ensure nil
+           :commands agda2-mode
+           :mode (("\\.agda\\'" . agda2-mode)
+                  ("\\.lagda.md\\'" . agda2-mode)))
+         #+end_src
+         ** ELisp
+         #+begin_src emacs-lisp
+         #+end_src
+         ** OCaml
+         #+begin_src emacs-lisp
+         (use-package tuareg
+             :straight t)
 
-(use-package merlin
-    :straight t
-    :after tuareg)
+         (use-package merlin
+             :straight t
+             :after tuareg)
 
-#+end_src
-** Lean
-#+begin_src emacs-lisp
-(use-package lean4-mode
-  :straight (lean4-mode
-	     :type git
-	     :host github
-	     :repo "leanprover/lean4-mode"
-	     :files ("*.el" "data"))
-  ;; to defer loading the package until required
-  :commands (lean4-mode))
-#+end_src
-** Nix
-#+begin_src emacs-lisp
-(use-package nix-mode
-   :straight t)
+         #+end_src
+         ** Lean
+         #+begin_src emacs-lisp
+         (use-package lean4-mode
+           :straight (lean4-mode
+         	     :type git
+         	     :host github
+         	     :repo "leanprover/lean4-mode"
+         	     :files ("*.el" "data"))
+           ;; to defer loading the package until required
+           :commands (lean4-mode))
+         #+end_src
+         ** Nix
+         #+begin_src emacs-lisp
+         (use-package nix-mode
+            :straight t)
 
-(defun darwin-rebuild-switch () ())
-(defun nix-channel-update () ())
-(defun nix-collect-garbage-d () ())
+         (defun darwin-rebuild-switch () ())
+         (defun nix-channel-update () ())
+         (defun nix-collect-garbage-d () ())
 
-(global-set-key (kbd "C-x C-. C-n o") #'(lambda () (interactive) (find-file "~/.nixpkgs/darwin-configuration.nix")))
-(global-set-key (kbd "C-x C-. C-n r") #'darwin-rebuild-switch)
-(global-set-key (kbd "C-x C-. C-n u") #'nix-channel-update)
-(global-set-key (kbd "C-x C-. C-n d") #'nix-collect-garbage-d)
-#+end_src
-** Javascript
-#+begin_src emacs-lisp
-(use-package js2-mode
-    :straight t)
-#+end_src
-** Python
-#+begin_src emacs-lisp
- ;; (use-package python-mode
- ;;  :straight t
- ;;  :defer t)
-#+end_src
-** Swift
-#+begin_src emacs-lisp
-(use-package swift-mode
-    :straight t)
-#+end_src
-* Data Serialization
-** JSON
-#+begin_src emacs-lisp
-(use-package json-mode
-  :straight t)
-#+end_src
-** YAML
-#+begin_src emacs-lisp
-(use-package yaml-mode
-   :straight t)
-#+end_src
-** csv
-#+begin_src emacs-lisp
-(use-package csv-mode
-  :straight t)
-#+end_src
+         (global-set-key (kbd "C-x C-. C-n o") #'(lambda () (interactive) (find-file "~/.nixpkgs/darwin-configuration.nix")))
+         (global-set-key (kbd "C-x C-. C-n r") #'darwin-rebuild-switch)
+         (global-set-key (kbd "C-x C-. C-n u") #'nix-channel-update)
+         (global-set-key (kbd "C-x C-. C-n d") #'nix-collect-garbage-d)
+         #+end_src
+         ** Javascript
+         #+begin_src emacs-lisp
+         (use-package js2-mode
+             :straight t)
+         #+end_src
+         ** Python
+         #+begin_src emacs-lisp
+          ;; (use-package python-mode
+          ;;  :straight t
+          ;;  :defer t)
+         #+end_src
+         ** Swift
+         #+begin_src emacs-lisp
+         (use-package swift-mode
+             :straight t)
+         #+end_src
+         * Data Serialization
+         ** JSON
+         #+begin_src emacs-lisp
+         (use-package json-mode
+           :straight t)
+         #+end_src
+         ** YAML
+         #+begin_src emacs-lisp
+         (use-package yaml-mode
+            :straight t)
+         #+end_src
+         ** csv
+         #+begin_src emacs-lisp
+         (use-package csv-mode
+           :straight t)
+         #+end_src
 * Password management
 ** pass
 #+begin_src emacs-lisp
@@ -1039,10 +1047,9 @@ And probably some more.
 ** telega
 #+begin_src emacs-lisp
 (use-package telega
-    :straight t
     :config
-    (setq telega-chat-bidi-display-reordering t)
-    (setq telega-server-libs-prefix "/usr/local"))
+    (setq telega-chat-bidi-display-reordering t
+          telega-use-images t))
 #+end_src
 ** notmuch
 #+begin_src emacs-lisp
@@ -1064,8 +1071,8 @@ And probably some more.
 * RSS
 ** elfeed
 #+begin_src emacs-lisp
-;; (use-package elfeed
-;;   :straight t)
+(use-package elfeed
+   :straight t)
 #+end_src
 * Profiling
 #+begin_src emacs-lisp
@@ -1080,5 +1087,3 @@ And probably some more.
     (:map speed-type-mode-map
      ("C-i" . speed-type--replay)))
 #+end_src
-
-
