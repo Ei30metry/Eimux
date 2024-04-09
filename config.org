@@ -45,11 +45,12 @@
 
 (setq display-buffer-alist
       '(
-        ("\\*\\(Help\\|haskell-compilation\\|compilation\\).*"
+        ("\\*\\(Help\\|haskell-compilation\\|compilation\\)\\*"
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)
           (window-height . 20)
           (dedicated . t))
+
         ("\\*hoogle\\*"
          (display-buffer-at-bottom)
           (window-height . 20)
@@ -62,7 +63,7 @@
          (dedicated . t)
          (body-function . select-window))
         ;; NOTE I think we I can replace this by saying comint-mode or ...
-        ((or . ((derived-mode . haskell-interactive-mode) "\\*\\(vterm\\|shell\\|eshell\\|terminal\\|ielm\\|Nix-REPL\\|haskell\\)*"))
+        ((or . ((derived-mode . haskell-interactive-mode) "\\*\\(vterm\\|shell\\|eshell\\|terminal\\|ielm\\|Nix-REPL\\|haskell\\)\\*"))
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)
           (window-height . 20)
@@ -79,6 +80,10 @@
          (window-height . 20)
          (nil . t))
         ("\\*Async Shell Command\\*"
+         (display-buffer-no-window)
+         (allow-no-window . t))
+
+        ("\\*Warnings\\*"
          (display-buffer-no-window)
          (allow-no-window . t))
        ))
@@ -228,6 +233,16 @@ And probably some more.
 ** Prevent Emacs from closing
 #+begin_src emacs-lisp
 (setq confirm-kill-emacs 'y-or-n-p)
+
+(defun ask-before-closing ()
+  "Close only if y was pressed."
+  (interactive)
+  (if (y-or-n-p (format "Really close frame? "))
+      (save-buffers-kill-emacs)
+    (message "Canceled frame close")))
+
+(when (daemonp)
+  (global-set-key (kbd "C-x C-c") 'ask-before-closing))
 #+end_src
 * Org-mode
 *** org
@@ -457,10 +472,14 @@ And probably some more.
   (persp-mode-prefix-key (kbd "C-x C-,"))
   :bind
   ("C-x k" . persp-kill-buffer*)
-  ("C-." . persp-switch-to-buffer)
+  ("C-." . persp-switch-to-buffer*)
   ("C-x b" . switch-to-buffer)
   :init
   (persp-mode))
+#+end_src
+** iedit
+#+begin_src emacs-lisp
+(use-package iedit :straight t)
 #+end_src
 ** project
 #+begin_src emacs-lisp
@@ -507,7 +526,11 @@ And probably some more.
           ("<C-m> C-c" . avy-goto-char-2)
           ("<C-m> C-l" . avy-goto-line)
           ("<C-m> C-w" . avy-goto-word-1)
-          ("<C-m> C-," . avy-goto-word-1))
+          ("<C-m> <C-m>" . avy-goto-word-1))
+#+end_src
+** occur
+#+begin_src emacs-lisp
+(global-set-key (kbd "<C-m> C-o") 'occur)
 #+end_src
 ** hydra
 #+begin_src emacs-lisp
@@ -723,7 +746,9 @@ And probably some more.
 (use-package pdf-tools
   :straight t
   :bind
-  (:map pdf-view-mode-map ("g" . revert-buffer-quick))
+  (:map pdf-view-mode-map ("g" . revert-buffer-quick)
+                          ("M-s o" . pdf-occur)
+                          ("<C-m> C-o" . pdf-occur))
   :mode
   (("\\.pdf\\'" . pdf-view-mode))
   :config
@@ -785,7 +810,7 @@ And probably some more.
   :bind
   (:map haskell-mode-map
         ("<C-m> C-w" . avy-goto-subword-1)
-        ("<C-m> C-," . avy-goto-subword-1)
+        ("<C-m> <C-m>" . avy-goto-subword-1)
         ("C-c h" . hoogle)
         ("C-C C-o" . haskell-interactive-bring)
         ("C-c f" . haskell-mode-stylish-buffer)
@@ -1002,7 +1027,7 @@ And probably some more.
     :bind
     (:map LaTeX-mode-map
      ("<C-m> C-w" . avy-goto-subword-1)
-     ("<C-m> C-," . avy-goto-subword-1)
+     ("<C-m> <C-m>" . avy-goto-subword-1)
      ("C-S-f" . subword-forward)
      ("C-S-b" . subword-backward)
      ("C-S-k" . subword-kill)
@@ -1018,6 +1043,8 @@ And probably some more.
 (use-package ott-mode
     :ensure nil
     :load-path "~/.emacs.d/ott-mode")
+
+(add-hook 'ott-mode-hook #'(lambda () (display-line-numbers-mode 1)))
 
 (define-prefix-command 'ctl-c-map)
 
@@ -1043,6 +1070,11 @@ And probably some more.
     :straight t
     :config
     (setq ement-auto-sync nil))
+#+end_src
+** message-mode
+#+begin_src emacs-lisp
+(add-hook 'message-mode-hook (lambda () (display-line-numbers-mode 1)))
+(add-hook 'message-mode-hook (lambda () (jinx-mode 1)))
 #+end_src
 ** telega
 #+begin_src emacs-lisp
