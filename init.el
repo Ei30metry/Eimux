@@ -27,6 +27,11 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(setq straight-profiles '(('default . "default.el")
+                          ('tried-and-true . "tried-and-true.el")))
+
+(setq straight-current-profile 'tried-and-true)
+
 (use-package org
   :straight t)
 

@@ -877,101 +877,101 @@ And probably some more.
                       (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
                       (modes quote (haskell-mode haskell-literate-mode)))))
 #+end_src
-         *** w3m-haddock
-         #+begin_src emacs-lisp
-         (use-package w3m :straight t)
+*** w3m-haddock
+#+begin_src emacs-lisp
+(use-package w3m :straight t)
 
-         (setq w3m-mode-map (make-sparse-keymap))
+(setq w3m-mode-map (make-sparse-keymap))
 
 
-         (require 'w3m-haddock)
-         (add-hook 'w3m-display-hook 'w3m-haddoc-display)
-         #+end_src
-         ** Agda
-         #+begin_src elisp
-         (setq agda-mode-directory
-               (file-name-directory (substring (shell-command-to-string "agda-mode locate") 0 -1)))
+(require 'w3m-haddock)
+(add-hook 'w3m-display-hook 'w3m-haddoc-display)
+#+end_src
+** Agda
+#+begin_src elisp
+(setq agda-mode-directory
+      (file-name-directory (substring (shell-command-to-string "agda-mode locate") 0 -1)))
 
-         ;; Add the directory containing agda2-mode.el to load-path
-         (add-to-list 'load-path agda-mode-directory)
+;; Add the directory containing agda2-mode.el to load-path
+(add-to-list 'load-path agda-mode-directory)
 
-         ;; Use-package configuration for agda2-mode
-         (use-package agda2-mode
-           :ensure nil
-           :commands agda2-mode
-           :mode (("\\.agda\\'" . agda2-mode)
-                  ("\\.lagda.md\\'" . agda2-mode)))
-         #+end_src
-         ** ELisp
-         #+begin_src emacs-lisp
-         #+end_src
-         ** OCaml
-         #+begin_src emacs-lisp
-         (use-package tuareg
-             :straight t)
+;; Use-package configuration for agda2-mode
+(use-package agda2-mode
+  :ensure nil
+  :commands agda2-mode
+  :mode (("\\.agda\\'" . agda2-mode)
+         ("\\.lagda.md\\'" . agda2-mode)))
+#+end_src
+** ELisp
+#+begin_src emacs-lisp
+#+end_src
+** OCaml
+#+begin_src emacs-lisp
+(use-package tuareg
+    :straight t)
 
-         (use-package merlin
-             :straight t
-             :after tuareg)
+(use-package merlin
+    :straight t
+    :after tuareg)
 
-         #+end_src
-         ** Lean
-         #+begin_src emacs-lisp
-         (use-package lean4-mode
-           :straight (lean4-mode
-         	     :type git
-         	     :host github
-         	     :repo "leanprover/lean4-mode"
-         	     :files ("*.el" "data"))
-           ;; to defer loading the package until required
-           :commands (lean4-mode))
-         #+end_src
-         ** Nix
-         #+begin_src emacs-lisp
-         (use-package nix-mode
-            :straight t)
+#+end_src
+** Lean
+#+begin_src emacs-lisp
+(use-package lean4-mode
+  :straight (lean4-mode
+	     :type git
+	     :host github
+	     :repo "leanprover/lean4-mode"
+	     :files ("*.el" "data"))
+  ;; to defer loading the package until required
+  :commands (lean4-mode))
+#+end_src
+** Nix
+#+begin_src emacs-lisp
+(use-package nix-mode
+   :straight t)
 
-         (defun darwin-rebuild-switch () ())
-         (defun nix-channel-update () ())
-         (defun nix-collect-garbage-d () ())
+(defun darwin-rebuild-switch () ())
+(defun nix-channel-update () ())
+(defun nix-collect-garbage-d () ())
 
-         (global-set-key (kbd "C-x C-. C-n o") #'(lambda () (interactive) (find-file "~/.nixpkgs/darwin-configuration.nix")))
-         (global-set-key (kbd "C-x C-. C-n r") #'darwin-rebuild-switch)
-         (global-set-key (kbd "C-x C-. C-n u") #'nix-channel-update)
-         (global-set-key (kbd "C-x C-. C-n d") #'nix-collect-garbage-d)
-         #+end_src
-         ** Javascript
-         #+begin_src emacs-lisp
-         (use-package js2-mode
-             :straight t)
-         #+end_src
-         ** Python
-         #+begin_src emacs-lisp
-          ;; (use-package python-mode
-          ;;  :straight t
-          ;;  :defer t)
-         #+end_src
-         ** Swift
-         #+begin_src emacs-lisp
-         (use-package swift-mode
-             :straight t)
-         #+end_src
-         * Data Serialization
-         ** JSON
-         #+begin_src emacs-lisp
-         (use-package json-mode
-           :straight t)
-         #+end_src
-         ** YAML
-         #+begin_src emacs-lisp
-         (use-package yaml-mode
-            :straight t)
-         #+end_src
-         ** csv
-         #+begin_src emacs-lisp
-         (use-package csv-mode
-           :straight t)
-         #+end_src
+(global-set-key (kbd "C-x C-. C-n o") #'(lambda () (interactive) (find-file "~/.nixpkgs/darwin-configuration.nix")))
+(global-set-key (kbd "C-x C-. C-n r") #'darwin-rebuild-switch)
+(global-set-key (kbd "C-x C-. C-n u") #'nix-channel-update)
+(global-set-key (kbd "C-x C-. C-n d") #'nix-collect-garbage-d)
+#+end_src
+** Javascript
+#+begin_src emacs-lisp
+(use-package js2-mode
+    :straight t)
+#+end_src
+** Python
+#+begin_src emacs-lisp
+ ;; (use-package python-mode
+ ;;  :straight t
+ ;;  :defer t)
+#+end_src
+** Swift
+#+begin_src emacs-lisp
+(use-package swift-mode
+    :straight t)
+#+end_src
+* Data Serialization
+** JSON
+#+begin_src emacs-lisp
+(use-package json-mode
+  :straight t)
+#+end_src
+** YAML
+#+begin_src emacs-lisp
+(use-package yaml-mode
+   :straight t)
+#+end_src
+** csv
+#+begin_src emacs-lisp
+(use-package csv-mode
+  :straight t)
+#+end_src
 * Password management
 ** pass
 #+begin_src emacs-lisp
@@ -1079,6 +1079,10 @@ And probably some more.
 ** telega
 #+begin_src emacs-lisp
 (use-package telega
+    :bind
+    (:map telega-chat-mode-map
+    ("C-c C-p" . telega-button-backward)
+    ("C-c C-n" . telega-button-forward))
     :config
     (setq telega-chat-bidi-display-reordering t
           telega-use-images t))
