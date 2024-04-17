@@ -121,6 +121,14 @@
 ;; TODO Write (next-register) and (previous-register)
 ;; (global-set-key (kbd "C-x r w i") 'window-configuration-to-register)
 #+end_src
+* Bookmark
+#+begin_src emacs-lisp
+(use-package bm
+  :straight t)
+
+(use-package bookmark-view
+  :straight t)
+#+end_src
 * Mark
 #+begin_src emacs-lisp
 (setq set-mark-command-repeat-pop t)
@@ -476,6 +484,8 @@ And probably some more.
   ("C-x b" . switch-to-buffer)
   :init
   (persp-mode))
+
+;;(add-hook 'kill-emacs-hook #'persp-state-save)
 #+end_src
 ** iedit
 #+begin_src emacs-lisp
@@ -1075,6 +1085,8 @@ And probably some more.
 #+begin_src emacs-lisp
 (add-hook 'message-mode-hook (lambda () (display-line-numbers-mode 1)))
 (add-hook 'message-mode-hook (lambda () (jinx-mode 1)))
+(setq message-default-mail-headers "Cc: \n"
+      message-auto-save-directory "~/.mail/drafts")
 #+end_src
 ** telega
 #+begin_src emacs-lisp
@@ -1119,6 +1131,8 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package speed-type
     :straight t
+    :hook
+    (speed-type-mode . olivetti-mode)
     :bind
     (:map speed-type-mode-map
      ("C-i" . speed-type--replay)))
