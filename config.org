@@ -79,6 +79,14 @@
           display-buffer-below-selected)
          (window-height . 20)
          (nil . t))
+
+        ((derived-mode . pdf-outline-buffer-mode)
+         (display-buffer-reuse-mode-window
+          display-buffer-below-selected)
+         (window-height . 20)
+         (dedicated . t)
+         (body-function-select-window))
+
         ("\\*Async Shell Command\\*"
          (display-buffer-no-window)
          (allow-no-window . t))
@@ -153,27 +161,28 @@
    :init
    (load-theme 'doom-sourcerer t))
 #+end_src
-*** per-buffer-theme
+*** Buffer specialisation
 #+begin_src emacs-lisp
 (use-package per-buffer-theme
-   :straight t
-   :after nov-mode)
+   :straight t)
 #+end_src
 ** Font
 #+begin_src emacs-lisp
 (set-face-attribute 'default nil
-                    :font "Andale Mono 14"
+                    :font "JetBrains Mono 13"
                     :weight 'medium)
 
 (set-face-attribute 'variable-pitch nil
-                    :font "Andale Mono 14"
+                    :font "JetBrains Mono 13"
                     :weight 'medium)
 
 (set-face-attribute 'fixed-pitch nil
-                    :font "Andale Mono 14"
+                    :font "JetBrains Mono 13"
                     :weight 'medium)
 
-(add-to-list 'default-frame-alist '(font . "Andale Mono 14"))
+(add-to-list 'default-frame-alist '(font . "JetBrains Mono 13"))
+
+(use-package ligature :straight t)
 #+end_src
 
 * Keybindings
@@ -266,6 +275,7 @@ And probably some more.
         org-directory "~/Agenda"
         org-log-into-drawer t
         org-treat-insert-todo-heading-as-state-change t
+        org-hide-emphasis-markers t
         org-return-follows-link t
         org-src-tab-acts-natively nil
         org-agenda-files '("~/Agenda/tasks.org" "~/Agenda/schedule.org" "~/Agenda/projects/specification.org")
@@ -605,6 +615,7 @@ And probably some more.
   ("C-c [" . sp-wrap-square)
   ("C-c {" . sp-wrap-curly)
   ("C-c u" . sp-unwrap-sexp)
+  ("C-c r" . sp-rewrap-sexp)
   ("C-M-j" . sp-join-sexp)
   ("C-M-g" . sp-split-sexp)
   ("C-c U" . sp-backward-unwrap-sexp)
@@ -758,7 +769,8 @@ And probably some more.
   :bind
   (:map pdf-view-mode-map ("g" . revert-buffer-quick)
                           ("M-s o" . pdf-occur)
-                          ("<C-m> C-o" . pdf-occur))
+                          ("<C-m> C-o" . pdf-occur)
+                          ("o" . pdf-outline))
   :mode
   (("\\.pdf\\'" . pdf-view-mode))
   :config
@@ -1090,11 +1102,18 @@ And probably some more.
 #+end_src
 ** telega
 #+begin_src emacs-lisp
+(defun use-telega-fonts ()
+ (interactive)
+ (setq buffer-face-set '(:family "Dejavu Sans 13")))
+
 (use-package telega
     :bind
     (:map telega-chat-mode-map
     ("C-c C-p" . telega-button-backward)
     ("C-c C-n" . telega-button-forward))
+    :hook
+    (telega-root-mode . use-telega-fonts)
+    (telega-chat-mode . use-telega-fonts)
     :config
     (setq telega-chat-bidi-display-reordering t
           telega-use-images t))
@@ -1133,6 +1152,7 @@ And probably some more.
     :straight t
     :hook
     (speed-type-mode . olivetti-mode)
+    (speed-type-mode . (lambda () (interactive) (text-scale-set 4)))
     :bind
     (:map speed-type-mode-map
      ("C-i" . speed-type--replay)))
