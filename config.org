@@ -570,6 +570,12 @@ And probably some more.
   :straight t
   :commands magit-status)
 #+end_src
+** forge
+#+begin_src emacs-lisp
+(use-package forge
+  :straight t
+  :after magit)
+#+end_src
 ** eglot
 #+begin_src emacs-lisp
   (setq gc-cons-threshold 100000000)
@@ -601,7 +607,7 @@ And probably some more.
   ("C-M-p" . sp-previous-sexp)
   ("C-S-b" . sp-backward-symbol)
   ("C-S-f" . sp-forward-symbol)
-  ("C-S-k" . sp-kill-symbol)
+  ("C-S-d" . sp-kill-symbol)
   ("C-S-<backspace>" . sp-backward-kill-symbol)
   ("M-S-<backspace>" . sp-backward-kill-sexp)
   ("C-M-<backspace>" . sp-delete-symbol)
@@ -846,7 +852,7 @@ And probably some more.
         ("M-g M-w" . avy-goto-subword-1)
         ("C-S-f" . subword-forward)
         ("C-S-b" . subword-backward)
-        ("C-S-k" . subword-kill)
+        ("C-S-d" . subword-kill)
         ("C-S-t" . subword-transpose)
         ("C-<backspace>" . subword-backward-kill)
         ("M-S-<backspace>" . subword-backward-kill))
@@ -1097,8 +1103,7 @@ And probably some more.
 #+begin_src emacs-lisp
 (add-hook 'message-mode-hook (lambda () (display-line-numbers-mode 1)))
 (add-hook 'message-mode-hook (lambda () (jinx-mode 1)))
-(setq message-default-mail-headers "Cc: \n"
-      message-auto-save-directory "~/.mail/drafts")
+(setq message-auto-save-directory "~/.mail/drafts")
 #+end_src
 ** telega
 #+begin_src emacs-lisp
@@ -1133,7 +1138,7 @@ And probably some more.
 (use-package notmuch
   :straight t)
 
-(global-set-key (kbd "C-x M") 'compose-mail)
+(global-set-key (kbd "C-x M") 'notmuch-mua-mail)
 #+end_src
 * RSS
 ** elfeed

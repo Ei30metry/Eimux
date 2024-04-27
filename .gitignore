@@ -37,3 +37,5 @@ speed-type
 persist/
 network-security.data
 telega/
+persp-states/
+/forge-database.sqlite
