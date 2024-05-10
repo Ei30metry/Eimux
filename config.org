@@ -17,6 +17,8 @@
 (scroll-bar-mode -1)
 (pixel-scroll-precision-mode 1)
 (global-visual-line-mode 1)
+
+(use-package ns-auto-titlebar :straight t :config (ns-auto-titlebar-mode 1))
 #+end_src
 * mode-line
 #+begin_src emacs-lisp
@@ -39,8 +41,9 @@
 * Buffer
 #+begin_src emacs-lisp
 (setq-default message-log-max :error)
+(setq initial-scratch-message nil)
 
-(setq initial-major-mode 'emacs-lisp-mode)
+(setq initial-major-mode 'org-mode)
 (setq switch-to-buffer-obey-display-actions t)
 
 (setq display-buffer-alist
@@ -51,10 +54,11 @@
           (window-height . 20)
           (dedicated . t))
 
-        ("\\*hoogle\\*"
+        ("\\*\\(hoogle\\|eldoc\\)\\*"
          (display-buffer-at-bottom)
-          (window-height . 20)
-          (dedicated . t))
+          (window-height . 15)
+          (dedicated . t)
+          (body-function . select-window))
 
         ("\\*Occur\\*"
          (display-buffer-reuse-mode-window
@@ -305,7 +309,7 @@ And probably some more.
 
        ("tp" "Project")
        ("tps" "Specification" entry (file+headline "projects/specification.org" "Tasks") "* TODO %?")
-       ("tpg" "GHC" entry (file+headline "projects/specification.org" "Tasks") "* TODO %?")
+       ("tpg" "GHC" entry (file+headline "projects/ghc.org" "Tasks") "* TODO %?")
        ("tph" "Hygeia" entry (file+headline "projects/hygeia.org" "Tasks") "* TODO %?")
        ("tc" "Config")
        ("tce" "Emacs" entry (file+headline "config/emacs-config.org" "Tasks") "* TODO %?\n%i")
@@ -510,6 +514,7 @@ And probably some more.
 (global-set-key (kbd "C-x p /") 'consult-ripgrep)
 (global-set-key (kbd "C-x p b") 'consult-project-buffer)
 (global-set-key (kbd "C-x p n") 'project-note-file)
+(global-set-key (kbd "C-x p C") 'project-recompile)
 #+end_src
 ** align
 #+begin_src emacs-lisp
@@ -582,6 +587,23 @@ And probably some more.
   (use-package eglot
     :straight t
     :commands eglot
+    :bind
+    ("C-c C-e C-e" . eglot)
+    (:map eglot-mode-map
+    ("C-c C-s" . consult-eglot-symbols)
+    ("C-c C-d" . eldoc)
+    ("C-c C-e C-f" . consult-flymake)
+    ("C-c C-a C-c" . eglot-code-actions)
+    ("C-c C-e C-t" . eglot-find-typeDefinition)
+    ("C-c C-a C-i" . eglot-code-action-inline)
+    ("C-c C-a C-e" . eglot-code-action-extract)
+    ("C-c C-a C-o" . eglot-code-action-organize-imports)
+    ("C-c C-a C-r" . eglot-code-action-rewrite)
+    ("C-c C-a C-a" . eglot-code-action-quickfix)
+    ("C-c C-e C-r" . eglot-rename)
+    ("C-c C-e C-s C-r" . eglot-reconnect)
+    ("C-c C-e C-s C-s" . eglot-shutdown)
+    ("C-c C-e C-s C-a" . eglot-shutdown-all))
     :config
     (setq-default eglot-workspace-configuration
           '((haskell (plugin (stan (globalOn . :json-false)))))))
@@ -758,12 +780,19 @@ And probably some more.
 #+end_src
 ** nov
 #+begin_src emacs-lisp
+(defun reading-setup ()
+   "Sets a fixed width (monospace) font in current buffer"
+   (interactive)
+   (face-remap-add-relative 'variable-pitch :family "Canela Text"
+                                           :height 1.0))
+
 (use-package nov
    :straight t
    :mode
    (("\\.epub\\'" . nov-mode))
    :hook
-   (nov-mode . olivetti-mode))
+   (nov-mode . olivetti-mode)
+   (nov-mode . reading-setup))
 #+end_src
 ** doc-view-mode
 #+begin_src emacs-lisp
@@ -831,6 +860,7 @@ And probably some more.
 (use-package haskell-mode
   :straight t
   :config
+  (require 'subword)
   (setq haskell-font-lock-symbols t
         haskell-stylish-on-save nil
         haskell-process-log nil)
@@ -840,10 +870,11 @@ And probably some more.
         ("<C-m> C-w" . avy-goto-subword-1)
         ("<C-m> <C-m>" . avy-goto-subword-1)
         ("C-c h" . hoogle)
-        ("C-C C-o" . haskell-interactive-bring)
-        ("C-c f" . haskell-mode-stylish-buffer)
+        ("C-c C-o" . haskell-interactive-bring)
         ("C-c i p" . haskell-command-insert-language-pragma)
-        ("C-c i m" . haskell-add-import)
+        ("C-c i s" . haskell-mode-toggle-scc-at-point)
+        ("C-c C-d" . haskell-process-do-info)
+        ("C-c C-i m" . haskell-add-import)
         ("C-c m" . haskell-navigate-imports)
         ("C-c C-n" . haskell-ds-forward-decl)
         ("C-c C-p" . haskell-ds-backward-decl)
@@ -928,7 +959,16 @@ And probably some more.
   :ensure nil
   :commands agda2-mode
   :mode (("\\.agda\\'" . agda2-mode)
-         ("\\.lagda.md\\'" . agda2-mode)))
+         ("\\.lagda.md\\'" . agda2-mode))
+  :bind
+  (:map agda2-mode-map
+        ("<C-m> C-w" . avy-goto-subword-1)
+        ("<C-m> <C-m>" . avy-goto-subword-1)
+        ("C-S-b" . subword-backward)
+        ("C-S-d" . subword-kill)
+        ("C-S-t" . subword-transpose)
+        ("C-<backspace>" . subword-backward-kill)
+        ("M-S-<backspace>" . subword-backward-kill)))
 #+end_src
 ** ELisp
 #+begin_src emacs-lisp
@@ -1109,7 +1149,7 @@ And probably some more.
 #+begin_src emacs-lisp
 (defun use-telega-fonts ()
  (interactive)
- (setq buffer-face-set '(:family "Dejavu Sans 13")))
+ (setq buffer-face-set '(:family "Dejavu Sans")))
 
 (use-package telega
     :bind
