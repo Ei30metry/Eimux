@@ -1,8 +1,6 @@
 (setq frame-resize-pixelwise t)
 (setq package-enable-at-startup nil)
-;; (add-to-list 'default-frame-alist '(undecorated . t))
-;; (setq inhibit-startup-echo-area-message "tychoish")
-
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 ;; (setq inhibit-startup-message 't)
 ;; (setq initial-scratch-message 'nil)
 ;; (setq initial-major-mode 'fundamental-mode)

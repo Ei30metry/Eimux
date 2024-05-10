@@ -22,6 +22,9 @@
 #+end_src
 * mode-line
 #+begin_src emacs-lisp
+(use-package mood-line
+  :straight t)
+
 (column-number-mode 1)
 #+end_src
 * prog-mode
@@ -37,6 +40,16 @@
 * MISC
 #+begin_src emacs-lisp
 (setq disabled-command-function nil)
+
+(delete-selection-mode t)
+
+(require 'hl-line)
+
+(hl-line-mode t)
+
+(setq custom-file (make-temp-name "/tmp/"))
+
+(add-hook 'before-save-hook #'delete-trailing-whitespace)
 #+end_src
 * Buffer
 #+begin_src emacs-lisp
@@ -112,14 +125,24 @@
 (setq-default show-trailing-whitespace nil)
 
 (setq-mode-local show-trailing-whitespace t)
+
 (setq-default warning-minimum-level :error)
 (setq make-backup-files nil
       auto-save-default nil
-      auto-save-list-file-prefix nil)
+      auto-save-list-file-prefix nil
+      create-lockfiles nil)
 
 (save-place-mode 1)
 
 (global-set-key (kbd "C-x 4 x g") 'revert-other-buffer-quick)
+
+(defun kill-this-buffer ()
+  "Kill the current buffer."
+  (interactive)
+  (kill-buffer nil))
+
+(bind-key "C-x k" #'kill-this-buffer)
+(bind-key "C-x K" #'kill-buffer)
 
 (defun revert-other-buffer-quick ()
   (interactive)
@@ -150,6 +173,11 @@
 (global-set-key (kbd "C-x w s") 'shrink-window)
 (global-set-key (kbd "C-x w m") 'maximize-window)
 (use-package transpose-frame :straight t)
+#+end_src
+** popper
+#+begin_src emacs-lisp
+(use-package popper
+  :straight t)
 #+end_src
 * UI
 ** Theme
@@ -505,7 +533,7 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package iedit :straight t)
 #+end_src
-** project
+** project management
 #+begin_src emacs-lisp
 (defun project-note-file ()
   (interactive)
@@ -515,6 +543,8 @@ And probably some more.
 (global-set-key (kbd "C-x p b") 'consult-project-buffer)
 (global-set-key (kbd "C-x p n") 'project-note-file)
 (global-set-key (kbd "C-x p C") 'project-recompile)
+
+(use-package direnv :straight t)
 #+end_src
 ** align
 #+begin_src emacs-lisp
@@ -874,7 +904,7 @@ And probably some more.
         ("C-c i p" . haskell-command-insert-language-pragma)
         ("C-c i s" . haskell-mode-toggle-scc-at-point)
         ("C-c C-d" . haskell-process-do-info)
-        ("C-c C-i m" . haskell-add-import)
+        ("C-c i m" . haskell-add-import)
         ("C-c m" . haskell-navigate-imports)
         ("C-c C-n" . haskell-ds-forward-decl)
         ("C-c C-p" . haskell-ds-backward-decl)
@@ -1187,8 +1217,19 @@ And probably some more.
    :straight t)
 #+end_src
 * Profiling
+** esup
 #+begin_src emacs-lisp
 (use-package esup
+  :straight t)
+#+end_src
+** rmsbolt
+#+begin_src emacs-lisp
+(use-package rmsbolt
+  :straight t)
+#+end_src
+* Process management
+#+begin_src emacs-lisp
+(use-package prodigy
   :straight t)
 #+end_src
 * Fun!
