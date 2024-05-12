@@ -30,7 +30,7 @@
 (setq straight-profiles '(('default . "default.el")
                           ('tried-and-true . "tried-and-true.el")))
 
-(setq straight-current-profile 'tried-and-true)
+(setq straight-current-profile 'default)
 
 (use-package org
   :straight t)

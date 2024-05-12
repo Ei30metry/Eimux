@@ -201,7 +201,8 @@
           help-mode
           compilation-mode
           comint-mode
-          vterm-mode))
+          vterm-mode
+          eshell-mode))
   (popper-mode +1)
   (popper-echo-mode +1))                ; For echo area hints
 #+end_src
@@ -559,6 +560,18 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package iedit :straight t)
 #+end_src
+** easy-kill
+#+begin_src emacs-lisp
+(use-package easy-kill :straight t)
+#+end_src
+** discover-my-major
+#+begin_src emacs-lisp
+(use-package discover-my-major
+  :straight t
+  :bind
+  ("C-h <C-m>" . discover-my-major)
+  ("C-h M-m" . discover-my-mode))
+#+end_src
 ** project management
 #+begin_src emacs-lisp
 (defun project-note-file ()
@@ -572,12 +585,30 @@ And probably some more.
 
 (use-package direnv :straight t)
 #+end_src
+** git-gutter
+#+begin_src emacs-lisp
+(use-package git-gutter
+  :straight t)
+#+end_src
 ** align
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-x M-a M-a") 'align)
 (global-set-key (kbd "C-x M-a M-r") 'align-regexp)
 (global-set-key (kbd "C-x M-a M-c") 'align-current)
 (global-set-key (kbd "C-x M-a M-e") 'align-entire)
+#+end_src
+** compile
+#+begin_src emacs-lisp
+(defun compilation-ansi-color-process-output ()
+    (ansi-color-process-output nil)
+    (set (make-local-variable 'comint-last-output-start)
+         (point-marker)))
+
+(use-package compile
+  :bind
+  (:map compilation-mode-map
+   ("c" . project-compile))
+  :hook (compilation-filter . compilation-ansi-color-process-output))
 #+end_src
 ** replace
 #+begin_src emacs-lisp
@@ -588,6 +619,10 @@ And probably some more.
   :straight t
   :init
   (diredfl-global-mode))
+#+end_src
+** dired
+#+begin_src emacs-lisp
+(setq dired-kill-when-opening-new-dired-buffer t)
 #+end_src
 ** ace-window
 #+begin_src emacs-lisp
@@ -802,6 +837,11 @@ And probably some more.
    :bind
    ("<C-m> C-i" . consult-imenu)
    ("<C-m> C-s" . consult-line)
+   ("M-y" . consult-yank-pop)
+   ("M-g g" . consult-goto-line)
+   ("M-g M-g" . consult-goto-line)
+   ("<C-m> C-d" . consult-mark)
+   ("M-g M-m" . consult-mark)
    (:map org-mode-map
    ("<C-m> C-i" . consult-org-heading)))
 
@@ -814,6 +854,8 @@ And probably some more.
 
 (setq xref-show-xrefs-function #'consult-xref
       xref-show-definitions-function #'consult-xref)
+
+
 #+end_src
 *** consult-eglot
 #+begin_src emacs-lisp
@@ -824,6 +866,18 @@ And probably some more.
 *** embark-consult
 #+begin_src emacs-lisp
 (use-package embark-consult :straight t)
+#+end_src
+*** consult-hoogle
+#+begin_src emacs-lisp
+(use-package consult-hoogle
+  :straight t
+  :after (consult vertico-multiform)
+  :commands consult-hoogle
+  :config
+  (eval-when-compile
+    (defvar vertico-multiform-commands))
+  (add-to-list 'vertico-multiform-commands
+               '(consult-hoogle buffer)))
 #+end_src
 ** Marginalia
 #+begin_src emacs-lisp
@@ -897,6 +951,7 @@ And probably some more.
   (hindent-reformat-region beg end t)
   (align beg end))
 #+end_src
+*** [[consult-hoogle]]
 *** haskell-mode
 #+begin_src emacs-lisp
 (require 'newcomment)
@@ -915,6 +970,10 @@ And probably some more.
          (goto-char end))))
        ))
 
+(defun insert-haskell-undefined ()
+  (interactive)
+  (insert "undefined"))
+
 (use-package haskell-mode
   :straight t
   :config
@@ -927,9 +986,10 @@ And probably some more.
   (:map haskell-mode-map
         ("<C-m> C-w" . avy-goto-subword-1)
         ("<C-m> <C-m>" . avy-goto-subword-1)
-        ("C-c h" . hoogle)
+        ("C-c h" . consult-hoogle)
         ("C-c C-o" . haskell-interactive-bring)
         ("C-c i p" . haskell-command-insert-language-pragma)
+        ("C-c C-u" . insert-haskell-undefined)
         ("C-c i s" . haskell-mode-toggle-scc-at-point)
         ("C-c C-d" . haskell-process-do-info)
         ("C-c i m" . haskell-add-import)
@@ -1104,6 +1164,11 @@ And probably some more.
 (use-package pass
   :straight t)
 #+end_src
+** epa
+#+begin_src emacs-lisp
+(use-package epa
+  :straight t)
+#+end_src
 * Shell
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-x C-. C-z r") #'(lambda () (interactive) (find-file "~/.zshrc")))
@@ -1114,11 +1179,12 @@ And probably some more.
 ** Jinx
 #+begin_src emacs-lisp
 (use-package jinx
-  :straight t
   :bind
   (:map jinx-mode-map
     ("<C-m> C-n" . jinx-next)
     ("<C-m> C-p" . jinx-previous)))
+
+(require 'jinx)
 #+end_src
 ** powerthesaurus
 #+begin_src emacs-lisp
@@ -1220,6 +1286,8 @@ And probably some more.
     :config
     (setq telega-chat-bidi-display-reordering t
           telega-use-images t))
+
+(require 'telega)
 #+end_src
 ** notmuch
 #+begin_src emacs-lisp
@@ -1259,6 +1327,10 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package prodigy
   :straight t)
+#+end_src
+* Downloading stuff
+#+begin_src emacs-lisp
+(use-package aria2 :straight t)
 #+end_src
 * Fun!
 #+begin_src emacs-lisp
