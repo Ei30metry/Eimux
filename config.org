@@ -186,9 +186,9 @@
   :straight t
   :bind
   ("C-,"  . popper-toggle)
-  ("C-' C-f" . popper-cycle)
-  ("C-' C-b" . popper-cycle-backwards)
-  ("C-' C-t" . popper-toggle-type)
+  ("C-x C-' C-f" . popper-cycle)
+  ("C-x C-' b" . popper-cycle-backwards)
+  ("C-x C-' t" . popper-toggle-type)
   :init
   (setq popper-reference-buffers
         '("\\*Messages\\*"
@@ -200,6 +200,7 @@
           "\\*Async Shell Command\\*"
           help-mode
           compilation-mode
+          haskell-interactive-mode
           comint-mode
           vterm-mode
           eshell-mode))
@@ -258,6 +259,7 @@ And probably some more.
 #+begin_src emacs-lisp
 (global-unset-key (kbd "C-x C-b"))
 (global-unset-key (kbd "C-x C-n"))
+(global-unset-key (kbd "C-x C-p"))
 (global-unset-key (kbd "C-x C-v"))
 (global-unset-key (kbd "C-x C-o"))
 (global-unset-key (kbd "C-x C-w"))
@@ -290,6 +292,9 @@ And probably some more.
 (global-set-key (kbd "C-S-z") 'zap-up-to-space)
 (global-set-key (kbd "M-j") 'join-line)
 (global-set-key (kbd "M-RET") 'default-indent-new-line)
+(global-set-key (kbd "C-x C-n") 'next-error)
+(global-set-key (kbd "C-x C-p") 'previous-error)
+
 #+end_src
 ** C-x C-m as execute-extended-command
 #+begin_src emacs-lisp
@@ -400,9 +405,9 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package org-bullets
   :straight t
-  :after org)
-
-(add-hook 'org-mode-hook #'(lambda () (org-bullets-mode 1)))
+  :after org
+  :hook
+  (org-mode . org-bullets-mode))
 #+end_src
 *** org-tempo
 #+begin_src emacs-lisp
@@ -479,7 +484,18 @@ And probably some more.
 * Media
 ** emms
 #+begin_src emacs-lisp
-(use-package emms :straight t)
+(use-package emms
+  :straight t
+  :config
+  (require 'emms-setup)
+  (emms-all)
+  (setq emms-player-list '(emms-player-mpv)
+        emms-info-functions
+          '(emms-info-native
+            emms-info-metaflac
+            emms-info-ogginfo)
+        emms-add-directory
+          '("/Users/artin/.telega/cache/music/")))
 #+end_src
 ** empv
 #+begin_src emacs-lisp
@@ -585,10 +601,9 @@ And probably some more.
 
 (use-package direnv :straight t)
 #+end_src
-** git-gutter
+** yasnippet
 #+begin_src emacs-lisp
-(use-package git-gutter
-  :straight t)
+(use-package yasnippet :straight t)
 #+end_src
 ** align
 #+begin_src emacs-lisp
@@ -599,7 +614,7 @@ And probably some more.
 #+end_src
 ** compile
 #+begin_src emacs-lisp
-(defun compilation-ansi-color-process-output ()
+(defun comint-ansi-color-process-output ()
     (ansi-color-process-output nil)
     (set (make-local-variable 'comint-last-output-start)
          (point-marker)))
@@ -608,7 +623,9 @@ And probably some more.
   :bind
   (:map compilation-mode-map
    ("c" . project-compile))
-  :hook (compilation-filter . compilation-ansi-color-process-output))
+  :hook (compilation-filter . comint-ansi-color-process-output)
+  :config
+  (setq compilation-always-kill t))
 #+end_src
 ** replace
 #+begin_src emacs-lisp
@@ -631,7 +648,9 @@ And probably some more.
         :config
         (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
         (setq aw-dispatch-always t)
-        :bind ("M-o" . ace-window))
+        :bind
+        ("C-x o" . ace-window)
+        ("M-o" . other-window))
 #+end_src
 ** avy
 #+begin_src emacs-lisp
@@ -1007,6 +1026,7 @@ And probably some more.
         ("M-S-<backspace>" . subword-backward-kill))
   :hook
   (haskell-mode . haskell-auto-insert-module-template)
+  (interactive-haskell-mode . comint-ansi-color-process-output)
   (haskell-mode . interactive-haskell-mode)
   (haskell-mode . haskell-indentation-mode)
   (haskell-mode . haskell-decl-scan-mode)
@@ -1181,8 +1201,8 @@ And probably some more.
 (use-package jinx
   :bind
   (:map jinx-mode-map
-    ("<C-m> C-n" . jinx-next)
-    ("<C-m> C-p" . jinx-previous)))
+    ("<C-m> C-j C-n" . jinx-next)
+    ("<C-m> C-j C-p" . jinx-previous)))
 
 (require 'jinx)
 #+end_src
@@ -1215,7 +1235,8 @@ And probably some more.
     (LaTeX-mode . reftex-mode)
     (LaTeX-mode . cdlatex-mode)
     (LaTeX-mode . jinx-mode)
-    (LaTeX-mode . (lambda () (display-line-numbers-mode 1)))
+    (LaTeX-mode . display-line-numbers-mode)
+    (LaTeX-mode . prettify-symbols-mode)
     :bind
     (:map LaTeX-mode-map
      ("<C-m> C-w" . avy-goto-subword-1)
@@ -1228,7 +1249,13 @@ And probably some more.
     :mode
     ("\\.tex\\'" . LaTeX-mode)
     ("\\.mng\\'" . LaTeX-mode)
-    ("\\.lhs\\'" . LaTeX-mode))
+    ("\\.lhs\\'" . LaTeX-mode)
+    :config
+    (add-to-list 'TeX-command-list
+               '("Make" "make" TeX-run-compile nil t :help "Run make")
+               t)
+    (setq TeX-kill-process-without-query t
+          TeX-command-default "Make"))
 #+end_src
 ** ott
 #+begin_src emacs-lisp

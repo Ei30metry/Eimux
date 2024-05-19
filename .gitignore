@@ -8,13 +8,13 @@ tmp/
 eln-cache/
 elpa/
 eshell/
-history 
+history
 straight/
 to-add.org
 .cache/
 recentf
 projects
-tramp 
+tramp
 transient/
 bookmarks
 tramp
@@ -39,3 +39,4 @@ network-security.data
 telega/
 persp-states/
 /forge-database.sqlite
+emms/
