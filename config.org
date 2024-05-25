@@ -186,7 +186,7 @@
   :straight t
   :bind
   ("C-,"  . popper-toggle)
-  ("C-x C-' C-f" . popper-cycle)
+  ("C-x C-' f" . popper-cycle)
   ("C-x C-' b" . popper-cycle-backwards)
   ("C-x C-' t" . popper-toggle-type)
   :init
@@ -649,8 +649,8 @@ And probably some more.
         (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
         (setq aw-dispatch-always t)
         :bind
-        ("C-x o" . ace-window)
-        ("M-o" . other-window))
+        ("C-x o" . other-window)
+        ("M-o" . ace-window))
 #+end_src
 ** avy
 #+begin_src emacs-lisp
@@ -681,6 +681,10 @@ And probably some more.
   :straight t
   :bind
   ("C-x u" . vundo))
+#+end_src
+** undu-fu
+#+begin_src emacs-lisp
+(use-package undo-fu :straight t)
 #+end_src
 ** magit
 #+begin_src emacs-lisp
@@ -747,6 +751,7 @@ And probably some more.
   ("M-S-<backspace>" . sp-backward-kill-sexp)
   ("C-M-<backspace>" . sp-delete-symbol)
   ("C-M-k" . sp-kill-sexp)
+  ("C-S-k" . sp-kill-symbol)
   ("C-M-u" . sp-forward-slurp-sexp)
   ("C-S-u" . sp-backward-slurp-sexp)
   ("C-M-y" . sp-forward-barf-sexp)
@@ -916,7 +921,8 @@ And probably some more.
    "Sets a fixed width (monospace) font in current buffer"
    (interactive)
    (face-remap-add-relative 'variable-pitch :family "Canela Text"
-                                           :height 1.0))
+                                           :height 1.2)
+   (text-scale-set 2))
 
 (use-package nov
    :straight t
@@ -1026,7 +1032,7 @@ And probably some more.
         ("M-S-<backspace>" . subword-backward-kill))
   :hook
   (haskell-mode . haskell-auto-insert-module-template)
-  (interactive-haskell-mode . comint-ansi-color-process-output)
+  (inferior-haskell . comint-ansi-color-process-output)
   (haskell-mode . interactive-haskell-mode)
   (haskell-mode . haskell-indentation-mode)
   (haskell-mode . haskell-decl-scan-mode)
