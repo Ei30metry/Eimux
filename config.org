@@ -70,7 +70,7 @@
           (dedicated . t)
           (body-function . select-window))
 
-        ("\\*\\(hoogle\\|eldoc\\)\\*"
+        ("\\*\\(hoogle\\|eldoc\\|osx-dictionary\\)\\*"
          (display-buffer-at-bottom)
           (window-height . 15)
           (dedicated . t)
@@ -203,6 +203,8 @@
           haskell-interactive-mode
           comint-mode
           vterm-mode
+          pdf-outline-buffer-mode
+          osx-dictionary-mode
           eshell-mode))
   (popper-mode +1)
   (popper-echo-mode +1))                ; For echo area hints
@@ -657,7 +659,7 @@ And probably some more.
 (use-package avy
     :straight t
     :config (avy-setup-default)
-    :bind ("C-;" . avy-goto-char-in-line)
+    :bind ("C-;" . avy-goto-word-1)
           ("<C-m> C-c" . avy-goto-char-2)
           ("<C-m> C-l" . avy-goto-line)
           ("<C-m> C-w" . avy-goto-word-1)
@@ -666,6 +668,7 @@ And probably some more.
 ** occur
 #+begin_src emacs-lisp
 (global-set-key (kbd "<C-m> C-o") 'occur)
+()
 #+end_src
 ** hydra
 #+begin_src emacs-lisp
@@ -710,6 +713,8 @@ And probably some more.
     ("C-c C-s" . consult-eglot-symbols)
     ("C-c C-d" . eldoc)
     ("C-c C-e C-f" . consult-flymake)
+    ("<C-m> C-n" . flymake-goto-next-error)
+    ("<C-m> C-p" . flymake-goto-prev-error)
     ("C-c C-a C-c" . eglot-code-actions)
     ("C-c C-e C-t" . eglot-find-typeDefinition)
     ("C-c C-a C-i" . eglot-code-action-inline)
@@ -723,7 +728,8 @@ And probably some more.
     ("C-c C-e C-s C-a" . eglot-shutdown-all))
     :config
     (setq-default eglot-workspace-configuration
-          '((haskell (plugin (stan (globalOn . :json-false)))))))
+          '((haskell (plugin (stan (globalOn . :json-false))))))
+    (setq eglot-confirm-server-initiated-edits nil))
 
 #+end_src
 ** smartparens
@@ -1219,12 +1225,12 @@ And probably some more.
   :bind
   ("M-^" . powerthesaurus-lookup-dwim))
 #+end_src
-** define-word
+** osx-dictionary
 #+begin_src emacs-lisp
-(use-package define-word
+(use-package osx-dictionary
   :straight t
   :bind
-  ("M-#" . define-word-at-point))
+  ("M-#" . osx-dictionary-search-word-at-point))
 #+end_src
 * Markup languages
 ** Tex
@@ -1335,9 +1341,15 @@ And probably some more.
       message-kill-buffer-on-exit t)
 
 (use-package notmuch
-  :straight t)
+  :straight t
+  :bind
+  ("C-x m" . notmuch))
 
 (global-set-key (kbd "C-x M") 'notmuch-mua-mail)
+#+end_src
+** BBDB
+#+begin_src emacs-lisp
+(use-package bbdb :straight t)
 #+end_src
 * RSS
 ** elfeed
