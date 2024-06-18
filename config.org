@@ -194,9 +194,11 @@
         '("\\*Messages\\*"
           "\\*Help\\*"
           "\\*hoogle\\*"
+          "\\*haskell\\*"
           "\\*eldoc\\*"
           "\\*Occur\\*"
           "Output\\*$"
+          "\\*Backtrace\\*"
           "\\*Async Shell Command\\*"
           help-mode
           compilation-mode
@@ -345,9 +347,9 @@ And probably some more.
         org-hide-emphasis-markers t
         org-return-follows-link t
         org-src-tab-acts-natively nil
-        org-agenda-files '("~/Agenda/tasks.org" "~/Agenda/schedule.org" "~/Agenda/projects/specification.org")
+        org-agenda-files '("~/Agenda/tasks.org"  "~/Agenda/projects/specification.org")
         org-todo-keywords
-        '((sequence "TODO" "FIX" "VERIFY" "REVIEW" "|" "DONE" "DELEGATED" )))
+        '((sequence "TODO" "|" "DONE" )))
   :hook
   (org-agenda-mode . (lambda () (visual-line-mode -1) (toggle-truncate-lines 1))))
 #+end_src
@@ -402,14 +404,6 @@ And probably some more.
 *** org-mime
 #+begin_src emacs-lisp
 (use-package org-mime :straight t)
-#+end_src
-*** org-bullets
-#+begin_src emacs-lisp
-(use-package org-bullets
-  :straight t
-  :after org
-  :hook
-  (org-mode . org-bullets-mode))
 #+end_src
 *** org-tempo
 #+begin_src emacs-lisp
@@ -648,8 +642,8 @@ And probably some more.
 (use-package ace-window
         :straight t
         :config
-        (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-        (setq aw-dispatch-always t)
+        (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
+              aw-dispatch-always t)
         :bind
         ("C-x o" . other-window)
         ("M-o" . ace-window))
@@ -660,10 +654,13 @@ And probably some more.
     :straight t
     :config (avy-setup-default)
     :bind ("C-;" . avy-goto-word-1)
+          ("C-'" . avy-goto-char-in-line)
           ("<C-m> C-c" . avy-goto-char-2)
           ("<C-m> C-l" . avy-goto-line)
           ("<C-m> C-w" . avy-goto-word-1)
-          ("<C-m> <C-m>" . avy-goto-word-1))
+          ("<C-m> <C-m>" . avy-goto-word-1)
+          (:map isearch-mode-map
+           ("C-;" . avy-isearch)))
 #+end_src
 ** occur
 #+begin_src emacs-lisp
@@ -693,6 +690,7 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package magit
   :straight t
+  :demand t
   :commands magit-status)
 #+end_src
 ** forge
@@ -703,34 +701,33 @@ And probably some more.
 #+end_src
 ** eglot
 #+begin_src emacs-lisp
-  (setq gc-cons-threshold 100000000)
-  (use-package eglot
-    :straight t
-    :commands eglot
-    :bind
-    ("C-c C-e C-e" . eglot)
-    (:map eglot-mode-map
-    ("C-c C-s" . consult-eglot-symbols)
-    ("C-c C-d" . eldoc)
-    ("C-c C-e C-f" . consult-flymake)
-    ("<C-m> C-n" . flymake-goto-next-error)
-    ("<C-m> C-p" . flymake-goto-prev-error)
-    ("C-c C-a C-c" . eglot-code-actions)
-    ("C-c C-e C-t" . eglot-find-typeDefinition)
-    ("C-c C-a C-i" . eglot-code-action-inline)
-    ("C-c C-a C-e" . eglot-code-action-extract)
-    ("C-c C-a C-o" . eglot-code-action-organize-imports)
-    ("C-c C-a C-r" . eglot-code-action-rewrite)
-    ("C-c C-a C-a" . eglot-code-action-quickfix)
-    ("C-c C-e C-r" . eglot-rename)
-    ("C-c C-e C-s C-r" . eglot-reconnect)
-    ("C-c C-e C-s C-s" . eglot-shutdown)
-    ("C-c C-e C-s C-a" . eglot-shutdown-all))
-    :config
-    (setq-default eglot-workspace-configuration
-          '((haskell (plugin (stan (globalOn . :json-false))))))
-    (setq eglot-confirm-server-initiated-edits nil))
-
+(setq gc-cons-threshold 100000000)
+(use-package eglot
+  :straight t
+  :commands eglot
+  :bind
+  ("C-c C-e C-e" . eglot)
+  (:map eglot-mode-map
+  ("C-c C-s" . consult-eglot-symbols)
+  ("C-c C-d" . eldoc)
+  ("C-c C-e C-f" . consult-flymake)
+  ("<C-m> C-n" . flymake-goto-next-error)
+  ("<C-m> C-p" . flymake-goto-prev-error)
+  ("C-c C-a C-c" . eglot-code-actions)
+  ("C-c C-e C-t" . eglot-find-typeDefinition)
+  ("C-c C-a C-i" . eglot-code-action-inline)
+  ("C-c C-a C-e" . eglot-code-action-extract)
+  ("C-c C-a C-o" . eglot-code-action-organize-imports)
+  ("C-c C-a C-r" . eglot-code-action-rewrite)
+  ("C-c C-a C-a" . eglot-code-action-quickfix)
+  ("C-c C-e C-r" . eglot-rename)
+  ("C-c C-e C-s C-r" . eglot-reconnect)
+  ("C-c C-e C-s C-s" . eglot-shutdown)
+  ("C-c C-e C-s C-a" . eglot-shutdown-all))
+  :config
+  (setq-default eglot-workspace-configuration
+        '((haskell (plugin (stan (globalOn . :json-false))))))
+  (setq eglot-confirm-server-initiated-edits nil))
 #+end_src
 ** smartparens
 #+begin_src emacs-lisp
@@ -928,10 +925,14 @@ And probably some more.
    (interactive)
    (face-remap-add-relative 'variable-pitch :family "Canela Text"
                                            :height 1.2)
-   (text-scale-set 2))
+   (text-scale-set 1))
 
 (use-package nov
    :straight t
+   :demand t
+   :bind
+   (:map nov-mode-map
+   ("j" . osx-dictionary-search-word-at-point))
    :mode
    (("\\.epub\\'" . nov-mode))
    :hook
@@ -1017,6 +1018,7 @@ And probably some more.
   (:map haskell-mode-map
         ("<C-m> C-w" . avy-goto-subword-1)
         ("<C-m> <C-m>" . avy-goto-subword-1)
+        ("C-;" . avy-goto-subword-1)
         ("C-c h" . consult-hoogle)
         ("C-c C-o" . haskell-interactive-bring)
         ("C-c i p" . haskell-command-insert-language-pragma)
@@ -1225,12 +1227,17 @@ And probably some more.
   :bind
   ("M-^" . powerthesaurus-lookup-dwim))
 #+end_src
+** synosaurus
+#+begin_src emacs-lisp
+(use-package synosaurus :straight t)
+#+end_src
 ** osx-dictionary
 #+begin_src emacs-lisp
 (use-package osx-dictionary
   :straight t
   :bind
-  ("M-#" . osx-dictionary-search-word-at-point))
+  ("M-#" . osx-dictionary-search-word-at-point)
+  (:map osx-dictionary-mode-map ("k" . osx-dictionary-quit)))
 #+end_src
 * Markup languages
 ** Tex
