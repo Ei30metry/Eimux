@@ -63,7 +63,8 @@
 
 (setq display-buffer-alist
       '(
-        ("\\*\\(Help\\|haskell-compilation\\|compilation\\)\\*"
+        ((or . ((derived-mode . helpful-mode)
+               "\\*\\(Help\\|haskell-compilation\\|compilation\\)\\*"))
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)
           (window-height . 20)
@@ -206,6 +207,7 @@
           comint-mode
           vterm-mode
           pdf-outline-buffer-mode
+          helpful-mode
           osx-dictionary-mode
           eshell-mode))
   (popper-mode +1)
@@ -259,10 +261,12 @@ Some prefix keys that are still available:
 - C-x C-y
 - C-x C-w
 - C-x C-]
+- C-x C-j
 And probably some more.
 #+begin_src emacs-lisp
 (global-unset-key (kbd "C-x C-b"))
 (global-unset-key (kbd "C-x C-n"))
+(global-unset-key (kbd "C-x C-j"))
 (global-unset-key (kbd "C-x C-p"))
 (global-unset-key (kbd "C-x C-v"))
 (global-unset-key (kbd "C-x C-o"))
@@ -491,7 +495,11 @@ And probably some more.
             emms-info-metaflac
             emms-info-ogginfo)
         emms-add-directory
-          '("/Users/artin/.telega/cache/music/")))
+          '("/Users/artin/.telega/cache/music/"))
+   :bind
+   ("C-x C-v b" . emms-browser)
+   ("C-x C-v p" . emms-pause)
+   ("C-x C-v s" . emms-seek))
 
 (setq episodes-audio-directory "/Users/artin/Podcast/Haskell Interlude/Episodes/"
       episodes-notes-directory "/Users/artin/Podcast/Haskell Interlude/Notes/"
@@ -521,8 +529,7 @@ And probably some more.
 (defun open-episode-note-buffer () (interactive) (switch-to-buffer (episode-note-buffer)))
 
 (global-set-key (kbd "C-x C-v C-v") 'write-to-episode-note-buffer)
-(global-set-key (kbd "C-x C-v p") 'emms-pause)
-(global-set-key (kbd "C-x C-v r") 'emms-pause)
+
 (global-set-key (kbd "C-x C-v s") 'emms-seek)
 (global-set-key (kbd "C-x C-v o") 'open-episode-note-buffer)
 #+end_src
@@ -541,6 +548,18 @@ And probably some more.
   (persp-mode))
 
 ;;(add-hook 'kill-emacs-hook #'persp-state-save)
+#+end_src
+** helpful
+#+begin_src emacs-lisp
+(use-package helpful
+  :straight t
+  :bind
+  ("C-h k" . helpful-key)
+  ("C-h v" . helpful-variable)
+  ("C-h f" . helpful-callable)
+  ("C-h x" . helpful-command)
+  ("C-h ." . helpful-at-point)
+  ("C-h q" . helpful-kill-buffers))
 #+end_src
 ** iedit
 #+begin_src emacs-lisp
@@ -609,7 +628,12 @@ And probably some more.
 #+end_src
 ** dired
 #+begin_src emacs-lisp
-(setq dired-kill-when-opening-new-dired-buffer t)
+(use-package dired
+  :bind
+  (:map dired-mode-map
+   ("C-j" . dired-jump))
+  :config
+  (setq dired-kill-when-opening-new-dired-buffer t))
 #+end_src
 ** ace-window
 #+begin_src emacs-lisp
@@ -1077,10 +1101,8 @@ And probably some more.
 (setq agda-mode-directory
       (file-name-directory (substring (shell-command-to-string "agda-mode locate") 0 -1)))
 
-;; Add the directory containing agda2-mode.el to load-path
 (add-to-list 'load-path agda-mode-directory)
 
-;; Use-package configuration for agda2-mode
 (use-package agda2-mode
   :ensure nil
   :commands agda2-mode
@@ -1321,10 +1343,18 @@ And probably some more.
       message-sendmail-envelope-from 'header
       message-kill-buffer-on-exit t)
 
+
+(defun fetch-mail-and-refresh ()
+  (interactive)
+  (shell-command "mbsync -aV")
+  (notmuch-poll))
+
 (use-package notmuch
   :straight t
   :bind
-  ("C-x m" . notmuch))
+  ("C-x m" . notmuch)
+  (:map notmuch-hello-mode-map
+   ("F" . fetch-mail-and-refresh)))
 
 (global-set-key (kbd "C-x M") 'notmuch-mua-mail)
 #+end_src
@@ -1367,5 +1397,7 @@ And probably some more.
     (speed-type-mode . (lambda () (interactive) (text-scale-set 4)))
     :bind
     (:map speed-type-mode-map
-     ("C-i" . speed-type--replay)))
+     ("C-i" . speed-type--replay))
+    :config
+    (setq speed-type-default-lang 'English))
 #+end_src
