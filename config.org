@@ -55,103 +55,104 @@
 #+end_src
 * Buffer
 #+begin_src emacs-lisp
-(setq-default message-log-max :error)
-(setq initial-scratch-message nil)
+  (setq-default message-log-max :error)
+  (setq initial-scratch-message nil)
 
-(setq initial-major-mode 'org-mode)
-(setq switch-to-buffer-obey-display-actions t)
+  (setq initial-major-mode 'org-mode)
+  (setq switch-to-buffer-obey-display-actions t)
 
-(setq display-buffer-alist
-      '(
-        ((or . ((derived-mode . helpful-mode)
-               "\\*\\(Help\\|haskell-compilation\\|compilation\\)\\*"))
-         (display-buffer-reuse-mode-window
-          display-buffer-below-selected)
-          (window-height . 20)
-          (dedicated . t)
-          (body-function . select-window))
+  (setq display-buffer-alist
+        '(
+          ((or . ((derived-mode . helpful-mode)
+                 "\\*\\(Help\\|haskell-compilation\\|compilation\\)\\*"))
+           (display-buffer-reuse-mode-window
+            display-buffer-below-selected)
+            (window-height . 20)
+            (dedicated . t)
+            (body-function . select-window))
 
-        ("\\*\\(hoogle\\|eldoc\\|osx-dictionary\\)\\*"
-         (display-buffer-at-bottom)
-          (window-height . 15)
-          (dedicated . t)
-          (body-function . select-window))
+          ("\\*\\(hoogle\\|eldoc\\|osx-dictionary\\)\\*"
+           (display-buffer-at-bottom)
+            (window-height . 15)
+            (dedicated . t)
+            (body-function . select-window))
 
-        ("\\*Occur\\*"
-         (display-buffer-reuse-mode-window
-          display-buffer-below-selected)
-         (window-height . 20)
-         (dedicated . t)
-         (body-function . select-window))
-        ;; NOTE I think we I can replace this by saying comint-mode or ...
-        ((or . ((derived-mode . haskell-interactive-mode)
-               "\\*\\(vterm\\|shell\\|eshell\\|terminal\\|ielm\\|Nix-REPL\\|haskell\\)\\*"))
-         (display-buffer-reuse-mode-window
-          display-buffer-below-selected)
-          (window-height . 20)
-          (body-function . select-window))
+          ("\\*Occur\\*"
+           (display-buffer-reuse-mode-window
+            display-buffer-below-selected)
+           (window-height . 20)
+           (dedicated . t)
+           (body-function . select-window))
+          ;; NOTE I think we I can replace this by saying comint-mode or ...
+          ((or . ((derived-mode . haskell-interactive-mode)
+                 "\\*\\(vterm\\|shell\\|eshell\\|terminal\\|ielm\\|Nix-REPL\\|haskell\\|Racket
+  REPL </>\\|Racket Describe </>\\|Racket Logger </>\\)\\*"))
+           (display-buffer-reuse-mode-window
+            display-buffer-below-selected)
+            (window-height . 22)
+            (body-function . select-window))
 
-        ("\\*Org Select\\*"
-         (display-buffer-reuse-mode-window
-          display-buffer-below-selected)
-         (window-height . 20)
-         (body-function . select-window))
-        ("Capture-*"
-         (display-buffer-reuse-mode-window
-          display-buffer-below-selected)
-         (window-height . 20)
-         (nil . t))
+          ("\\*Org Select\\*"
+           (display-buffer-reuse-mode-window
+            display-buffer-below-selected)
+           (window-height . 20)
+           (body-function . select-window))
+          ("Capture-*"
+           (display-buffer-reuse-mode-window
+            display-buffer-below-selected)
+           (window-height . 20)
+           (nil . t))
 
-        ((derived-mode . pdf-outline-buffer-mode)
-         (display-buffer-reuse-mode-window
-          display-buffer-below-selected)
-         (window-height . 20)
-         (dedicated . t)
-         (body-function-select-window))
+          ((derived-mode . pdf-outline-buffer-mode)
+           (display-buffer-reuse-mode-window
+            display-buffer-below-selected)
+           (window-height . 20)
+           (dedicated . t)
+           (body-function-select-window))
 
-        ("\\*Async Shell Command\\*"
-         (display-buffer-no-window)
-         (allow-no-window . t))
+          ("\\*Async Shell Command\\*"
+           (display-buffer-no-window)
+           (allow-no-window . t))
 
-        ("\\*Warnings\\*"
-         (display-buffer-no-window)
-         (allow-no-window . t))
-       ))
+          ("\\*Warnings\\*"
+           (display-buffer-no-window)
+           (allow-no-window . t))
+         ))
 
-(add-hook 'minibuffer-exit-hook
-      #'(lambda ()
-         (let ((buffer "*Completions*"))
-           (and (get-buffer buffer)
-            (kill-buffer buffer)))))
+  (add-hook 'minibuffer-exit-hook
+        #'(lambda ()
+           (let ((buffer "*Completions*"))
+             (and (get-buffer buffer)
+              (kill-buffer buffer)))))
 
-(use-package mode-local
-  :straight t)
+  (use-package mode-local
+    :straight t)
 
-(setq-default show-trailing-whitespace nil)
+  (setq-default show-trailing-whitespace nil)
 
-(setq-mode-local show-trailing-whitespace t)
+  (setq-mode-local show-trailing-whitespace t)
 
-(setq-default warning-minimum-level :error)
-(setq make-backup-files nil
-      auto-save-default nil
-      auto-save-list-file-prefix nil
-      create-lockfiles nil)
+  (setq-default warning-minimum-level :error)
+  (setq make-backup-files nil
+        auto-save-default nil
+        auto-save-list-file-prefix nil
+        create-lockfiles nil)
 
-(save-place-mode 1)
+  (save-place-mode 1)
 
-(global-set-key (kbd "C-x 4 x g") 'revert-other-buffer-quick)
+  (global-set-key (kbd "C-x 4 x g") 'revert-other-buffer-quick)
 
-(defun kill-this-buffer ()
-  "Kill the current buffer."
-  (interactive)
-  (kill-buffer nil))
+  (defun kill-this-buffer ()
+    "Kill the current buffer."
+    (interactive)
+    (kill-buffer nil))
 
-(global-set-key (kbd "C-x k") 'kill-this-buffer)
-(global-set-key (kbd "C-x K") 'kill-buffer)
+  (global-set-key (kbd "C-x k") 'kill-this-buffer)
+  (global-set-key (kbd "C-x K") 'kill-buffer)
 
-(defun revert-other-buffer-quick ()
-  (interactive)
-  (message "TODO"))
+  (defun revert-other-buffer-quick ()
+    (interactive)
+    (message "TODO"))
 #+end_src
 * Register
 #+begin_src emacs-lisp
@@ -209,6 +210,7 @@
           pdf-outline-buffer-mode
           helpful-mode
           osx-dictionary-mode
+          racket-repl-mode
           eshell-mode))
   (popper-mode +1)
   (popper-echo-mode +1))                ; For echo area hints
@@ -707,7 +709,7 @@ And probably some more.
   ("C-c C-e C-e" . eglot)
   (:map eglot-mode-map
   ("C-c C-s" . consult-eglot-symbols)
-  ("C-c C-d" . eldoc)
+  ("C-c C-." . eldoc)
   ("C-c C-e C-f" . consult-flymake)
   ("<C-m> C-n" . flymake-goto-next-error)
   ("<C-m> C-p" . flymake-goto-prev-error)
@@ -733,6 +735,7 @@ And probably some more.
   :straight t
   :config
   (require 'smartparens-haskell)
+  (require 'smartparens-racket)
   (require 'smartparens-config)
   :bind
   ("C-M-a" . sp-beginning-of-sexp)
@@ -1120,6 +1123,29 @@ And probably some more.
 #+end_src
 ** ELisp
 #+begin_src emacs-lisp
+#+end_src
+** Racket
+#+begin_src emacs-lisp
+(use-package racket-mode
+  :straight t
+  :hook
+  (racket-mode . smartparens-strict-mode)
+  (racket-repl-mode . smartparens-strict-mode)
+  (racket-mode . racket-xp-mode)
+  :bind
+  (:map racket-mode-map
+   ("C-M-u" . sp-forward-slurp-sexp) ;; TODO This is horrible. Study keymaps.
+   ("C-M-y" . sp-forward-barf-sexp))
+  (:map racket-repl-mode-map
+   ("C-M-u" . sp-forward-slurp-sexp)
+   ("C-M-y" . sp-forward-barf-sexp)))
+#+end_src
+** Common Lisp
+#+begin_src emacs-lisp
+(use-package slime
+  :straight t
+  :config
+  (setq inferior-lisp-program (executable-find "sbcl")))
 #+end_src
 ** OCaml
 #+begin_src emacs-lisp

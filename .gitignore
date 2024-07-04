@@ -38,6 +38,7 @@ persist/
 network-security.data
 telega/
 persp-states/
+racket-mode/
 /forge-database.sqlite
 emms/
 bbdb
