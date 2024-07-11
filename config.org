@@ -64,7 +64,7 @@
   (setq display-buffer-alist
         '(
           ((or . ((derived-mode . helpful-mode)
-                 "\\*\\(Help\\|haskell-compilation\\|compilation\\)\\*"))
+                 "\\*\\(Help\\|haskell-compilation\\|compilation\\|sly-description\\|sly-macroexpansion\\)\\*"))
            (display-buffer-reuse-mode-window
             display-buffer-below-selected)
             (window-height . 20)
@@ -85,8 +85,9 @@
            (body-function . select-window))
           ;; NOTE I think we I can replace this by saying comint-mode or ...
           ((or . ((derived-mode . haskell-interactive-mode)
+                  (derived-mode . sly-mrepl-mode)
                  "\\*\\(vterm\\|shell\\|eshell\\|terminal\\|ielm\\|Nix-REPL\\|haskell\\|Racket
-  REPL </>\\|Racket Describe </>\\|Racket Logger </>\\)\\*"))
+  REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\)\\*"))
            (display-buffer-reuse-mode-window
             display-buffer-below-selected)
             (window-height . 22)
@@ -197,11 +198,13 @@
           "\\*Help\\*"
           "\\*hoogle\\*"
           "\\*haskell\\*"
+          "\\*Tex Help\\*"
           "\\*eldoc\\*"
           "\\*Occur\\*"
           "Output\\*$"
           "\\*Backtrace\\*"
           "\\*Async Shell Command\\*"
+          "\\*sly-macroexpansion\\*"
           help-mode
           compilation-mode
           haskell-interactive-mode
@@ -211,6 +214,7 @@
           helpful-mode
           osx-dictionary-mode
           racket-repl-mode
+          sly-mrepl-mode
           eshell-mode))
   (popper-mode +1)
   (popper-echo-mode +1))                ; For echo area hints
@@ -551,6 +555,10 @@ And probably some more.
 
 ;;(add-hook 'kill-emacs-hook #'persp-state-save)
 #+end_src
+** flymake and flycheck
+#+begin_src emacs-lisp
+;; (use-package flymake-flycheck :straight t :after dante)
+#+end_src
 ** helpful
 #+begin_src emacs-lisp
 (use-package helpful
@@ -738,6 +746,8 @@ And probably some more.
   (require 'smartparens-racket)
   (require 'smartparens-config)
   :bind
+  ("C-M-d" . beginning-of-defun)
+  ("C-M-c" . end-of-defun)
   ("C-M-a" . sp-beginning-of-sexp)
   ("C-M-e" . sp-end-of-sexp)
   ("M-["   . sp-backward-down-sexp)
@@ -984,6 +994,24 @@ And probably some more.
   (hindent-reformat-region beg end t)
   (align beg end))
 #+end_src
+*** dante
+#+begin_src emacs-lisp
+  ;; (use-package dante
+  ;;   :straight t ; ask use-package to install the package
+  ;;   :commands 'dante-mode
+  ;;   :hook
+  ;;   (dante-mode . (lambda my-fix-hs-eldoc () (setq eldoc-documentation-strategy #'eldoc-documentation-default)))
+  ;;   (dante-mode . flymake-mode)
+  ;;   :init
+  ;;   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
+  ;;   :config
+  ;;   (require 'flymake-flycheck)
+  ;;   (defalias 'flymake-hlint
+  ;;     (flymake-flycheck-diagnostic-function-for 'haskell-hlint))
+  ;;   (add-to-list 'flymake-diagnostic-functions 'flymake-hlint))
+    ;; flycheck backend deprecated October 2022
+    ;; (flycheck-add-next-checker 'haskell-dante '(info . haskell-hlint)))
+#+end_src
 *** [[consult-hoogle]]
 *** haskell-mode
 #+begin_src emacs-lisp
@@ -1121,7 +1149,7 @@ And probably some more.
         ("C-<backspace>" . subword-backward-kill)
         ("M-S-<backspace>" . subword-backward-kill)))
 #+end_src
-** ELisp
+** Emacs Lisp
 #+begin_src emacs-lisp
 #+end_src
 ** Racket
@@ -1142,10 +1170,11 @@ And probably some more.
 #+end_src
 ** Common Lisp
 #+begin_src emacs-lisp
-(use-package slime
+(use-package sly
   :straight t
   :config
-  (setq inferior-lisp-program (executable-find "sbcl")))
+  (setq inferior-lisp-program (executable-find "sbcl")
+        sly-completion-mode nil))
 #+end_src
 ** OCaml
 #+begin_src emacs-lisp
@@ -1197,6 +1226,24 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package swift-mode
     :straight t)
+#+end_src
+** Rust
+*** rust-mode
+#+begin_src emacs-lisp
+(use-package rust-mode
+  :straight t)
+#+end_src
+*** rustc
+#+begin_src emacs-lisp
+(use-package rustic
+  :straight t
+  :config
+  (setq rustic-lsp-client 'eglot))
+#+end_src
+*** cargo
+#+begin_src emacs-lisp
+(use-package cargo
+  :straight t)
 #+end_src
 * Data Serialization
 ** JSON
