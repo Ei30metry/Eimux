@@ -86,6 +86,7 @@
           ;; NOTE I think we I can replace this by saying comint-mode or ...
           ((or . ((derived-mode . haskell-interactive-mode)
                   (derived-mode . sly-mrepl-mode)
+                  (derived-mode . inferior-emacs-lisp-mode)
                  "\\*\\(vterm\\|shell\\|eshell\\|terminal\\|ielm\\|Nix-REPL\\|haskell\\|Racket
   REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\)\\*"))
            (display-buffer-reuse-mode-window
@@ -205,6 +206,7 @@
           "\\*Backtrace\\*"
           "\\*Async Shell Command\\*"
           "\\*sly-macroexpansion\\*"
+          "\\*sly-description\\*"
           help-mode
           compilation-mode
           haskell-interactive-mode
@@ -215,6 +217,7 @@
           osx-dictionary-mode
           racket-repl-mode
           sly-mrepl-mode
+          inferior-emacs-lisp-mode
           eshell-mode))
   (popper-mode +1)
   (popper-echo-mode +1))                ; For echo area hints
@@ -1150,7 +1153,10 @@ And probably some more.
         ("M-S-<backspace>" . subword-backward-kill)))
 #+end_src
 ** Emacs Lisp
+*** macrostep-mode
 #+begin_src emacs-lisp
+(use-package macrostep :straight t)
+(use-package dash :straight t)
 #+end_src
 ** Racket
 #+begin_src emacs-lisp
@@ -1169,12 +1175,25 @@ And probably some more.
    ("C-M-y" . sp-forward-barf-sexp)))
 #+end_src
 ** Common Lisp
+*** sly
 #+begin_src emacs-lisp
 (use-package sly
   :straight t
   :config
   (setq inferior-lisp-program (executable-find "sbcl")
         sly-completion-mode nil))
+#+end_src
+*** sly-macrostep
+#+begin_src emacs-lisp
+(use-package sly-macrostep :straight t)
+#+end_src
+*** sly-quicklisp
+#+begin_src emacs-lisp
+(use-package sly-quicklisp :straight t)
+#+end_src
+*** sly-asdf
+#+begin_src emacs-lisp
+(use-package sly-asdf :straight t)
 #+end_src
 ** OCaml
 #+begin_src emacs-lisp
