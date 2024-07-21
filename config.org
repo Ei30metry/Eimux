@@ -20,6 +20,16 @@
 
 (use-package ns-auto-titlebar :straight t :config (ns-auto-titlebar-mode 1))
 #+end_src
+
+* coding systems
+#+begin_src emacs-lisp
+(setq locale-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8-unix)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+#+end_src
+
 * mode-line
 #+begin_src emacs-lisp
 (use-package mood-line
@@ -64,6 +74,7 @@
   (setq display-buffer-alist
         '(
           ((or . ((derived-mode . helpful-mode)
+                  (derived-mode . idris2-info-mode)
                  "\\*\\(Help\\|haskell-compilation\\|compilation\\|sly-description\\|sly-macroexpansion\\)\\*"))
            (display-buffer-reuse-mode-window
             display-buffer-below-selected)
@@ -88,7 +99,7 @@
                   (derived-mode . sly-mrepl-mode)
                   (derived-mode . inferior-emacs-lisp-mode)
                  "\\*\\(vterm\\|shell\\|eshell\\|terminal\\|ielm\\|Nix-REPL\\|haskell\\|Racket
-  REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\)\\*"))
+  REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\|idris2-repl\\)\\*"))
            (display-buffer-reuse-mode-window
             display-buffer-below-selected)
             (window-height . 22)
@@ -216,6 +227,9 @@
           helpful-mode
           osx-dictionary-mode
           racket-repl-mode
+          idris2-repl-mode
+          idris2-info-mode
+          idris2-compiler-notes-mode
           sly-mrepl-mode
           inferior-emacs-lisp-mode
           eshell-mode))
@@ -258,6 +272,8 @@
 (add-to-list 'default-frame-alist '(font . "JetBrains Mono 13"))
 
 (use-package ligature :straight t)
+
+;; (set-fontset-font t nil "SF Pro Display" nil 'append)
 #+end_src
 
 * Keybindings
@@ -351,7 +367,7 @@ And probably some more.
   ("C-x A" . org-agenda)
   ("C-," . popper-toggle)
   ("C-S-c" . org-capture)
-  (:map org-mode-map ("C-S-c" . org-capture))
+  (:map org-mode-map ("C-S-c" . org-capture) ("C-," . nil) ("C-'" . nil))
   :config
   (setq org-startup-indented t
         org-directory "~/Agenda"
@@ -542,6 +558,16 @@ And probably some more.
 (global-set-key (kbd "C-x C-v s") 'emms-seek)
 (global-set-key (kbd "C-x C-v o") 'open-episode-note-buffer)
 #+end_src
+** read-player
+#+begin_src emacs-lisp
+(use-package read-player
+  :straight (ready-player
+	     :type git
+	     :host github
+	     :repo "xenodium/ready-player"
+	     :files ("*.el" "data"))
+  :commands (ready-player-mode))
+#+end_src
 * Tools
 ** perspective
 #+begin_src emacs-lisp
@@ -710,7 +736,8 @@ And probably some more.
   :straight t
   :after magit)
 #+end_src
-** eglot
+** LSP
+*** eglot
 #+begin_src emacs-lisp
 (setq gc-cons-threshold 100000000)
 (use-package eglot
@@ -740,6 +767,17 @@ And probably some more.
         '((haskell (plugin (stan (globalOn . :json-false))))))
   (setq eglot-confirm-server-initiated-edits nil))
 #+end_src
+*** eglot-x
+#+begin_src emacs-lisp
+(use-package eglot-x
+  :straight (eglot-x
+	     :type git
+	     :host github
+	     :repo "nemethf/eglot-x"
+	     :files ("*.el"))
+  :config
+  (eglot-x-setup))
+#+end_src
 ** smartparens
 #+begin_src emacs-lisp
 (use-package smartparens
@@ -753,6 +791,7 @@ And probably some more.
   ("C-M-c" . end-of-defun)
   ("C-M-a" . sp-beginning-of-sexp)
   ("C-M-e" . sp-end-of-sexp)
+  ("C-M-'" . sp-raise-sexp)
   ("M-["   . sp-backward-down-sexp)
   ("C-M-[" . sp-backward-up-sexp)
   ("M-]"   . sp-down-sexp)
@@ -783,10 +822,9 @@ And probably some more.
   ("C-M-g" . sp-split-sexp)
   ("C-c U" . sp-backward-unwrap-sexp)
   :hook
-  (prog-mode . smartparens-strict-mode)
+  (prog-mode . smartparens-mode)
   :init
-  (show-smartparens-global-mode)
-  (smartparens-global-mode))
+  (show-smartparens-global-mode))
 #+end_src
 ** hl-todo
 #+begin_src emacs-lisp
@@ -964,13 +1002,17 @@ And probably some more.
   (:map pdf-view-mode-map ("g" . revert-buffer-quick)
                           ("M-s o" . pdf-occur)
                           ("<C-m> C-o" . pdf-occur)
-                          ("o" . pdf-outline))
+                          ("o" . pdf-outline)
+                          ("M-g M-g" . pdf-view-goto-page))
   :mode
   (("\\.pdf\\'" . pdf-view-mode))
   :config
   (auto-revert-mode 1)
   (setq auto-revert-verbose nil
-        pdf-view-use-scaling t))
+        pdf-view-use-scaling t)
+  :hook
+  (pdf-view-mode . pdf-isearch-minor-mode)
+  (pdf-view-mode . pdf-view-midnight-minor-mode))
 #+end_src
 * Programming Languages
 ** Haskell
@@ -996,6 +1038,22 @@ And probably some more.
   (interactive "r")
   (hindent-reformat-region beg end t)
   (align beg end))
+#+end_src
+*** GHC specific
+#+begin_src emacs-lisp
+(defvar ghc-repo-url "https://gitlab.haskell.org/ghc/ghc/")
+
+;; TODO refactor the following functions into a function called "open-ghc-stuff-at-point"
+
+;; TODO write a dwim version that determines whether the number at point is a
+
+(defun open-ghc-issue-at-point ()
+  (interactive)
+  (browse-url (concat ghc-repo-url "-/issues/" (number-to-string (number-at-point)))))
+
+(defun open-ghc-MR-at-point ()
+  (interactive)
+  (browse-url (concat ghc-repo-url "-/merge_requests/" (number-to-string (number-at-point)))))
 #+end_src
 *** dante
 #+begin_src emacs-lisp
@@ -1139,24 +1197,52 @@ And probably some more.
 
 (use-package agda2-mode
   :ensure nil
-  :commands agda2-mode
+  :demand t
   :mode (("\\.agda\\'" . agda2-mode)
          ("\\.lagda.md\\'" . agda2-mode))
   :bind
   (:map agda2-mode-map
         ("<C-m> C-w" . avy-goto-subword-1)
         ("<C-m> <C-m>" . avy-goto-subword-1)
+        ("C-c h" . agda2-helper-function-type)
+        ("C-c C-h" . nil)
         ("C-S-b" . subword-backward)
         ("C-S-d" . subword-kill)
         ("C-S-t" . subword-transpose)
         ("C-<backspace>" . subword-backward-kill)
         ("M-S-<backspace>" . subword-backward-kill)))
 #+end_src
+** Idris2
+#+begin_src emacs-lisp
+(use-package idris2-mode
+  :straight (idris2-mode
+	     :type git
+	     :host github
+	     :repo "idris-community/idris2-mode"
+	     :files ("*.el" "data"))
+  ;; to defer loading the package until required
+  :commands (idris2-mode))
+#+end_src
 ** Emacs Lisp
 *** macrostep-mode
 #+begin_src emacs-lisp
 (use-package macrostep :straight t)
+#+end_src
+*** libraries
+#+begin_src emacs-lisp
 (use-package dash :straight t)
+#+end_src
+*** emacs-lisp
+#+begin_src emacs-lisp
+(use-package emacs-lisp-mode
+  :hook
+  (emacs-lisp-mode . smartparens-strict-mode))
+#+end_src
+*** ielm
+#+begin_src emacs-lisp
+(use-package ielm
+  :hook
+  (inferior-emacs-lisp-mode . smartparens-strict-mode))
 #+end_src
 ** Racket
 #+begin_src emacs-lisp
@@ -1181,7 +1267,13 @@ And probably some more.
   :straight t
   :config
   (setq inferior-lisp-program (executable-find "sbcl")
-        sly-completion-mode nil))
+        sly-completion-mode nil)
+  :hook
+  (common-lisp-mode . smartparens-strict-mode)
+  (sly-mrepl-mode . smartparens-strict-mode)
+  :bind
+  ("C-c C-d C-h" . nil)
+  ("C-c C-d C-H" . sly-hyperspec-lookup))
 #+end_src
 *** sly-macrostep
 #+begin_src emacs-lisp
@@ -1189,7 +1281,7 @@ And probably some more.
 #+end_src
 *** sly-quicklisp
 #+begin_src emacs-lisp
-(use-package sly-quicklisp :straight t)
+;; (use-package sly-quicklisp :straight t)
 #+end_src
 *** sly-asdf
 #+begin_src emacs-lisp
@@ -1203,7 +1295,6 @@ And probably some more.
 (use-package merlin
     :straight t
     :after tuareg)
-
 #+end_src
 ** Lean
 #+begin_src emacs-lisp
@@ -1252,7 +1343,7 @@ And probably some more.
 (use-package rust-mode
   :straight t)
 #+end_src
-*** rustc
+*** rustic
 #+begin_src emacs-lisp
 (use-package rustic
   :straight t
