@@ -49,19 +49,22 @@
 #+end_src
 * MISC
 #+begin_src emacs-lisp
-(setq disabled-command-function nil)
+  (setq disabled-command-function nil)
 
-(delete-selection-mode t)
+  (delete-selection-mode t)
 
-(require 'hl-line)
+  (require 'hl-line)
 
-(global-hl-line-mode t)
+  (global-hl-line-mode t)
 
-(setq custom-file (make-temp-name "/tmp/"))
+  (setq custom-file (make-temp-name "/tmp/"))
 
-(add-hook 'before-save-hook #'delete-trailing-whitespace)
+  (add-hook 'before-save-hook #'delete-trailing-whitespace)
 
-(setq case-fold-search nil)
+  (setq case-fold-search nil)
+
+  (defun camlcase-to-snakecase () (message "TODO"))
+  (defun snakecase-to-camlcase () (message "TODO"))
 #+end_src
 * Buffer
 #+begin_src emacs-lisp
@@ -109,6 +112,11 @@
            (display-buffer-reuse-mode-window
             display-buffer-below-selected)
            (window-height . 20)
+           (body-function . select-window))
+          ("\\*Org Src*"
+           (display-buffer-reuse-mode-window
+            display-buffer-below-selected)
+           (window-height . 45)
            (body-function . select-window))
           ("Capture-*"
            (display-buffer-reuse-mode-window
@@ -582,6 +590,7 @@ And probably some more.
   :init
   (persp-mode))
 
+(defun move-persp-to-frame () (message "TODO"))
 ;;(add-hook 'kill-emacs-hook #'persp-state-save)
 #+end_src
 ** flymake and flycheck
@@ -1355,6 +1364,11 @@ And probably some more.
 (use-package cargo
   :straight t)
 #+end_src
+* Web Stuff
+#+begin_src emacs-lisp
+  (use-package web-mode
+    :straight t)
+#+end_src
 * Data Serialization
 ** JSON
 #+begin_src emacs-lisp
@@ -1435,6 +1449,7 @@ And probably some more.
     (LaTeX-mode . jinx-mode)
     (LaTeX-mode . display-line-numbers-mode)
     (LaTeX-mode . prettify-symbols-mode)
+    (LaTeX-mode . smartparens-strict-mode)
     :bind
     (:map LaTeX-mode-map
      ("<C-m> C-w" . avy-goto-subword-1)
@@ -1457,19 +1472,22 @@ And probably some more.
 #+end_src
 ** ott
 #+begin_src emacs-lisp
-(use-package ott-mode
-    :ensure nil
-    :load-path "~/.emacs.d/ott-mode")
+  (use-package ott-mode
+      :demand t
+      :load-path "~/.emacs.d/ott-mode"
+      :hook
+      (ott-mode . smartparens-strict-mode)
+      (ott-mode . (lambda () (display-line-numbers-mode 1))))
 
-(add-hook 'ott-mode-hook #'(lambda () (display-line-numbers-mode 1)))
+  ;; (define-prefix-command 'ctl-c-map)
 
-(define-prefix-command 'ctl-c-map)
+  ;; (setq ott-mode-map (make-sparse-keymap))
 
-(setq ott-mode-map (make-sparse-keymap))
-
-(define-keymap
-   :name ott-mode-map
-   :parent ctl-c-map)
+  ;; (define-keymap
+  ;;    :name ott-mode-map
+  ;;    :parent ctl-c-map)
+(push 'ott compilation-error-regexp-alist)
+(push '(ott "File \\([a-zA-Z0-9/\\._-]+\\) on line \\([0-9]+\\).*$" 1 2 nil) compilation-error-regexp-alist-alist)
 #+end_src
 ** markdown-mode
 #+begin_src emacs-lisp
