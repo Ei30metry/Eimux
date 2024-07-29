@@ -517,54 +517,65 @@ And probably some more.
 * Media
 ** emms
 #+begin_src emacs-lisp
-(use-package emms
-  :straight t
-  :config
-  (require 'emms-setup)
-  (emms-all)
-  (setq emms-player-list '(emms-player-mpv)
-        emms-info-functions
-          '(emms-info-native
-            emms-info-metaflac
-            emms-info-ogginfo)
-        emms-add-directory
-          '("/Users/artin/.telega/cache/music/"))
-   :bind
-   ("C-x C-v b" . emms-browser)
-   ("C-x C-v p" . emms-pause)
-   ("C-x C-v s" . emms-seek))
+  (use-package emms
+    :straight t
+    :config
+    (require 'emms-setup)
+    (emms-all)
+    (setq emms-player-list '(emms-player-mpv)
+          emms-info-functions
+            '(emms-info-native
+              emms-info-metaflac
+              emms-info-ogginfo)
+          emms-add-directory
+            '("/Users/artin/.telega/cache/music/"))
+     :bind
+     ("C-x C-v b" . emms-browser)
+     ("C-x C-v p" . emms-pause)
+     ("C-x C-v s" . emms-seek))
 
-(setq episodes-audio-directory "/Users/artin/Podcast/Haskell Interlude/Episodes/"
-      episodes-notes-directory "/Users/artin/Podcast/Haskell Interlude/Notes/"
-      default-description "Volume drop")
+  (setq episodes-audio-directory "/Users/artin/Podcast/Haskell Interlude/Episodes/"
+        episodes-notes-directory "/Users/artin/Podcast/Haskell Interlude/Notes/"
+        default-description "Volume drop")
 
-(defun write-timerange (buffer &optional description)
-    "Write the timestamp of the currently playing episode to its note file"
+  (defun write-timerange (buffer &optional description)
+      "Write the timestamp of the currently playing episode to its note file"
+      (interactive)
+      (let* ((timestamp (emms-track-get (emms-playlist-current-selected-track) 'info-playing-time))
+            (timestamp-range (concat (emms-playing-time-format-time (- (truncate timestamp) 1))
+                                     " -- "
+                                     (emms-playing-time-format-time (+ (truncate timestamp) 1)))))
+
+          (save-excursion (with-current-buffer (get-buffer-create buffer)
+                               (if description
+                                  (insert (concat timestamp-range " : " description "\n"))
+                                  (insert (concat timestamp-range " : " default-description "\n")))))))
+
+  (defun episode-note-buffer ()
+    (file-name-sans-extension (file-name-nondirectory (emms-track-name (emms-playlist-current-selected-track)))))
+
+
+  (defun write-to-episode-note-buffer (&optional description)
     (interactive)
-    (let* ((timestamp (emms-track-get (emms-playlist-current-selected-track) 'info-playing-time))
-          (timestamp-range (concat (emms-playing-time-format-time (- (truncate timestamp) 1))
-                                   " -- "
-                                   (emms-playing-time-format-time (+ (truncate timestamp) 1)))))
-
-        (save-excursion (with-current-buffer (get-buffer-create buffer)
-                             (if description
-                                (insert (concat timestamp-range " : " description "\n"))
-                                (insert (concat timestamp-range " : " default-description "\n")))))))
-
-(defun episode-note-buffer ()
-  (file-name-sans-extension (file-name-nondirectory (emms-track-name (emms-playlist-current-selected-track)))))
+    (write-timerange (episode-note-buffer) description))
 
 
-(defun write-to-episode-note-buffer (&optional description)
-  (interactive)
-  (write-timerange (episode-note-buffer) description))
+  (defun enter-episode-note-then-write (note)
+    (interactive
+     (progn
+       (emms-pause)
+       (let
+           ((note (read-string "Note: " nil)))
+         (list note))))
+    (write-to-episode-note-buffer note)
+    (emms-pause))
 
-(defun open-episode-note-buffer () (interactive) (switch-to-buffer (episode-note-buffer)))
+  (defun open-episode-note-buffer () (interactive) (switch-to-buffer (episode-note-buffer)))
 
-(global-set-key (kbd "C-x C-v C-v") 'write-to-episode-note-buffer)
+  (global-set-key (kbd "C-x C-v C-v") 'enter-episode-note-then-write)
 
-(global-set-key (kbd "C-x C-v s") 'emms-seek)
-(global-set-key (kbd "C-x C-v o") 'open-episode-note-buffer)
+  (global-set-key (kbd "C-x C-v s") 'emms-seek)
+  (global-set-key (kbd "C-x C-v o") 'open-episode-note-buffer)
 #+end_src
 ** read-player
 #+begin_src emacs-lisp
@@ -708,10 +719,13 @@ And probably some more.
           (:map isearch-mode-map
            ("C-;" . avy-isearch)))
 #+end_src
+** zzz-to-char
+#+begin_src emacs-lisp
+(use-package zzz-to-char :straight t :bind ("M-z" . zzz-to-char-up-to-char))
+#+end_src
 ** occur
 #+begin_src emacs-lisp
 (global-set-key (kbd "<C-m> C-o") 'occur)
-()
 #+end_src
 ** hydra
 #+begin_src emacs-lisp
