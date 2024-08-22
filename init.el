@@ -32,8 +32,7 @@
 
 (setq straight-current-profile 'default)
 
-(use-package org
-  :straight t)
+(straight-use-package 'org)
 
 (use-package exec-path-from-shell
  :straight t

@@ -71,21 +71,21 @@
   (setq-default message-log-max :error)
   (setq initial-scratch-message nil)
 
-  (setq initial-major-mode 'org-mode)
+  (setq initial-major-mode 'emacs-lisp-mode)
   (setq switch-to-buffer-obey-display-actions t)
 
   (setq display-buffer-alist
         '(
           ((or . ((derived-mode . helpful-mode)
                   (derived-mode . idris2-info-mode)
-                 "\\*\\(Help\\|haskell-compilation\\|compilation\\|sly-description\\|sly-macroexpansion\\)\\*"))
+                 "\\*\\(Help\\|haskell-compilation\\|compilation\\|sly-description\\|sly-macroexpansion\\|toc\\)\\*"))
            (display-buffer-reuse-mode-window
             display-buffer-below-selected)
             (window-height . 20)
             (dedicated . t)
             (body-function . select-window))
 
-          ("\\*\\(hoogle\\|eldoc\\|osx-dictionary\\)\\*"
+          ("\\*\\(hoogle\\|eldoc for*\\|osx-dictionary\\)\\*"
            (display-buffer-at-bottom)
             (window-height . 15)
             (dedicated . t)
@@ -102,7 +102,7 @@
                   (derived-mode . sly-mrepl-mode)
                   (derived-mode . inferior-emacs-lisp-mode)
                  "\\*\\(vterm\\|shell\\|eshell\\|terminal\\|ielm\\|Nix-REPL\\|haskell\\|Racket
-  REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\|idris2-repl\\)\\*"))
+  REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\|idris2-repl\\|terminal\\)\\*"))
            (display-buffer-reuse-mode-window
             display-buffer-below-selected)
             (window-height . 22)
@@ -163,11 +163,6 @@
 
   (global-set-key (kbd "C-x 4 x g") 'revert-other-buffer-quick)
 
-  (defun kill-this-buffer ()
-    "Kill the current buffer."
-    (interactive)
-    (kill-buffer nil))
-
   (global-set-key (kbd "C-x k") 'kill-this-buffer)
   (global-set-key (kbd "C-x K") 'kill-buffer)
 
@@ -196,53 +191,70 @@
 (setq set-mark-command-repeat-pop t)
 #+end_src
 * Window and Frame
+** perspective
 #+begin_src emacs-lisp
-(global-set-key (kbd "C-x w s") 'shrink-window)
-(global-set-key (kbd "C-x w m") 'maximize-window)
-(global-set-key (kbd "C-x w u") 'winner-undo)
-(global-set-key (kbd "C-x w r") 'winner-redo)
-(use-package transpose-frame :straight t)
+  (use-package perspective ;; TODO use persp instead
+    :straight t
+    :custom
+    (persp-mode-prefix-key (kbd "C-x C-,"))
+    :bind
+    ("C-x k" . (lambda () (interactive) (persp-kill-buffer* nil)))
+    ("C-x K" . persp-kill-buffer*)
+    ("C-." . persp-switch-to-buffer*)
+    ("C-x b" . switch-to-buffer)
+    :init
+    (persp-mode))
+
+  (defun move-persp-to-frame () (message "TODO"))
+
+  (global-set-key (kbd "C-x w s") 'shrink-window)
+  (global-set-key (kbd "C-x w m") 'maximize-window)
+  (global-set-key (kbd "C-x w u") 'winner-undo)
+  (global-set-key (kbd "C-x w r") 'winner-redo)
+  (use-package transpose-frame :straight t)
 #+end_src
 ** popper
 #+begin_src emacs-lisp
-(use-package popper
-  :straight t
-  :bind
-  ("C-,"  . popper-toggle)
-  ("C-x C-' f" . popper-cycle)
-  ("C-x C-' b" . popper-cycle-backwards)
-  ("C-x C-' t" . popper-toggle-type)
-  :init
-  (setq popper-reference-buffers
-        '("\\*Messages\\*"
-          "\\*Help\\*"
-          "\\*hoogle\\*"
-          "\\*haskell\\*"
-          "\\*Tex Help\\*"
-          "\\*eldoc\\*"
-          "\\*Occur\\*"
-          "Output\\*$"
-          "\\*Backtrace\\*"
-          "\\*Async Shell Command\\*"
-          "\\*sly-macroexpansion\\*"
-          "\\*sly-description\\*"
-          help-mode
-          compilation-mode
-          haskell-interactive-mode
-          comint-mode
-          vterm-mode
-          pdf-outline-buffer-mode
-          helpful-mode
-          osx-dictionary-mode
-          racket-repl-mode
-          idris2-repl-mode
-          idris2-info-mode
-          idris2-compiler-notes-mode
-          sly-mrepl-mode
-          inferior-emacs-lisp-mode
-          eshell-mode))
-  (popper-mode +1)
-  (popper-echo-mode +1))                ; For echo area hints
+  (use-package popper
+    :straight t
+    :bind
+    ("C-x C-' f" . popper-cycle)
+    ("C-x C-' b" . popper-cycle-backwards)
+    ("C-,"  . popper-toggle)
+    ("C-x C-' t" . popper-toggle-type)
+    :init
+    (setq popper-reference-buffers
+          '("\\*Messages\\*"
+            "\\*Help\\*"
+            "\\*hoogle\\*"
+            "\\*haskell\\*"
+            "\\*Tex Help\\*"
+            "\\*toc\\*"
+            "\\*Occur\\*"
+            "\\*eldoc for\\*$"
+            "Output\\*$"
+            "\\*Backtrace\\*"
+            "\\*Async Shell Command\\*"
+            "\\*sly-macroexpansion\\*"
+            "\\*sly-description\\*"
+            help-mode
+            compilation-mode
+            haskell-interactive-mode
+            comint-mode
+            vterm-mode
+            pdf-outline-buffer-mode
+            helpful-mode
+            osx-dictionary-mode
+            racket-repl-mode
+            idris2-repl-mode
+            idris2-info-mode
+            idris2-compiler-notes-mode
+            sly-mrepl-mode
+            inferior-emacs-lisp-mode
+            term-mode
+            eshell-mode))
+    (popper-mode +1)
+    (popper-echo-mode +1))                ; For echo area hints
 #+end_src
 * UI
 ** Theme
@@ -366,11 +378,457 @@ And probably some more.
 (when (daemonp)
   (global-set-key (kbd "C-x C-c") 'ask-before-closing))
 #+end_src
-* Org-mode
-*** org
+* Tools
+** consult
+#+begin_src emacs-lisp
+(use-package consult
+   :straight t
+   :demand t
+   :bind
+   ("<C-m> C-i" . consult-imenu)
+   ("<C-m> C-s" . consult-line)
+   ("M-y" . consult-yank-pop)
+   ("M-g g" . consult-goto-line)
+   ("M-g M-g" . consult-goto-line)
+   ("<C-m> C-d" . consult-mark)
+   ("M-g M-m" . consult-mark)
+   (:map org-mode-map
+   ("<C-m> C-i" . consult-org-heading)))
+
+(setq completion-in-region-function
+      (lambda (&rest args)
+        (apply (if vertico-mode
+                   #'consult-completion-in-region
+                 #'completion--in-region)
+               args)))
+
+(setq xref-show-xrefs-function #'consult-xref
+      xref-show-definitions-function #'consult-xref)
+
+
+#+end_src
+*** consult-eglot
+#+begin_src emacs-lisp
+(use-package consult-eglot
+  :straight t
+  :after eglot)
+#+end_src
+*** embark-consult
+#+begin_src emacs-lisp
+(use-package embark-consult :straight t)
+#+end_src
+*** consult-hoogle
+#+begin_src emacs-lisp
+(use-package consult-hoogle
+  :straight t
+  :after haskell-mode
+  :config
+  (eval-when-compile
+    (defvar vertico-multiform-commands))
+  (add-to-list 'vertico-multiform-commands
+               '(consult-hoogle buffer)))
+#+end_src
+*** consult-omni
+#+begin_src emacs-lisp
+  (use-package consult-omni
+    :straight (consult-omni
+               :type git
+               :host github
+               :repo "armindarvish/consult-omni"
+               :files (:defaults "sources/*.el"))
+    :config
+    (straight-use-package 'request)
+    (setq consult-omni-show-preview t
+          consult-omni-preview-key "C-i"
+          consult-omni-default-count 5
+          consult-omni-default-input-throttle 1.7
+          consult-embark-default-term #'vterm
+          consult-omni-default-browse-function 'browse-url
+          consult-omni-default-interactive-command #'consult-omni-multi
+          consult-omni-http-retrieve-backend 'request)
+    (require 'consult-omni-sources)
+    (require 'consult-omni-embark)
+    (consult-omni-sources-load-modules)
+    (setq consult-omni-multi-source '("calc"
+                                      "File"
+                                      "Apps"
+                                      "Google"
+                                      "GitHub"
+                                      "Org Agenda")))
+                                      #+end_src
+*** consult-notmuch
+#+begin_src emacs-lisp
+  (use-package consult-notmuch
+    :straight t
+    :after notmuch)
+#+end_src
+** embark
+#+begin_src emacs-lisp
+(use-package embark
+    :straight t
+    :demand t
+    :bind
+    (:map minibuffer-mode-map
+    ("C-." . embark-act))
+    :config
+    (setq prefix-help-command #'embark-prefix-help-command))
+#+end_src
+** marginalia
+#+begin_src emacs-lisp
+(use-package marginalia
+  :straight t
+  :init
+  (marginalia-mode))
+#+end_src
+** helpful
+#+begin_src emacs-lisp
+(use-package helpful
+  :straight t
+  :demand t
+  :bind
+  ("C-h k" . helpful-key)
+  ("C-h v" . helpful-variable)
+  ("C-h f" . helpful-callable)
+  ("C-h x" . helpful-command)
+  ("C-h ." . helpful-at-point)
+  ("C-h q" . helpful-kill-buffers))
+#+end_src
+** iedit
+#+begin_src emacs-lisp
+  (use-package iedit
+    :straight t
+    :bind
+    ("C-M-;" . iedit-mode))
+#+end_src
+** easy-kill
+#+begin_src emacs-lisp
+  (use-package easy-kill
+    :straight t
+    :bind
+    ("M-w" . easy-kill)
+    ("C-M-SPC" . easy-mark))
+#+end_src
+** discover-my-major
+#+begin_src emacs-lisp
+(use-package discover-my-major
+  :straight t
+  :bind
+  ("C-h <C-m> . discover-my-major")
+  ("C-h M-m" . discover-my-mode))
+#+end_src
+** project management
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-x p /") 'consult-ripgrep)
+(global-set-key (kbd "C-x p b") 'consult-project-buffer)
+(global-set-key (kbd "C-x p n") 'project-note-file)
+(global-set-key (kbd "C-x p C") 'project-recompile)
+
+(use-package direnv :straight t)
+#+end_src
+** direnv
+#+begin_src emacs-lisp
+(use-package direnv :straight t)
+#+end_src
+** yasnippet
+#+begin_src emacs-lisp
+(use-package yasnippet :straight t)
+#+end_src
+** align
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-x M-a M-a") 'align)
+(global-set-key (kbd "C-x M-a M-r") 'align-regexp)
+(global-set-key (kbd "C-x M-a M-c") 'align-current)
+(global-set-key (kbd "C-x M-a M-e") 'align-entire)
+#+end_src
+** compile
+#+begin_src emacs-lisp
+(defun comint-ansi-color-process-output ()
+    (ansi-color-process-output nil)
+    (set (make-local-variable 'comint-last-output-start)
+         (point-marker)))
+
+(use-package compile
+  :bind
+  (:map compilation-mode-map
+   ("c" . project-compile))
+  :hook (compilation-filter . comint-ansi-color-process-output)
+  :config
+  (setq compilation-always-kill t))
+#+end_src
+** replace
+#+begin_src emacs-lisp
+#+end_src
+** diredfl
+#+begin_src emacs-lisp
+(use-package diredfl
+  :straight t
+  :init
+  (diredfl-global-mode))
+#+end_src
+** dired
+#+begin_src emacs-lisp
+(use-package dired
+  :bind
+  (:map dired-mode-map
+   ("C-j" . dired-jump))
+  :config
+  (setq dired-kill-when-opening-new-dired-buffer t))
+#+end_src
+** ace-window
+#+begin_src emacs-lisp
+(use-package ace-window
+        :straight t
+        :demand t
+        :config
+        (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
+              aw-dispatch-always t)
+        :bind
+        ("C-x o" . other-window)
+        ("M-o" . ace-window))
+#+end_src
+** avy
+#+begin_src emacs-lisp
+(use-package avy
+    :straight t
+    :demand t
+    :config (avy-setup-default)
+    :bind ("C-;" . avy-goto-word-1)
+          ("C-'" . avy-goto-char-in-line)
+          ("<C-m> C-c" . avy-goto-char-2)
+          ("<C-m> C-l" . avy-goto-line)
+          ("<C-m> C-w" . avy-goto-word-1)
+          ("<C-m> <C-m>" . avy-goto-word-1)
+          (:map isearch-mode-map
+           ("C-;" . avy-isearch)))
+#+end_src
+** zzz-to-char
+#+begin_src emacs-lisp
+(use-package zzz-to-char
+  :straight t
+  :bind ("M-z" . zzz-to-char-up-to-char)
+  :demand t)
+#+end_src
+** occur
+#+begin_src emacs-lisp
+(global-set-key (kbd "<C-m> C-o") 'occur)
+#+end_src
+** multiple-cursors
+#+begin_src emacs-lisp
+(use-package multiple-cursors :straight t)
+#+end_src
+** vundo
+#+begin_src emacs-lisp
+(use-package vundo
+  :straight t
+  :demand t
+  :bind
+  ("C-x u" . vundo))
+#+end_src
+** undu-fu
+#+begin_src emacs-lisp
+(use-package undo-fu
+  :demand t
+  :straight t)
+#+end_src
+** magit
+#+begin_src emacs-lisp
+(use-package magit
+  :straight t
+  :demand t
+  :commands magit-status)
+#+end_src
+** forge
+#+begin_src emacs-lisp
+(use-package forge
+  :straight t)
+#+end_src
+** LSP
+*** eglot
+#+begin_src emacs-lisp
+(setq gc-cons-threshold 100000000)
+(use-package eglot
+  :ensure nil
+  :commands eglot
+  :bind
+  ("C-c C-e C-e" . eglot)
+  (:map eglot-mode-map
+  ("C-c C-s" . consult-eglot-symbols)
+  ("C-c C-." . eldoc)
+  ("C-c C-e C-f" . consult-flymake)
+  ("<C-m> C-n" . flymake-goto-next-error)
+  ("<C-m> C-p" . flymake-goto-prev-error)
+  ("C-c C-a C-c" . eglot-code-actions)
+  ("C-c C-e C-t" . eglot-find-typeDefinition)
+  ("C-c C-a C-i" . eglot-code-action-inline)
+  ("C-c C-a C-e" . eglot-code-action-extract)
+  ("C-c C-a C-o" . eglot-code-action-organize-imports)
+  ("C-c C-a C-r" . eglot-code-action-rewrite)
+  ("C-c C-a C-a" . eglot-code-action-quickfix)
+  ("C-c C-e C-r" . eglot-rename)
+  ("C-c C-e C-s C-r" . eglot-reconnect)
+  ("C-c C-e C-s C-s" . eglot-shutdown)
+  ("C-c C-e C-s C-a" . eglot-shutdown-all))
+  :config
+  (setq-default eglot-workspace-configuration
+        '((haskell (plugin (stan (globalOn . :json-false))))))
+  (setq eglot-confirm-server-initiated-edits nil))
+#+end_src
+*** eglot-x
+#+begin_src emacs-lisp
+(use-package eglot-x
+  :straight (eglot-x
+	     :type git
+	     :host github
+	     :repo "nemethf/eglot-x"
+	     :files ("*.el"))
+  :config
+  :after rustic
+  (eglot-x-setup))
+#+end_src
+** smartparens
+#+begin_src emacs-lisp
+(use-package smartparens
+  :straight t
+  :demand t
+  :config
+  (require 'smartparens-haskell)
+  (require 'smartparens-racket)
+  (require 'smartparens-config)
+  :bind
+  ("C-M-d" . beginning-of-defun)
+  ("C-M-c" . end-of-defun)
+  ("C-M-a" . sp-beginning-of-sexp)
+  ("C-M-e" . sp-end-of-sexp)
+  ("C-M-'" . sp-raise-sexp)
+  ("M-["   . sp-backward-down-sexp)
+  ("C-M-[" . sp-backward-up-sexp)
+  ("M-]"   . sp-down-sexp)
+  ("C-M-]" . sp-up-sexp)
+  ("C-M-f" . sp-forward-sexp)
+  ("C-M-b" . sp-backward-sexp)
+  ("C-M-n" . sp-next-sexp)
+  ("C-M-p" . sp-previous-sexp)
+  ("C-S-b" . sp-backward-symbol)
+  ("C-S-f" . sp-forward-symbol)
+  ("C-S-d" . sp-kill-symbol)
+  ("C-S-<backspace>" . sp-backward-kill-symbol)
+  ("M-S-<backspace>" . sp-backward-kill-sexp)
+  ("C-M-<backspace>" . sp-delete-symbol)
+  ("C-M-k" . sp-kill-sexp)
+  ("C-S-k" . sp-kill-symbol)
+  ("C-M-u" . sp-forward-slurp-sexp)
+  ("C-S-u" . sp-backward-slurp-sexp)
+  ("C-M-y" . sp-forward-barf-sexp)
+  ("C-S-y" . sp-backward-barf-sexp)
+  ("C-M-w" . sp-copy-sexp)
+  ("C-c (" . sp-wrap-round)
+  ("C-c [" . sp-wrap-square)
+  ("C-c {" . sp-wrap-curly)
+  ("C-c u" . sp-unwrap-sexp)
+  ("C-c r" . sp-rewrap-sexp)
+  ("C-M-j" . sp-join-sexp)
+  ("C-M-g" . sp-split-sexp)
+  ("C-c U" . sp-backward-unwrap-sexp)
+  :hook
+  (prog-mode . smartparens-mode)
+  :init
+  (show-smartparens-global-mode))
+#+end_src
+** hl-todo
+#+begin_src emacs-lisp
+(use-package hl-todo
+  :straight t
+  :demand t
+  :init
+  (global-hl-todo-mode))
+#+end_src
+** vertico
+#+begin_src emacs-lisp
+(use-package vertico
+  :straight t
+  :demand t
+  :bind (:map vertico-map
+            ("C-n" . vertico-next)
+            ("C-p" . vertico-previous))
+  :custom
+  (vertico-cycle t)
+  :init
+  (vertico-mode))
+#+end_src
+** savehist
+#+begin_src emacs-lisp
+(use-package savehist
+    :straight t
+    :init
+    (savehist-mode))
+#+end_src
+** orderless
+#+begin_src emacs-lisp
+(use-package orderless
+  :straight t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+#+end_src
+** Terminals
+*** term
+#+begin_src emacs-lisp
+(use-package term
+  :config
+  (setq explicit-shell-file-name "zsh")
+  :hook
+  (term-mode . compilation-shell-minor-mode))
+
+#+end_src
+*** vterm
+#+begin_src emacs-lisp
+(use-package vterm
+  :straight t
+  :demand t
+  :hook
+  (vterm-mode . compilation-shell-minor-mode)
+  :bind
+  ("s-\\" . vterm)
+  ("s-<return>" . vterm-other-window))
+#+end_src
+*** eshell
+#+begin_src emacs-lisp
+  (use-package eshell
+    :hook
+    (eshell-mode . compilation-shell-minor-mode))
+#+end_src
+*** shell
+#+begin_src emacs-lisp
+(use-package shell :hook (shell-mode . compilation-shell-minor-mode))
+#+end_src
+** dumb-jump
+#+begin_src emacs-lisp
+(use-package dumb-jump
+    :straight t
+    :demand t
+    :config
+    (setq dumb-jump-force-searcher 'ag)) ;; TODO Use rg with custom rules for faster search results
+#+end_src
+** xref
+#+begin_src emacs-lisp
+(use-package xref
+  :straight t
+  :config
+  (setq xref-prompt-for-identifier nil))
+
+(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+#+end_src
+** tab
+#+begin_src emacs-lisp
+(setq-default indent-tabs-mode nil)
+(setq-default default-tab-width 4)
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
+#+end_src
+* Technical writing
+** org
 #+begin_src emacs-lisp
 (use-package org
-  :straight t
   :bind
   ("C-x A" . org-agenda)
   ("C-," . popper-toggle)
@@ -428,7 +886,6 @@ And probably some more.
 *** org-contrib
 #+begin_src emacs-lisp
 (use-package org-contrib
- :straight t
  :after org
  :config
  (require 'ox-extra)
@@ -465,7 +922,15 @@ And probably some more.
  :hook
  (org-mode . toc-org-mode))
 #+end_src
-*** org-roam
+*** org-books
+#+begin_src emacs-lisp
+(use-package org-books
+ :straight t
+ :after org
+ :config
+ (setq org-books-file "~/Agenda/books.org"))
+#+end_src
+** org-roam
 #+begin_src emacs-lisp
 (use-package org-roam
    :straight t
@@ -505,20 +970,92 @@ And probably some more.
           org-roam-ui-update-on-save t
           org-roam-ui-open-on-start t))
 #+end_src
-** Productivity
-*** Books
+*** org-roam-bibtexqqqqqqqqqqqqq
 #+begin_src emacs-lisp
-(use-package org-books
- :straight t
- :after org
- :config
- (setq org-books-file "~/Agenda/books.org"))
+  (use-package org-roam-bibtex
+    :straight t)
+#+end_src
+** Tex
+*** cdlatex
+#+begin_src emacs-lisp
+(use-package cdlatex
+    :straight t)
+#+end_src
+*** auctex
+#+begin_src emacs-lisp
+  (use-package auctex
+      :straight t
+      :hook
+      (LaTeX-mode . reftex-mode)
+      (LaTeX-mode . cdlatex-mode)
+      (LaTeX-mode . jinx-mode)
+      (LaTeX-mode . display-line-numbers-mode)
+      (LaTeX-mode . prettify-symbols-mode)
+      (LaTeX-mode . smartparens-mode)
+      :bind
+      (:map LaTeX-mode-map
+       ("<C-m> C-w" . avy-goto-subword-1)
+       ("<C-m> <C-m>" . avy-goto-subword-1)
+       ("C-S-f" . subword-forward)
+       ("C-S-b" . subword-backward)
+       ("C-S-k" . subword-kill)
+       ("C-S-t" . subword-transpose)
+       ("C-<backspace>" . subword-backward-kill))
+      :mode
+      ("\\.tex\\'" . LaTeX-mode)
+      ("\\.mng\\'" . LaTeX-mode)
+      ("\\.lhs\\'" . LaTeX-mode)
+      :config
+      (add-to-list 'TeX-command-list
+                 '("Make" "make" TeX-run-compile nil t :help "Run make")
+                 t)
+      (setq TeX-kill-process-without-query t
+            TeX-command-default "Make"))
+#+end_src
+** citar
+#+begin_src emacs-lisp
+  (use-package citar
+    :straight t
+    :hook
+    (LaTeX-mode . citar-capf-setup)
+    (org-mode . citar-capf-setup))
+
+  (use-package citar-embark
+    :after citar embark
+    :no-require
+    :config (citar-embark-mode))
+
+  (use-package citar-org-roam
+    :after (citar org-roam)
+    :config (citar-org-roam-mode))
+#+end_src
+** ott
+#+begin_src emacs-lisp
+(use-package ott-mode
+    :demand t
+    :load-path "~/.emacs.d/ott-mode"
+    :hook
+    (ott-mode . smartparens-mode)
+    (ott-mode . (lambda () (display-line-numbers-mode 1))))
+
+(push 'ott compilation-error-regexp-alist)
+(push '(ott "File \\([a-zA-Z0-9/\\._-]+\\) on line \\([0-9]+\\).*$" 1 2 nil) compilation-error-regexp-alist-alist)
+#+end_src
+** markdown-mode
+#+begin_src emacs-lisp
+(use-package markdown-mode
+  :straight t)
+#+end_src
+** rst-mode
+#+begin_src emacs-lisp
+(setq rst-pdf-program "/Applications/Skim.app/Contents/MacOS/Skim")
 #+end_src
 * Media
 ** emms
 #+begin_src emacs-lisp
   (use-package emms
     :straight t
+    :demand t
     :config
     (require 'emms-setup)
     (emms-all)
@@ -528,7 +1065,10 @@ And probably some more.
               emms-info-metaflac
               emms-info-ogginfo)
           emms-add-directory
-            '("/Users/artin/.telega/cache/music/"))
+            '("/Users/artin/.telega/cache/music/")
+          emms-browser-covers #'emms-browser-cache-thumbnail-async
+          emms-browser-thumbnail-small-size 64
+          emms-browser-thumbnail-medium-size 128)
      :bind
      ("C-x C-v b" . emms-browser)
      ("C-x C-v p" . emms-pause)
@@ -587,407 +1127,6 @@ And probably some more.
 	     :files ("*.el" "data"))
   :commands (ready-player-mode))
 #+end_src
-* Tools
-** perspective
-#+begin_src emacs-lisp
-(use-package perspective
-  :straight t
-  :custom
-  (persp-mode-prefix-key (kbd "C-x C-,"))
-  :bind
-  ("C-x k" . persp-kill-buffer*)
-  ("C-." . persp-switch-to-buffer*)
-  ("C-x b" . switch-to-buffer)
-  :init
-  (persp-mode))
-
-(defun move-persp-to-frame () (message "TODO"))
-;;(add-hook 'kill-emacs-hook #'persp-state-save)
-#+end_src
-** flymake and flycheck
-#+begin_src emacs-lisp
-;; (use-package flymake-flycheck :straight t :after dante)
-#+end_src
-** helpful
-#+begin_src emacs-lisp
-(use-package helpful
-  :straight t
-  :bind
-  ("C-h k" . helpful-key)
-  ("C-h v" . helpful-variable)
-  ("C-h f" . helpful-callable)
-  ("C-h x" . helpful-command)
-  ("C-h ." . helpful-at-point)
-  ("C-h q" . helpful-kill-buffers))
-#+end_src
-** iedit
-#+begin_src emacs-lisp
-(use-package iedit :straight t)
-#+end_src
-** easy-kill
-#+begin_src emacs-lisp
-(use-package easy-kill :straight t)
-#+end_src
-** discover-my-major
-#+begin_src emacs-lisp
-(use-package discover-my-major
-  :straight t
-  :bind
-  ("C-h <C-m>" . discover-my-major)
-  ("C-h M-m" . discover-my-mode))
-#+end_src
-** project management
-#+begin_src emacs-lisp
-(defun project-note-file ()
-  (interactive)
-  (message "%s" (concat "TODO Implement me! " (project-name (project-current)))))
-
-(global-set-key (kbd "C-x p /") 'consult-ripgrep)
-(global-set-key (kbd "C-x p b") 'consult-project-buffer)
-(global-set-key (kbd "C-x p n") 'project-note-file)
-(global-set-key (kbd "C-x p C") 'project-recompile)
-
-(use-package direnv :straight t)
-#+end_src
-** yasnippet
-#+begin_src emacs-lisp
-(use-package yasnippet :straight t)
-#+end_src
-** align
-#+begin_src emacs-lisp
-(global-set-key (kbd "C-x M-a M-a") 'align)
-(global-set-key (kbd "C-x M-a M-r") 'align-regexp)
-(global-set-key (kbd "C-x M-a M-c") 'align-current)
-(global-set-key (kbd "C-x M-a M-e") 'align-entire)
-#+end_src
-** compile
-#+begin_src emacs-lisp
-(defun comint-ansi-color-process-output ()
-    (ansi-color-process-output nil)
-    (set (make-local-variable 'comint-last-output-start)
-         (point-marker)))
-
-(use-package compile
-  :bind
-  (:map compilation-mode-map
-   ("c" . project-compile))
-  :hook (compilation-filter . comint-ansi-color-process-output)
-  :config
-  (setq compilation-always-kill t))
-#+end_src
-** replace
-#+begin_src emacs-lisp
-#+end_src
-** diredfl
-#+begin_src emacs-lisp
-(use-package diredfl
-  :straight t
-  :init
-  (diredfl-global-mode))
-#+end_src
-** dired
-#+begin_src emacs-lisp
-(use-package dired
-  :bind
-  (:map dired-mode-map
-   ("C-j" . dired-jump))
-  :config
-  (setq dired-kill-when-opening-new-dired-buffer t))
-#+end_src
-** ace-window
-#+begin_src emacs-lisp
-(use-package ace-window
-        :straight t
-        :config
-        (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
-              aw-dispatch-always t)
-        :bind
-        ("C-x o" . other-window)
-        ("M-o" . ace-window))
-#+end_src
-** avy
-#+begin_src emacs-lisp
-(use-package avy
-    :straight t
-    :config (avy-setup-default)
-    :bind ("C-;" . avy-goto-word-1)
-          ("C-'" . avy-goto-char-in-line)
-          ("<C-m> C-c" . avy-goto-char-2)
-          ("<C-m> C-l" . avy-goto-line)
-          ("<C-m> C-w" . avy-goto-word-1)
-          ("<C-m> <C-m>" . avy-goto-word-1)
-          (:map isearch-mode-map
-           ("C-;" . avy-isearch)))
-#+end_src
-** zzz-to-char
-#+begin_src emacs-lisp
-(use-package zzz-to-char :straight t :bind ("M-z" . zzz-to-char-up-to-char))
-#+end_src
-** occur
-#+begin_src emacs-lisp
-(global-set-key (kbd "<C-m> C-o") 'occur)
-#+end_src
-** hydra
-#+begin_src emacs-lisp
-(use-package hydra :straight t)
-#+end_src
-** multiple-cursors
-#+begin_src emacs-lisp
-(use-package multiple-cursors :straight t)
-#+end_src
-** vundo
-#+begin_src emacs-lisp
-(use-package vundo
-  :straight t
-  :bind
-  ("C-x u" . vundo))
-#+end_src
-** undu-fu
-#+begin_src emacs-lisp
-(use-package undo-fu :straight t)
-#+end_src
-** magit
-#+begin_src emacs-lisp
-(use-package magit
-  :straight t
-  :demand t
-  :commands magit-status)
-#+end_src
-** forge
-#+begin_src emacs-lisp
-(use-package forge
-  :straight t
-  :after magit)
-#+end_src
-** LSP
-*** eglot
-#+begin_src emacs-lisp
-(setq gc-cons-threshold 100000000)
-(use-package eglot
-  :straight t
-  :commands eglot
-  :bind
-  ("C-c C-e C-e" . eglot)
-  (:map eglot-mode-map
-  ("C-c C-s" . consult-eglot-symbols)
-  ("C-c C-." . eldoc)
-  ("C-c C-e C-f" . consult-flymake)
-  ("<C-m> C-n" . flymake-goto-next-error)
-  ("<C-m> C-p" . flymake-goto-prev-error)
-  ("C-c C-a C-c" . eglot-code-actions)
-  ("C-c C-e C-t" . eglot-find-typeDefinition)
-  ("C-c C-a C-i" . eglot-code-action-inline)
-  ("C-c C-a C-e" . eglot-code-action-extract)
-  ("C-c C-a C-o" . eglot-code-action-organize-imports)
-  ("C-c C-a C-r" . eglot-code-action-rewrite)
-  ("C-c C-a C-a" . eglot-code-action-quickfix)
-  ("C-c C-e C-r" . eglot-rename)
-  ("C-c C-e C-s C-r" . eglot-reconnect)
-  ("C-c C-e C-s C-s" . eglot-shutdown)
-  ("C-c C-e C-s C-a" . eglot-shutdown-all))
-  :config
-  (setq-default eglot-workspace-configuration
-        '((haskell (plugin (stan (globalOn . :json-false))))))
-  (setq eglot-confirm-server-initiated-edits nil))
-#+end_src
-*** eglot-x
-#+begin_src emacs-lisp
-(use-package eglot-x
-  :straight (eglot-x
-	     :type git
-	     :host github
-	     :repo "nemethf/eglot-x"
-	     :files ("*.el"))
-  :config
-  (eglot-x-setup))
-#+end_src
-** smartparens
-#+begin_src emacs-lisp
-(use-package smartparens
-  :straight t
-  :config
-  (require 'smartparens-haskell)
-  (require 'smartparens-racket)
-  (require 'smartparens-config)
-  :bind
-  ("C-M-d" . beginning-of-defun)
-  ("C-M-c" . end-of-defun)
-  ("C-M-a" . sp-beginning-of-sexp)
-  ("C-M-e" . sp-end-of-sexp)
-  ("C-M-'" . sp-raise-sexp)
-  ("M-["   . sp-backward-down-sexp)
-  ("C-M-[" . sp-backward-up-sexp)
-  ("M-]"   . sp-down-sexp)
-  ("C-M-]" . sp-up-sexp)
-  ("C-M-f" . sp-forward-sexp)
-  ("C-M-b" . sp-backward-sexp)
-  ("C-M-n" . sp-next-sexp)
-  ("C-M-p" . sp-previous-sexp)
-  ("C-S-b" . sp-backward-symbol)
-  ("C-S-f" . sp-forward-symbol)
-  ("C-S-d" . sp-kill-symbol)
-  ("C-S-<backspace>" . sp-backward-kill-symbol)
-  ("M-S-<backspace>" . sp-backward-kill-sexp)
-  ("C-M-<backspace>" . sp-delete-symbol)
-  ("C-M-k" . sp-kill-sexp)
-  ("C-S-k" . sp-kill-symbol)
-  ("C-M-u" . sp-forward-slurp-sexp)
-  ("C-S-u" . sp-backward-slurp-sexp)
-  ("C-M-y" . sp-forward-barf-sexp)
-  ("C-S-y" . sp-backward-barf-sexp)
-  ("C-M-w" . sp-copy-sexp)
-  ("C-c (" . sp-wrap-round)
-  ("C-c [" . sp-wrap-square)
-  ("C-c {" . sp-wrap-curly)
-  ("C-c u" . sp-unwrap-sexp)
-  ("C-c r" . sp-rewrap-sexp)
-  ("C-M-j" . sp-join-sexp)
-  ("C-M-g" . sp-split-sexp)
-  ("C-c U" . sp-backward-unwrap-sexp)
-  :hook
-  (prog-mode . smartparens-mode)
-  :init
-  (show-smartparens-global-mode))
-#+end_src
-** hl-todo
-#+begin_src emacs-lisp
-(use-package hl-todo
-  :straight t
-  :init
-  (global-hl-todo-mode))
-#+end_src
-** vertico
-#+begin_src emacs-lisp
-(use-package vertico
-  :straight t
-  :bind (:map vertico-map
-            ("C-n" . vertico-next)
-            ("C-p" . vertico-previous))
-  :custom
-  (vertico-cycle t)
-  :init
-  (vertico-mode))
-#+end_src
-** savehist
-#+begin_src emacs-lisp
-(use-package savehist
-    :straight t
-    :init
-    (savehist-mode))
-#+end_src
-** orderless
-#+begin_src emacs-lisp
-(use-package orderless
-  :straight t
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles basic partial-completion)))))
-#+end_src
-** Terminal
-*** term
-#+begin_src emacs-lisp
-(setq explicit-shell-file-name "zsh")
-#+end_src
-*** vterm
-#+begin_src emacs-lisp
-(use-package vterm
-  :straight t
-  :bind
-  ("s-\\" . vterm)
-  ("s-<return>" . vterm-other-window))
-#+end_src
-*** eshell
-#+begin_src emacs-lisp
-#+end_src
-** dumb-jump
-#+begin_src emacs-lisp
-(use-package dumb-jump
-    :straight t
-    :config
-    (setq dumb-jump-force-searcher 'ag)) ;; TODO Use rg with custom rules for faster search results
-#+end_src
-** xref
-#+begin_src emacs-lisp
-(use-package xref
-  :straight t
-  :config
-  (setq xref-prompt-for-identifier nil))
-
-(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-#+end_src
-** tab
-#+begin_src emacs-lisp
-(setq-default indent-tabs-mode nil)
-(setq-default default-tab-width 4)
-(setq-default tab-width 4)
-(setq-default indent-tabs-mode nil)
-#+end_src
-** embark
-#+begin_src emacs-lisp
-(use-package embark
-    :straight t
-    :bind
-    (:map minibuffer-mode-map
-    ("C-." . embark-act))
-    :config
-    (setq prefix-help-command #'embark-prefix-help-command))
-#+end_src
-** consult
-#+begin_src emacs-lisp
-(use-package consult
-   :straight t
-   :bind
-   ("<C-m> C-i" . consult-imenu)
-   ("<C-m> C-s" . consult-line)
-   ("M-y" . consult-yank-pop)
-   ("M-g g" . consult-goto-line)
-   ("M-g M-g" . consult-goto-line)
-   ("<C-m> C-d" . consult-mark)
-   ("M-g M-m" . consult-mark)
-   (:map org-mode-map
-   ("<C-m> C-i" . consult-org-heading)))
-
-(setq completion-in-region-function
-      (lambda (&rest args)
-        (apply (if vertico-mode
-                   #'consult-completion-in-region
-                 #'completion--in-region)
-               args)))
-
-(setq xref-show-xrefs-function #'consult-xref
-      xref-show-definitions-function #'consult-xref)
-
-
-#+end_src
-*** consult-eglot
-#+begin_src emacs-lisp
-(use-package consult-eglot
-  :straight t
-  :after eglot)
-#+end_src
-*** embark-consult
-#+begin_src emacs-lisp
-(use-package embark-consult :straight t)
-#+end_src
-*** consult-hoogle
-#+begin_src emacs-lisp
-(use-package consult-hoogle
-  :straight t
-  :after (consult vertico-multiform)
-  :commands consult-hoogle
-  :config
-  (eval-when-compile
-    (defvar vertico-multiform-commands))
-  (add-to-list 'vertico-multiform-commands
-               '(consult-hoogle buffer)))
-#+end_src
-** Marginalia
-#+begin_src emacs-lisp
-(use-package marginalia
-  :straight t
-  :init
-  (marginalia-mode))
-#+end_src
 * Document
 ** olivetti
 #+begin_src emacs-lisp
@@ -1017,10 +1156,15 @@ And probably some more.
 ** doc-view-mode
 #+begin_src emacs-lisp
 #+end_src
+** image-roll
+#+begin_src emacs-lisp
+
+#+end_src
 ** pdf-tools
 #+begin_src emacs-lisp
 (use-package pdf-tools
   :straight t
+  :demand t
   :bind
   (:map pdf-view-mode-map ("g" . revert-buffer-quick)
                           ("M-s o" . pdf-occur)
@@ -1037,7 +1181,18 @@ And probably some more.
   (pdf-view-mode . pdf-isearch-minor-mode)
   (pdf-view-mode . pdf-view-midnight-minor-mode))
 #+end_src
+** djvu
+#+begin_src emacs-lisp
+(use-package djvu :straight t)
+#+end_src
+** djvu3
+#+begin_src emacs-lisp
+(use-package djvu3 :straight (djvu3 :type git :host github :repo "dalanicolai/djvu3" :files (".el")))
+#+end_src
 * Programming Languages
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c C-.") 'eldoc)
+#+end_src
 ** Haskell
 *** hindent
 #+begin_src emacs-lisp
@@ -1121,6 +1276,7 @@ And probably some more.
 
 (use-package haskell-mode
   :straight t
+  :demand t
   :config
   (require 'subword)
   (setq haskell-font-lock-symbols t
@@ -1201,6 +1357,19 @@ And probably some more.
                       (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
                       (modes quote (haskell-mode haskell-literate-mode)))))
 #+end_src
+*** haskell-ng-mode
+#+begin_src emacs-lisp
+  ;; (use-package haskell-ng-mode
+  ;;   :straight (:type git
+  ;;              :repo "https://gitlab.com/magus/haskell-ng-mode"
+  ;;              :branch "main")
+  ;;   :init
+  ;;   (add-to-list 'treesit-language-source-alist '(haskell "https://github.com/tree-sitter/tree-sitter-haskell"))
+  ;;   (add-to-list 'treesit-language-source-alist '(cabal "https://gitlab.com/magus/tree-sitter-cabal.git"))
+  ;;   (treesit-install-language-grammar 'haskell)
+  ;;   (treesit-install-language-grammar 'cabal)
+  ;;   )
+#+end_src
 *** w3m-haddock
 #+begin_src emacs-lisp
 (use-package w3m :straight t)
@@ -1210,6 +1379,11 @@ And probably some more.
 
 (require 'w3m-haddock)
 (add-hook 'w3m-display-hook 'w3m-haddoc-display)
+#+end_src
+*** haskell-snippets
+#+begin_src emacs-lisp
+(use-package haskell-snippets
+  :straight t)
 #+end_src
 ** Agda
 #+begin_src elisp
@@ -1257,20 +1431,28 @@ And probably some more.
 #+end_src
 *** emacs-lisp
 #+begin_src emacs-lisp
-(use-package emacs-lisp-mode
-  :hook
-  (emacs-lisp-mode . smartparens-strict-mode))
+  (use-package emacs-lisp-mode
+    :bind
+    (:map emacs-lisp-mode-map
+     ("C-c C-k" . eval-buffer)
+     ("C-c C-z" . ielm)) ;; TODO write a proper switch-to-ielm
+    :hook
+    (emacs-lisp-mode . smartparens-strict-mode))
 #+end_src
 *** ielm
 #+begin_src emacs-lisp
-(use-package ielm
-  :hook
-  (inferior-emacs-lisp-mode . smartparens-strict-mode))
+  (use-package ielm
+    :bind
+    (:map inferior-emacs-lisp-mode-map
+          ("C-c C-z" . other-window)) ;; TODO write a proper switch-to-buffer
+    :hook
+    (inferior-emacs-lisp-mode . smartparens-strict-mode))
 #+end_src
 ** Racket
 #+begin_src emacs-lisp
 (use-package racket-mode
   :straight t
+  :demand t
   :hook
   (racket-mode . smartparens-strict-mode)
   (racket-repl-mode . smartparens-strict-mode)
@@ -1286,17 +1468,20 @@ And probably some more.
 ** Common Lisp
 *** sly
 #+begin_src emacs-lisp
-(use-package sly
-  :straight t
-  :config
-  (setq inferior-lisp-program (executable-find "sbcl")
-        sly-completion-mode nil)
-  :hook
-  (common-lisp-mode . smartparens-strict-mode)
-  (sly-mrepl-mode . smartparens-strict-mode)
-  :bind
-  ("C-c C-d C-h" . nil)
-  ("C-c C-d C-H" . sly-hyperspec-lookup))
+  (use-package sly
+    :straight t
+    :demand t
+    :config
+    (setq inferior-lisp-program (executable-find "sbcl")
+          sly-completion-mode nil)
+    :hook
+    (common-lisp-mode . smartparens-strict-mode)
+    (lisp-mode . smartparens-strict-mode)
+    (sly-mrepl-mode . smartparens-strict-mode)
+    :bind
+    (:map lisp-mode-map
+          ("C-c C-d C-h" . nil)
+          ("C-c C-d C-H" . sly-hyperspec-lookup)))
 #+end_src
 *** sly-macrostep
 #+begin_src emacs-lisp
@@ -1332,22 +1517,26 @@ And probably some more.
 #+end_src
 ** Nix
 #+begin_src emacs-lisp
-(use-package nix-mode
-   :straight t)
+  (use-package nix-mode
+     :straight t)
 
-(defun darwin-rebuild-switch () ())
-(defun nix-channel-update () ())
-(defun nix-collect-garbage-d () ())
+  (defun darwin-rebuild-switch () ())
+  (defun nix-channel-update () ())
+  (defun nix-collect-garbage-d () ())
 
-(global-set-key (kbd "C-x C-. C-n o") #'(lambda () (interactive) (find-file "~/.nixpkgs/darwin-configuration.nix")))
-(global-set-key (kbd "C-x C-. C-n r") #'darwin-rebuild-switch)
-(global-set-key (kbd "C-x C-. C-n u") #'nix-channel-update)
-(global-set-key (kbd "C-x C-. C-n d") #'nix-collect-garbage-d)
+  (global-set-key (kbd "C-x C-. C-n o") #'(lambda () (interactive) (find-file "~/.nixpkgs/darwin-configuration.nix")))
+  (global-set-key (kbd "C-x C-. C-n r") #'darwin-rebuild-switch)
+  (global-set-key (kbd "C-x C-. C-n u") #'nix-channel-update)
+  (global-set-key (kbd "C-x C-. C-n d") #'nix-collect-garbage-d)
 #+end_src
 ** Javascript
 #+begin_src emacs-lisp
 (use-package js2-mode
     :straight t)
+#+end_src
+** bnf
+#+begin_src emacs-lisp
+(use-package bnf-mode :straight t)
 #+end_src
 ** Python
 #+begin_src emacs-lisp
@@ -1378,6 +1567,13 @@ And probably some more.
 (use-package cargo
   :straight t)
 #+end_src
+** Elixir
+** Erlang
+** Clojure
+#+begin_src emacs-lisp
+
+#+end_src
+** Java
 * Web Stuff
 #+begin_src emacs-lisp
   (use-package web-mode
@@ -1446,72 +1642,6 @@ And probably some more.
   ("M-#" . osx-dictionary-search-word-at-point)
   (:map osx-dictionary-mode-map ("k" . osx-dictionary-quit)))
 #+end_src
-* Markup languages
-** Tex
-*** cdlatex
-#+begin_src emacs-lisp
-(use-package cdlatex
-    :straight t)
-#+end_src
-*** auctex
-#+begin_src emacs-lisp
-(use-package auctex
-    :straight t
-    :hook
-    (LaTeX-mode . reftex-mode)
-    (LaTeX-mode . cdlatex-mode)
-    (LaTeX-mode . jinx-mode)
-    (LaTeX-mode . display-line-numbers-mode)
-    (LaTeX-mode . prettify-symbols-mode)
-    (LaTeX-mode . smartparens-strict-mode)
-    :bind
-    (:map LaTeX-mode-map
-     ("<C-m> C-w" . avy-goto-subword-1)
-     ("<C-m> <C-m>" . avy-goto-subword-1)
-     ("C-S-f" . subword-forward)
-     ("C-S-b" . subword-backward)
-     ("C-S-k" . subword-kill)
-     ("C-S-t" . subword-transpose)
-     ("C-<backspace>" . subword-backward-kill))
-    :mode
-    ("\\.tex\\'" . LaTeX-mode)
-    ("\\.mng\\'" . LaTeX-mode)
-    ("\\.lhs\\'" . LaTeX-mode)
-    :config
-    (add-to-list 'TeX-command-list
-               '("Make" "make" TeX-run-compile nil t :help "Run make")
-               t)
-    (setq TeX-kill-process-without-query t
-          TeX-command-default "Make"))
-#+end_src
-** ott
-#+begin_src emacs-lisp
-  (use-package ott-mode
-      :demand t
-      :load-path "~/.emacs.d/ott-mode"
-      :hook
-      (ott-mode . smartparens-strict-mode)
-      (ott-mode . (lambda () (display-line-numbers-mode 1))))
-
-  ;; (define-prefix-command 'ctl-c-map)
-
-  ;; (setq ott-mode-map (make-sparse-keymap))
-
-  ;; (define-keymap
-  ;;    :name ott-mode-map
-  ;;    :parent ctl-c-map)
-(push 'ott compilation-error-regexp-alist)
-(push '(ott "File \\([a-zA-Z0-9/\\._-]+\\) on line \\([0-9]+\\).*$" 1 2 nil) compilation-error-regexp-alist-alist)
-#+end_src
-** markdown-mode
-#+begin_src emacs-lisp
-(use-package markdown-mode
-  :straight t)
-#+end_src
-** rst-mode
-#+begin_src emacs-lisp
-(setq rst-pdf-program "/Applications/Skim.app/Contents/MacOS/Skim")
-#+end_src
 * Messaging and Mail
 ** ement
 #+begin_src emacs-lisp
@@ -1566,6 +1696,7 @@ And probably some more.
 
 (use-package notmuch
   :straight t
+  :demand t
   :bind
   ("C-x m" . notmuch)
   (:map notmuch-hello-mode-map
@@ -1604,6 +1735,7 @@ And probably some more.
 (use-package aria2 :straight t)
 #+end_src
 * Fun!
+** speed-type
 #+begin_src emacs-lisp
 (use-package speed-type
     :straight t
@@ -1615,4 +1747,15 @@ And probably some more.
      ("C-i" . speed-type--replay))
     :config
     (setq speed-type-default-lang 'English))
+#+end_src
+** gptel
+#+begin_src emacs-lisp
+  (use-package gptel
+    :straight t
+    :demand t
+    :config
+    (setq gptel-model "Gemeni"
+          gptel-backend (gptel-make-gemini "Gemini"
+                          :key auth-info-password
+                          :stream t)))
 #+end_src
