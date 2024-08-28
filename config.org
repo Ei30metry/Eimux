@@ -430,32 +430,47 @@ And probably some more.
 #+end_src
 *** consult-omni
 #+begin_src emacs-lisp
-  (use-package consult-omni
-    :straight (consult-omni
-               :type git
-               :host github
-               :repo "armindarvish/consult-omni"
-               :files (:defaults "sources/*.el"))
-    :config
-    (straight-use-package 'request)
-    (setq consult-omni-show-preview t
-          consult-omni-preview-key "C-i"
-          consult-omni-default-count 5
-          consult-omni-default-input-throttle 1.7
-          consult-embark-default-term #'vterm
-          consult-omni-default-browse-function 'browse-url
-          consult-omni-default-interactive-command #'consult-omni-multi
-          consult-omni-http-retrieve-backend 'request)
-    (require 'consult-omni-sources)
-    (require 'consult-omni-embark)
-    (consult-omni-sources-load-modules)
-    (setq consult-omni-multi-source '("calc"
-                                      "File"
-                                      "Apps"
-                                      "Google"
-                                      "GitHub"
-                                      "Org Agenda")))
-                                      #+end_src
+    (use-package consult-omni
+      :straight (consult-omni
+                 :type git
+                 :host github
+                 :repo "armindarvish/consult-omni"
+                 :files (:defaults "sources/*.el"))
+      :config
+      (straight-use-package 'request)
+      (setq consult-omni-show-preview t
+            consult-omni-preview-key "C-i"
+            consult-omni-default-count 5
+            consult-omni-default-input-throttle 1.7
+            consult-embark-default-term #'vterm
+            consult-omni-default-browse-function 'browse-url
+            consult-omni-default-interactive-command #'consult-omni-multi
+            consult-omni-http-retrieve-backend 'request
+            consult-omni-open-with-prompt "λ. ")
+      (require 'consult-omni-sources)
+      (require 'consult-omni-embark)
+      (consult-omni-sources-load-modules)
+      (setq consult-omni-multi-sources '("calc"
+                                         "File"
+                                         "Apps"
+                                         "Google"
+                                         "GitHub"
+                                         "Org Agenda")
+            consult-omni-web-sources '("Wikipedia"
+                                       "Github")))
+
+  (defun consult-omni-web (&optional initial prompt sources no-callback &rest args)
+    "Interactive web search”
+
+  This is similar to `consult-omni-multi', but runs the search on
+  web sources defined in `consult-omni-web-sources'.  See
+  `consult-omni-multi' for more details.
+  "
+    (interactive "P")
+    (let ((prompt (or prompt (concat "[" (propertize "consult-omni-web" 'face 'consult-omni-prompt-face) "]" " Search:  ")))
+          (sources (or sources consult-omni-web-sources)))
+      (consult-omni-multi initial prompt sources no-callback args)))
+#+end_src
 *** consult-notmuch
 #+begin_src emacs-lisp
   (use-package consult-notmuch
@@ -554,6 +569,10 @@ And probably some more.
   :hook (compilation-filter . comint-ansi-color-process-output)
   :config
   (setq compilation-always-kill t))
+#+end_src
+** imake
+#+begin_src emacs-lisp
+(use-package imake :straight t)
 #+end_src
 ** replace
 #+begin_src emacs-lisp
@@ -970,7 +989,7 @@ And probably some more.
           org-roam-ui-update-on-save t
           org-roam-ui-open-on-start t))
 #+end_src
-*** org-roam-bibtexqqqqqqqqqqqqq
+*** org-roam-bibtex
 #+begin_src emacs-lisp
   (use-package org-roam-bibtex
     :straight t)
@@ -1016,6 +1035,8 @@ And probably some more.
 #+begin_src emacs-lisp
   (use-package citar
     :straight t
+    :config
+    (setq citar-bibliography '("~/Research/artin.bib"))
     :hook
     (LaTeX-mode . citar-capf-setup)
     (org-mode . citar-capf-setup))
@@ -1028,6 +1049,19 @@ And probably some more.
   (use-package citar-org-roam
     :after (citar org-roam)
     :config (citar-org-roam-mode))
+
+#+end_src
+** biblio
+#+begin_src emacs-lisp
+  (use-package biblio
+    :straight t
+    :config
+    (require 'biblio-download))
+#+end_src
+** markdown-mode
+#+begin_src emacs-lisp
+(use-package markdown-mode
+  :straight t)
 #+end_src
 ** ott
 #+begin_src emacs-lisp
@@ -1040,11 +1074,6 @@ And probably some more.
 
 (push 'ott compilation-error-regexp-alist)
 (push '(ott "File \\([a-zA-Z0-9/\\._-]+\\) on line \\([0-9]+\\).*$" 1 2 nil) compilation-error-regexp-alist-alist)
-#+end_src
-** markdown-mode
-#+begin_src emacs-lisp
-(use-package markdown-mode
-  :straight t)
 #+end_src
 ** rst-mode
 #+begin_src emacs-lisp
@@ -1417,7 +1446,6 @@ And probably some more.
 	     :host github
 	     :repo "idris-community/idris2-mode"
 	     :files ("*.el" "data"))
-  ;; to defer loading the package until required
   :commands (idris2-mode))
 #+end_src
 ** Emacs Lisp
@@ -1428,6 +1456,7 @@ And probably some more.
 *** libraries
 #+begin_src emacs-lisp
 (use-package dash :straight t)
+(use-package llama :straight t)
 #+end_src
 *** emacs-lisp
 #+begin_src emacs-lisp
@@ -1703,6 +1732,10 @@ And probably some more.
    ("F" . fetch-mail-and-refresh)))
 
 (global-set-key (kbd "C-x M") 'notmuch-mua-mail)
+#+end_src
+*** notmuch-addr
+#+begin_src emacs-lisp
+(use-package notmuch-addr :straight t)
 #+end_src
 ** BBDB
 #+begin_src emacs-lisp
