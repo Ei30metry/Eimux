@@ -387,7 +387,7 @@ And probably some more.
    :bind
    ("<C-m> C-i" . consult-imenu)
    ("<C-m> C-s" . consult-line)
-   ("M-y" . consult-yank-pop)
+   ("M-y" . yank-pop)
    ("M-g g" . consult-goto-line)
    ("M-g M-g" . consult-goto-line)
    ("<C-m> C-d" . consult-mark)
@@ -1146,6 +1146,12 @@ And probably some more.
   (global-set-key (kbd "C-x C-v s") 'emms-seek)
   (global-set-key (kbd "C-x C-v o") 'open-episode-note-buffer)
 #+end_src
+** lyrics-fetcher
+#+begin_src emacs-lisp
+(use-package lyrics-fetcher
+  :straight t
+  :after (emms))
+#+end_src
 ** read-player
 #+begin_src emacs-lisp
 (use-package read-player
@@ -1663,6 +1669,10 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package synosaurus :straight t)
 #+end_src
+** reverso
+#+begin_src emacs-lisp
+(use-package reverso :straight t)
+#+end_src
 ** osx-dictionary
 #+begin_src emacs-lisp
 (use-package osx-dictionary
@@ -1683,7 +1693,8 @@ And probably some more.
 #+begin_src emacs-lisp
 (add-hook 'message-mode-hook (lambda () (display-line-numbers-mode 1)))
 (add-hook 'message-mode-hook (lambda () (jinx-mode 1)))
-(setq message-auto-save-directory "~/.mail/drafts")
+(setq message-auto-save-directory "~/.mail/drafts"
+      message-kill-buffer-on-exit t)
 #+end_src
 ** telega
 #+begin_src emacs-lisp
@@ -1717,7 +1728,6 @@ And probably some more.
       message-sendmail-envelope-from 'header
       message-kill-buffer-on-exit t)
 
-
 (defun fetch-mail-and-refresh ()
   (interactive)
   (shell-command "mbsync -aV")
@@ -1744,8 +1754,28 @@ And probably some more.
 * RSS
 ** elfeed
 #+begin_src emacs-lisp
-(use-package elfeed
-   :straight t)
+  (use-package elfeed
+     :straight t
+     :commands (elfeed)
+     :config
+     (setq elfeed-db-directory "~/.elfeed"
+           elfeed-feeds '(("https://planet.haskell.org/atom.xml" haskell PL)
+                          ("https://haskell.pl-a.net/atom.xml" haskell PL)
+                          ("http://www.masteringemacs.org/feed" emacs blog)
+                          ("https://lexi-lambda.github.io/feeds/all.atom.xml" haskell lisp blog)
+                          ("https://www.haskellforall.com/feeds/posts/default" blog)
+                          ("https://www.williamyaoh.com/feed.atom" haskell blog)
+                          ("https://ekmett.github.io/reader/feed/index.html" haskell blog)
+                          ("https://www.michaelpj.com/blog/feed.xml" haskell blog)
+                          ("https://rss.arxiv.org/atom/math.LO" math logic)
+                          ("https://rss.arxiv.org/atom/cs.DS" CS DS)
+                          ("https://rss.arxiv.org/atom/cs.LO" CS logic)
+                          ("https://rss.arxiv.org/atom/cs.DM" CS DM)
+                          ("https://rss.arxiv.org/atom/cs.PL" CS PL)
+                          ("https://rss.arxiv.org/atom/cs.FL" CS PL)
+                          ("https://www.well-typed.com/blog/rss2.xml" haskell))))
+  (use-package elfeed-score :straight t)
+  (use-package elfeed-org :straight t)
 #+end_src
 * Profiling
 ** esup
@@ -1791,4 +1821,8 @@ And probably some more.
           gptel-backend (gptel-make-gemini "Gemini"
                           :key auth-info-password
                           :stream t)))
+#+end_src
+** biome
+#+begin_src emacs-lisp
+  (use-package biome :straight t)
 #+end_src
