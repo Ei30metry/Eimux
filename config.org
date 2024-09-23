@@ -823,12 +823,13 @@ And probably some more.
 (use-package shell :hook (shell-mode . compilation-shell-minor-mode))
 #+end_src
 ** dumb-jump
++ [ ] when it comes to haskell-mode, ag is more accurate, but unfortunately slower. Have mode-specific values for the dump-jump-force-searcher variable.
 #+begin_src emacs-lisp
 (use-package dumb-jump
     :straight t
     :demand t
     :config
-    (setq dumb-jump-force-searcher 'ag)) ;; TODO Use rg with custom rules for faster search results
+    (setq dumb-jump-force-searcher 'ag))
 #+end_src
 ** xref
 #+begin_src emacs-lisp
@@ -839,83 +840,44 @@ And probably some more.
 
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 #+end_src
-** tab
+** tab configuration
 #+begin_src emacs-lisp
 (setq-default indent-tabs-mode nil)
 (setq-default default-tab-width 4)
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 #+end_src
-* Technical writing
-** org
+** speedbar
++ [ ] Use the theme's faces insated of the ugly ones provided by speedbar.
++ [ ] Write a sr-speedbar-toggle-and-switch function to avoid having to switch to the speedbar buffer after opening it using C-\. Kind of like popper-toggle.
++ [ ] Write a function that would expand a line if it's contracted, and contract it if it's expanded.
++ [ ] The speedbar window should always be the left-most window! not a window next to the current window.
 #+begin_src emacs-lisp
-(use-package org
-  :bind
-  ("C-x A" . org-agenda)
-  ("C-," . popper-toggle)
-  ("C-S-c" . org-capture)
-  (:map org-mode-map ("C-S-c" . org-capture) ("C-," . nil) ("C-'" . nil))
-  :config
-  (setq org-startup-indented t
-        org-directory "~/Agenda"
-        org-log-into-drawer t
-        org-treat-insert-todo-heading-as-state-change t
-        org-hide-emphasis-markers t
-        org-return-follows-link t
-        org-src-tab-acts-natively nil
-        org-agenda-files '("~/Agenda/tasks.org"  "~/Agenda/projects/specification.org")
-        org-todo-keywords
-        '((sequence "TODO" "|" "DONE" )))
-  :hook
-  (org-agenda-mode . (lambda () (visual-line-mode -1) (toggle-truncate-lines 1))))
+  (use-package sr-speedbar
+    :straight t
+    :config
+    (speedbar-add-supported-extension ".hs")
+    (setq speedbar-use-images nil
+          sr-speedbar-right-side nil)
+    :bind
+    ("C-\\" . sr-speedbar-toggle)
+    (:map speedbar-mode-map
+          ("<TAB>" . speedbar-expand-line)
+          ("<backtab>" . speedbar-contract-line)
+          ("q" . sr-speedbar-close)
+          ("Q" . nil)))
+
+  ;; (defun sr-speedbar-toggle-and-switch ()
+  ;;   (interactive)
+  ;;   (if (not (equal (current-buffer) sr-speedbar-buffer-name))
+  ;;       (progn
+  ;;         (sr-speedbar-open)
+  ;;         (switch-to-buffer sr-speedbar-buffer-name))
+  ;;     (sr-speedbar-close)))
+
+
 #+end_src
-*** org-capture
-#+begin_src emacs-lisp
-  (setq org-capture-templates
-       '(("t" "Task")
-         ("tt" "Planned" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %^t\nDEADLINE: %^t")
-         ("tT" "Today" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %t\nDEADLINE: %t")
-         ("tl" "Process later" entry (file+headline "tasks.org" "Inbox") "* TODO %?")
-         ("tp" "Project")
-         ("tps" "Specification" entry (file+headline "projects/specification.org" "Tasks") "* TODO %?")
-         ("tpg" "GHC" entry (file+headline "projects/ghc.org" "Tasks") "* TODO %?")
-         ("tc" "Config")
-         ("tce" "Emacs" entry (file+headline "config/emacs-config.org" "Tasks") "* TODO %?\n")
-         ("tcn" "Nix" entry (file+headline "config/nix.org" "Tasks") "* TODO %?\n  %i")
-         ("a" "Ask" entry (file+headline "projects/specification.org" "QUESTIONS") "* QUESTION %?\n")))
-#+end_src
-*** org-contrib
-#+begin_src emacs-lisp
-(use-package org-contrib
- :after org
- :config
- (require 'ox-extra)
- (ox-extras-activate '(latex-header-blocks ignore-headlines)))
-#+end_src
-*** org-contacts
-#+begin_src emacs-lisp
-(use-package org-contacts :straight t)
-#+end_src
-*** org-mime
-#+begin_src emacs-lisp
-(use-package org-mime :straight t)
-#+end_src
-*** org-tempo
-#+begin_src emacs-lisp
-(with-eval-after-load 'org
-    (require 'org-tempo)
-    (setq org-structure-template-alist
-         '(("el" . "src emacs-lisp")
-           ("py" . "src python")
-           ("sq" . "src sql")
-           ("hs" . "src haskell")
-           ("t" . "src tex")
-           ("rs" . "src rust")
-           ("c"  . "src c")
-           ("tx" . "src txt")
-           ("o" . "src ott"))))
-#+end_src
-*** toc-org
+** toc-org
 #+begin_src emacs-lisp
 (use-package toc-org
  :straight t
@@ -923,7 +885,21 @@ And probably some more.
  :hook
  (org-mode . toc-org-mode))
 #+end_src
-*** org-books
+** org-tempo
+#+begin_src emacs-lisp
+  (require 'org-tempo)
+  (setq org-structure-template-alist
+       '(("el" . "src emacs-lisp")
+         ("py" . "src python")
+         ("sq" . "src sql")
+         ("hs" . "src haskell")
+         ("t" . "src tex")
+         ("rs" . "src rust")
+         ("c"  . "src c")
+         ("tx" . "src txt")
+         ("o" . "src ott")))
+#+end_src
+** org-books
 #+begin_src emacs-lisp
 (use-package org-books
  :straight t
@@ -1260,108 +1236,107 @@ And probably some more.
 *** [[consult-hoogle]]
 *** haskell-mode
 #+begin_src emacs-lisp
-(require 'newcomment)
+  (require 'newcomment)
 
-(defun comment-or-uncomment-decl ()
-"Comment or uncomment current declaration."
-  (interactive)
-  (let ((start-end (hindent-decl-points)))
-    (let ((beg (car start-end))
-          (end (cdr start-end)))
-      (comment-or-uncomment-region
-       (save-excursion
-         (goto-char beg)
-         (push-mark))
-       (save-excursion
-         (goto-char end))))
-       ))
+  (defun comment-or-uncomment-decl ()
+  "Comment or uncomment current declaration."
+    (interactive)
+    (let ((start-end (hindent-decl-points)))
+      (let ((beg (car start-end))
+            (end (cdr start-end)))
+        (comment-or-uncomment-region
+         (save-excursion
+           (goto-char beg)
+           (push-mark))
+         (save-excursion
+           (goto-char end))))))
 
-(defun insert-haskell-undefined ()
-  (interactive)
-  (insert "undefined"))
+  (defun insert-haskell-undefined ()
+    (interactive)
+    (insert "undefined"))
 
-(use-package haskell-mode
-  :straight t
-  :demand t
-  :config
-  (require 'subword)
-  (setq haskell-font-lock-symbols t
-        haskell-stylish-on-save nil
-        haskell-process-log nil)
+  (use-package haskell-mode
+    :straight t
+    :demand t
+    :config
+    (require 'subword)
+    (setq haskell-font-lock-symbols t
+          haskell-stylish-on-save nil
+          haskell-process-log t
+          haskell-process-sugggest-hoogle-imports t)
+    :bind
+    (:map haskell-mode-map
+          ("<C-m> C-w" . avy-goto-subword-1)
+          ("<C-m> <C-m>" . avy-goto-subword-1)
+          ("C-;" . avy-goto-subword-1)
+          ("C-c M-o" . haskell-mode-tag-find)
+          ("C-c h" . consult-hoogle)
+          ("C-c C-o" . haskell-interactive-bring)
+          ("C-c i p" . haskell-command-insert-language-pragma)
+          ("C-c C-u" . insert-haskell-undefined)
+          ("C-c i s" . haskell-mode-toggle-scc-at-point)
+          ("C-c C-d" . haskell-process-do-info)
+          ("C-c i m" . haskell-add-import)
+          ("C-c m" . haskell-navigate-imports)
+          ("C-c C-n" . haskell-ds-forward-decl)
+          ("C-c C-p" . haskell-ds-backward-decl)
+          ("M-n" . haskell-ds-forward-decl)
+          ("M-p" . haskell-ds-backward-decl)
+          ("M-g M-w" . avy-goto-subword-1)
+          ("C-S-f" . subword-forward)
+          ("C-S-b" . subword-backward)
+          ("C-S-d" . subword-kill)
+          ("C-S-t" . subword-transpose)
+          ("C-<backspace>" . subword-backward-kill)
+          ("M-S-<backspace>" . subword-backward-kill))
+    :hook
+    (haskell-mode . haskell-auto-insert-module-template)
+    (haskell-mode . interactive-haskell-mode)
+    (haskell-mode . haskell-indentation-mode)
+    (haskell-mode . haskell-decl-scan-mode)
+    (haskell-mode . hindent-mode))
 
-  :bind
-  (:map haskell-mode-map
-        ("<C-m> C-w" . avy-goto-subword-1)
-        ("<C-m> <C-m>" . avy-goto-subword-1)
-        ("C-;" . avy-goto-subword-1)
-        ("C-c h" . consult-hoogle)
-        ("C-c C-o" . haskell-interactive-bring)
-        ("C-c i p" . haskell-command-insert-language-pragma)
-        ("C-c C-u" . insert-haskell-undefined)
-        ("C-c i s" . haskell-mode-toggle-scc-at-point)
-        ("C-c C-d" . haskell-process-do-info)
-        ("C-c i m" . haskell-add-import)
-        ("C-c m" . haskell-navigate-imports)
-        ("C-c C-n" . haskell-ds-forward-decl)
-        ("C-c C-p" . haskell-ds-backward-decl)
-        ("M-n" . haskell-ds-forward-decl)
-        ("M-p" . haskell-ds-backward-decl)
-        ("M-g M-w" . avy-goto-subword-1)
-        ("C-S-f" . subword-forward)
-        ("C-S-b" . subword-backward)
-        ("C-S-d" . subword-kill)
-        ("C-S-t" . subword-transpose)
-        ("C-<backspace>" . subword-backward-kill)
-        ("M-S-<backspace>" . subword-backward-kill))
-  :hook
-  (haskell-mode . haskell-auto-insert-module-template)
-  (inferior-haskell . comint-ansi-color-process-output)
-  (haskell-mode . interactive-haskell-mode)
-  (haskell-mode . haskell-indentation-mode)
-  (haskell-mode . haskell-decl-scan-mode)
-  (haskell-mode . hindent-mode))
+  ;;(with-eval-after-load 'interactive-haskell-mode
+  ;;  (define-key interactive-haskell-mode-map (kbd "C-c C-c") 'haskell-compile)
+  ;;  (define-key interactive-haskell-mode-map  (kbd "C-c C-b") 'haskell-interactive-switch-back)
+  ;;  (define-key haskell-interactive-mode-map (kbd "C-c C-c") 'haskell-compile)
+  ;;  (define-key haskell-interactive-mode-map  (kbd "C-c C-b") 'haskell-interactive-switch-back))
 
-;;(with-eval-after-load 'interactive-haskell-mode
-;;  (define-key interactive-haskell-mode-map (kbd "C-c C-c") 'haskell-compile)
-;;  (define-key interactive-haskell-mode-map  (kbd "C-c C-b") 'haskell-interactive-switch-back)
-;;  (define-key haskell-interactive-mode-map (kbd "C-c C-c") 'haskell-compile)
-;;  (define-key haskell-interactive-mode-map  (kbd "C-c C-b") 'haskell-interactive-switch-back))
+  (defun haskell-scratch-buffer () (mesage "TODO implement me!"))
 
-(defun haskell-scratch-buffer () (mesage "TODO implement me!"))
-
-(with-eval-after-load 'align
-  (add-to-list 'align-rules-list
-                    '(haskell-types
-                      (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
-                      (modes quote (haskell-mode haskell-literate-mode))))
-       (add-to-list 'align-rules-list
-                    '(haskell-assignment
-                      (regexp . "\\(\\s-+\\)=\\s-+")
-                      (modes quote (haskell-mode haskell-literate-mode))))
-       (add-to-list 'align-rules-list
-                    '(haskell-arrows
-                      (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
-                      (modes quote (haskell-mode haskell-literate-mode))))
-       (add-to-list 'align-rules-list
-                    '(haskell-left-arrows
-                      (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
-                      (modes quote (haskell-mode haskell-literate-mode))))
-       (add-to-list 'align-rules-list
-                    '(haskell-types
-                      (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
-                      (modes quote (haskell-mode haskell-literate-mode))))
-       (add-to-list 'align-rules-list
-                    '(haskell-assignment
-                      (regexp . "\\(\\s-+\\)=\\s-+")
-                      (modes quote (haskell-mode haskell-literate-mode))))
-       (add-to-list 'align-rules-list
-                    '(haskell-arrows
-                      (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
-                      (modes quote (haskell-mode haskell-literate-mode))))
-       (add-to-list 'align-rules-list
-                    '(haskell-left-arrows
-                      (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
-                      (modes quote (haskell-mode haskell-literate-mode)))))
+  (with-eval-after-load 'align
+    (add-to-list 'align-rules-list
+                      '(haskell-types
+                        (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
+                        (modes quote (haskell-mode haskell-literate-mode))))
+         (add-to-list 'align-rules-list
+                      '(haskell-assignment
+                        (regexp . "\\(\\s-+\\)=\\s-+")
+                        (modes quote (haskell-mode haskell-literate-mode))))
+         (add-to-list 'align-rules-list
+                      '(haskell-arrows
+                        (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
+                        (modes quote (haskell-mode haskell-literate-mode))))
+         (add-to-list 'align-rules-list
+                      '(haskell-left-arrows
+                        (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
+                        (modes quote (haskell-mode haskell-literate-mode))))
+         (add-to-list 'align-rules-list
+                      '(haskell-types
+                        (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
+                        (modes quote (haskell-mode haskell-literate-mode))))
+         (add-to-list 'align-rules-list
+                      '(haskell-assignment
+                        (regexp . "\\(\\s-+\\)=\\s-+")
+                        (modes quote (haskell-mode haskell-literate-mode))))
+         (add-to-list 'align-rules-list
+                      '(haskell-arrows
+                        (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
+                        (modes quote (haskell-mode haskell-literate-mode))))
+         (add-to-list 'align-rules-list
+                      '(haskell-left-arrows
+                        (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
+                        (modes quote (haskell-mode haskell-literate-mode)))))
 #+end_src
 *** haskell-ng-mode
 #+begin_src emacs-lisp
