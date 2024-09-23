@@ -847,7 +847,7 @@ And probably some more.
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 #+end_src
-** speedbar
+** sr-speedbar
 + [ ] Use the theme's faces insated of the ugly ones provided by speedbar.
 + [ ] Write a sr-speedbar-toggle-and-switch function to avoid having to switch to the speedbar buffer after opening it using C-\. Kind of like popper-toggle.
 + [ ] Write a function that would expand a line if it's contracted, and contract it if it's expanded.
@@ -860,7 +860,7 @@ And probably some more.
     (setq speedbar-use-images nil
           sr-speedbar-right-side nil)
     :bind
-    ("C-\\" . sr-speedbar-toggle)
+    ;; ("C-\\" . sr-speedbar-toggle)
     (:map speedbar-mode-map
           ("<TAB>" . speedbar-expand-line)
           ("<backtab>" . speedbar-contract-line)
@@ -874,8 +874,17 @@ And probably some more.
   ;;         (sr-speedbar-open)
   ;;         (switch-to-buffer sr-speedbar-buffer-name))
   ;;     (sr-speedbar-close)))
-
-
+#+end_src
+** treemacs
+#+begin_src emacs-lisp
+  (use-package treemacs
+    :straight t
+    :bind
+    ("C-\\" . treemacs)
+    :config
+    (treemacs-project-follow-mode)
+    (treemacs-display-current-project-exclusively)
+    (treemacs-git-mode -1))
 #+end_src
 ** toc-org
 #+begin_src emacs-lisp
@@ -1295,14 +1304,6 @@ And probably some more.
     (haskell-mode . haskell-indentation-mode)
     (haskell-mode . haskell-decl-scan-mode)
     (haskell-mode . hindent-mode))
-
-  ;;(with-eval-after-load 'interactive-haskell-mode
-  ;;  (define-key interactive-haskell-mode-map (kbd "C-c C-c") 'haskell-compile)
-  ;;  (define-key interactive-haskell-mode-map  (kbd "C-c C-b") 'haskell-interactive-switch-back)
-  ;;  (define-key haskell-interactive-mode-map (kbd "C-c C-c") 'haskell-compile)
-  ;;  (define-key haskell-interactive-mode-map  (kbd "C-c C-b") 'haskell-interactive-switch-back))
-
-  (defun haskell-scratch-buffer () (mesage "TODO implement me!"))
 
   (with-eval-after-load 'align
     (add-to-list 'align-rules-list
