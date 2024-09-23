@@ -203,6 +203,7 @@
     ("C-." . persp-switch-to-buffer*)
     ("C-x b" . switch-to-buffer)
     :init
+    (setq persp-initial-frame-name "misc")
     (persp-mode))
 
   (defun move-persp-to-frame () (message "TODO"))
@@ -246,6 +247,7 @@
             helpful-mode
             osx-dictionary-mode
             racket-repl-mode
+            nix-repl-mode
             idris2-repl-mode
             idris2-info-mode
             idris2-compiler-notes-mode
@@ -802,13 +804,13 @@ And probably some more.
 *** vterm
 #+begin_src emacs-lisp
 (use-package vterm
-  :straight t
   :demand t
   :hook
   (vterm-mode . compilation-shell-minor-mode)
   :bind
   ("s-\\" . vterm)
   ("s-<return>" . vterm-other-window))
+(require 'vterm)
 #+end_src
 *** eshell
 #+begin_src emacs-lisp
@@ -869,38 +871,18 @@ And probably some more.
 #+end_src
 *** org-capture
 #+begin_src emacs-lisp
-;; NOTE rewrite this using a function
-;; NOTE find a better way then putting everything under a menu
-(setq org-capture-templates
-     '(("t" "Task")
-       ("tt" "Planned" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %^t\nDEADLINE: %^t")
-       ("tT" "Today" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %t\nDEADLINE: %t")
-       ("tl" "Process later" entry (file+headline "tasks.org" "Inbox") "* TODO %?")
-       ("td" "Deadline" entry (file+headline "tasks.org" "Deadline") "* TODO %?\nDEADLINE: %^t")
-       ("ts" "Schedule"entry (file+headline "tasks.org" "Schedule") "* TODO %?\nSCHEDULED: %^t")
-       ("l" "Lookup")
-       ("lr" "Random" entry (file+headline "lookup.org" "Random") "* TODO %?")
-       ("lm" "Mathematics" entry (file+headline "lookup.org" "Math") "* TODO %?")
-       ("lc" "CS" entry (file+headline "lookup.org" "Computer Science") "* TODO %?")
-       ("lp" "Philosophy" entry (file+headline "lookup.org" "Philosophy") "* TODO %?")
-       ("le" "Emacs" entry (file+headline "lookup.org" "Emacs") "* TODO %?")
-
-       ("tp" "Project")
-       ("tps" "Specification" entry (file+headline "projects/specification.org" "Tasks") "* TODO %?")
-       ("tpg" "GHC" entry (file+headline "projects/ghc.org" "Tasks") "* TODO %?")
-       ("tph" "Hygeia" entry (file+headline "projects/hygeia.org" "Tasks") "* TODO %?")
-       ("tc" "Config")
-       ("tce" "Emacs" entry (file+headline "config/emacs-config.org" "Tasks") "* TODO %?\n%i")
-       ("tcn" "Nix" entry (file+headline "config/nix.org" "Tasks") "* TODO %?\n  %i")
-       ("a" "Ask" entry (file+headline "projects/specification.org" "QUESTIONS") "* %^{Ask:|QUESTION|ASKSIMON|ASKRICHARD} %?\nSCHEDULED: %^t")
-       ("i" "Idea")
-       ("ic" "Config")
-       ("ip" "Project")
-       ("ips" "Specification" entry (file+headline "projects/specification.org" "Ideas") "* IDEA %?")
-       ("ice" "Emacs" entry (file+headline "config/emacs-config.org" "
-       Ideas") "* IDEA %?\n  %i\n")
-       ("icn" "Nix" entry (file+headline "config/nix.org" "Tasks") "* IDEA %?")
-     ))
+  (setq org-capture-templates
+       '(("t" "Task")
+         ("tt" "Planned" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %^t\nDEADLINE: %^t")
+         ("tT" "Today" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %t\nDEADLINE: %t")
+         ("tl" "Process later" entry (file+headline "tasks.org" "Inbox") "* TODO %?")
+         ("tp" "Project")
+         ("tps" "Specification" entry (file+headline "projects/specification.org" "Tasks") "* TODO %?")
+         ("tpg" "GHC" entry (file+headline "projects/ghc.org" "Tasks") "* TODO %?")
+         ("tc" "Config")
+         ("tce" "Emacs" entry (file+headline "config/emacs-config.org" "Tasks") "* TODO %?\n")
+         ("tcn" "Nix" entry (file+headline "config/nix.org" "Tasks") "* TODO %?\n  %i")
+         ("a" "Ask" entry (file+headline "projects/specification.org" "QUESTIONS") "* QUESTION %?\n")))
 #+end_src
 *** org-contrib
 #+begin_src emacs-lisp
@@ -1004,6 +986,7 @@ And probably some more.
 #+begin_src emacs-lisp
   (use-package auctex
       :straight t
+      :demand t
       :hook
       (LaTeX-mode . reftex-mode)
       (LaTeX-mode . cdlatex-mode)
@@ -1012,24 +995,18 @@ And probably some more.
       (LaTeX-mode . prettify-symbols-mode)
       (LaTeX-mode . smartparens-mode)
       :bind
-      (:map LaTeX-mode-map
-       ("<C-m> C-w" . avy-goto-subword-1)
-       ("<C-m> <C-m>" . avy-goto-subword-1)
-       ("C-S-f" . subword-forward)
-       ("C-S-b" . subword-backward)
-       ("C-S-k" . subword-kill)
-       ("C-S-t" . subword-transpose)
-       ("C-<backspace>" . subword-backward-kill))
+      ;; (:map LaTeX-mode-map
+      ;; ("<C-m> C-w" . avy-goto-subword-1)
+      ;; ("<C-m> <C-m>" . avy-goto-subword-1)
+      ;; ("C-S-f" . subword-forward)
+      ;; ("C-S-b" . subword-backward)
+      ;; ("C-S-k" . subword-kill)
+      ;; ("C-S-t" . subword-transpose)
+      ;; ("C-<backspace>" . subword-backward-kill))
       :mode
       ("\\.tex\\'" . LaTeX-mode)
       ("\\.mng\\'" . LaTeX-mode)
-      ("\\.lhs\\'" . LaTeX-mode)
-      :config
-      (add-to-list 'TeX-command-list
-                 '("Make" "make" TeX-run-compile nil t :help "Run make")
-                 t)
-      (setq TeX-kill-process-without-query t
-            TeX-command-default "Make"))
+      ("\\.lhs\\'" . LaTeX-mode))
 #+end_src
 ** citar
 #+begin_src emacs-lisp
@@ -1065,19 +1042,15 @@ And probably some more.
 #+end_src
 ** ott
 #+begin_src emacs-lisp
-(use-package ott-mode
-    :demand t
-    :load-path "~/.emacs.d/ott-mode"
-    :hook
-    (ott-mode . smartparens-mode)
-    (ott-mode . (lambda () (display-line-numbers-mode 1))))
+  (use-package ott-mode
+      :demand t
+      :load-path "~/.emacs.d/ott-mode"
+      :hook
+      (ott-mode . smartparens-mode)
+      (ott-mode . (lambda () (display-line-numbers-mode 1))))
 
-(push 'ott compilation-error-regexp-alist)
-(push '(ott "File \\([a-zA-Z0-9/\\._-]+\\) on line \\([0-9]+\\).*$" 1 2 nil) compilation-error-regexp-alist-alist)
-#+end_src
-** rst-mode
-#+begin_src emacs-lisp
-(setq rst-pdf-program "/Applications/Skim.app/Contents/MacOS/Skim")
+  (push 'ott compilation-error-regexp-alist)
+  (push '(ott "File \\([a-zA-Z0-9/\\._-]+\\) on line \\([0-9]+\\).*$" 1 2 nil) compilation-error-regexp-alist-alist)
 #+end_src
 * Media
 ** emms
@@ -1198,12 +1171,11 @@ And probably some more.
 ** pdf-tools
 #+begin_src emacs-lisp
 (use-package pdf-tools
-  :straight t
   :demand t
   :bind
   (:map pdf-view-mode-map ("g" . revert-buffer-quick)
-                          ("M-s o" . pdf-occur)
-                          ("<C-m> C-o" . pdf-occur)
+                          ("M-s o" . occur)
+                          ("<C-m> C-o" . occur)
                           ("o" . pdf-outline)
                           ("M-g M-g" . pdf-view-goto-page))
   :mode
@@ -1213,7 +1185,6 @@ And probably some more.
   (setq auto-revert-verbose nil
         pdf-view-use-scaling t)
   :hook
-  (pdf-view-mode . pdf-isearch-minor-mode)
   (pdf-view-mode . pdf-view-midnight-minor-mode))
 #+end_src
 ** djvu
@@ -1559,7 +1530,7 @@ And probably some more.
   (defun nix-channel-update () ())
   (defun nix-collect-garbage-d () ())
 
-  (global-set-key (kbd "C-x C-. C-n o") #'(lambda () (interactive) (find-file "~/.nixpkgs/darwin-configuration.nix")))
+  (global-set-key (kbd "C-x C-. C-n o") #'(lambda () (interactive) (find-file "~/.config/nix-darwin/flake.nix")))
   (global-set-key (kbd "C-x C-. C-n r") #'darwin-rebuild-switch)
   (global-set-key (kbd "C-x C-. C-n u") #'nix-channel-update)
   (global-set-key (kbd "C-x C-. C-n d") #'nix-collect-garbage-d)
@@ -1738,10 +1709,9 @@ And probably some more.
   :demand t
   :bind
   ("C-x m" . notmuch)
+  ("C-x M" . notmuch-mua-mail)
   (:map notmuch-hello-mode-map
    ("F" . fetch-mail-and-refresh)))
-
-(global-set-key (kbd "C-x M") 'notmuch-mua-mail)
 #+end_src
 *** notmuch-addr
 #+begin_src emacs-lisp
@@ -1749,7 +1719,7 @@ And probably some more.
 #+end_src
 ** BBDB
 #+begin_src emacs-lisp
-(use-package bbdb :straight t)
+  ;; (use-package bbdb :straight t)
 #+end_src
 * RSS
 ** elfeed
@@ -1763,16 +1733,20 @@ And probably some more.
                           ("https://haskell.pl-a.net/atom.xml" haskell PL)
                           ("http://www.masteringemacs.org/feed" emacs blog)
                           ("https://lexi-lambda.github.io/feeds/all.atom.xml" haskell lisp blog)
+                          ("https://ianthehenry.com/feed.xml" blog)
+                          ("https://coot.me/feed.rss" blog haskell)
                           ("https://www.haskellforall.com/feeds/posts/default" blog)
                           ("https://www.williamyaoh.com/feed.atom" haskell blog)
                           ("https://ekmett.github.io/reader/feed/index.html" haskell blog)
+                          ("https://math.andrej.com/feed.xml" math logic CS PL blog)
                           ("https://www.michaelpj.com/blog/feed.xml" haskell blog)
                           ("https://rss.arxiv.org/atom/math.LO" math logic)
-                          ("https://rss.arxiv.org/atom/cs.DS" CS DS)
-                          ("https://rss.arxiv.org/atom/cs.LO" CS logic)
-                          ("https://rss.arxiv.org/atom/cs.DM" CS DM)
-                          ("https://rss.arxiv.org/atom/cs.PL" CS PL)
-                          ("https://rss.arxiv.org/atom/cs.FL" CS PL)
+                          ("https://rss.arxiv.org/rss/cs.DS" CS DS)
+                          ("https://rss.arxiv.org/rss/cs.LO" CS logic)
+                          ("https://rss.arxiv.org/rss/cs.DM" CS DM)
+                          ("https://rss.arxiv.org/rss/cs.PL" CS PL)
+                          ("https://rss.arxiv.org/rss/cs.FL" CS PL)
+                          ("https://blog.haskell.org/atom.xml" haskell blog)
                           ("https://www.well-typed.com/blog/rss2.xml" haskell))))
   (use-package elfeed-score :straight t)
   (use-package elfeed-org :straight t)
