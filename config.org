@@ -66,6 +66,12 @@
   (defun camlcase-to-snakecase () (message "TODO"))
   (defun snakecase-to-camlcase () (message "TODO"))
 #+end_src
+** Shell
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-x C-. C-z r") #'(lambda () (interactive) (find-file "~/.zshrc")))
+(global-set-key (kbd "C-x C-. C-z p") #'(lambda () (interactive) (find-file "~/.zprofile")))
+(global-set-key (kbd "C-x C-. C-z e") #'(lambda () (interactive) (find-file "~/.zshenv")))
+#+end_src
 * Buffer
 #+begin_src emacs-lisp
   (setq-default message-log-max :error)
@@ -420,6 +426,21 @@ And probably some more.
  :config
  (setq org-books-file "~/Agenda/books.org"))
 #+end_src
+*** org-capture
+#+begin_src emacs-lisp
+  (setq org-capture-templates
+       '(("t" "Task")
+         ("tt" "Planned" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %^t\nDEADLINE: %^t")
+         ("tT" "Today" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %t\nDEADLINE: %t")
+         ("tl" "Process later" entry (file+headline "tasks.org" "Inbox") "* TODO %?")
+         ("tp" "Project")
+         ("tps" "Specification" entry (file+headline "projects/specification.org" "Tasks") "* TODO %?")
+         ("tpg" "GHC" entry (file+headline "projects/ghc.org" "Tasks") "* TODO %?")
+         ("tc" "Config")
+         ("tce" "Emacs" entry (file+headline "config/emacs-config.org" "Tasks") "* TODO %?\n")
+         ("tcn" "Nix" entry (file+headline "config/nix.org" "Tasks") "* TODO %?\n  %i")
+         ("a" "Ask" entry (file+headline "projects/specification.org" "QUESTIONS") "* QUESTION %?\n")))
+#+end_src
 *** org-roam
 #+begin_src emacs-lisp
 (use-package org-roam
@@ -658,6 +679,10 @@ And probably some more.
 (global-set-key (kbd "C-x M-a M-c") 'align-current)
 (global-set-key (kbd "C-x M-a M-e") 'align-entire)
 #+end_src
+** format-all
+#+begin_src emacs-lisp
+(use-package format-all :straight t)
+#+end_src
 ** compile
 #+begin_src emacs-lisp
 (defun comint-ansi-color-process-output ()
@@ -892,37 +917,6 @@ And probably some more.
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
 #+end_src
-** Terminals
-*** term
-#+begin_src emacs-lisp
-(use-package term
-  :config
-  (setq explicit-shell-file-name "zsh")
-  :hook
-  (term-mode . compilation-shell-minor-mode))
-
-#+end_src
-*** vterm
-#+begin_src emacs-lisp
-(use-package vterm
-  :demand t
-  :hook
-  (vterm-mode . compilation-shell-minor-mode)
-  :bind
-  ("s-\\" . vterm)
-  ("s-<return>" . vterm-other-window))
-(require 'vterm)
-#+end_src
-*** eshell
-#+begin_src emacs-lisp
-  (use-package eshell
-    :hook
-    (eshell-mode . compilation-shell-minor-mode))
-#+end_src
-*** shell
-#+begin_src emacs-lisp
-(use-package shell :hook (shell-mode . compilation-shell-minor-mode))
-#+end_src
 ** dumb-jump
 + [ ] when it comes to haskell-mode, ag is more accurate, but unfortunately slower. Have mode-specific values for the dump-jump-force-searcher variable.
 #+begin_src emacs-lisp
@@ -961,7 +955,6 @@ And probably some more.
     (setq speedbar-use-images nil
           sr-speedbar-right-side nil)
     :bind
-    ;; ("C-\\" . sr-speedbar-toggle)
     (:map speedbar-mode-map
           ("<TAB>" . speedbar-expand-line)
           ("<backtab>" . speedbar-contract-line)
@@ -975,17 +968,6 @@ And probably some more.
   ;;         (sr-speedbar-open)
   ;;         (switch-to-buffer sr-speedbar-buffer-name))
   ;;     (sr-speedbar-close)))
-#+end_src
-** treemacs
-#+begin_src emacs-lisp
-  (use-package treemacs
-    :straight t
-    :bind
-    ("C-\\" . treemacs)
-    :config
-    (treemacs-project-follow-mode)
-    (treemacs-display-current-project-exclusively)
-    (treemacs-git-mode -1))
 #+end_src
 ** Tex
 *** cdlatex
@@ -1062,6 +1044,37 @@ And probably some more.
 
   (push 'ott compilation-error-regexp-alist)
   (push '(ott "File \\([a-zA-Z0-9/\\._-]+\\) on line \\([0-9]+\\).*$" 1 2 nil) compilation-error-regexp-alist-alist)
+#+end_src
+* Terminals
+*** term
+#+begin_src emacs-lisp
+(use-package term
+  :config
+  (setq explicit-shell-file-name "zsh")
+  :hook
+  (term-mode . compilation-shell-minor-mode))
+
+#+end_src
+*** vterm
+#+begin_src emacs-lisp
+(use-package vterm
+  :demand t
+  :hook
+  (vterm-mode . compilation-shell-minor-mode)
+  :bind
+  ("s-\\" . vterm)
+  ("s-<return>" . vterm-other-window))
+(require 'vterm)
+#+end_src
+*** eshell
+#+begin_src emacs-lisp
+  (use-package eshell
+    :hook
+    (eshell-mode . compilation-shell-minor-mode))
+#+end_src
+*** shell
+#+begin_src emacs-lisp
+(use-package shell :hook (shell-mode . compilation-shell-minor-mode))
 #+end_src
 * Media
 ** emms
@@ -1594,7 +1607,7 @@ And probably some more.
 
 #+end_src
 ** Java
-* Web Stuff
+** Web Stuff
 #+begin_src emacs-lisp
   (use-package web-mode
     :straight t)
@@ -1625,12 +1638,6 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package epa
   :straight t)
-#+end_src
-* Shell
-#+begin_src emacs-lisp
-(global-set-key (kbd "C-x C-. C-z r") #'(lambda () (interactive) (find-file "~/.zshrc")))
-(global-set-key (kbd "C-x C-. C-z p") #'(lambda () (interactive) (find-file "~/.zprofile")))
-(global-set-key (kbd "C-x C-. C-z e") #'(lambda () (interactive) (find-file "~/.zshenv")))
 #+end_src
 * Spelling and Thesaurus
 ** Jinx
