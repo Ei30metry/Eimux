@@ -583,6 +583,14 @@ And probably some more.
     :config
     (setq prefix-help-command #'embark-prefix-help-command))
 #+end_src
+** imenu-anywhere
+#+begin_src emacs-lisp
+(use-package imenu-anywhere :straight t)
+#+end_src
+** imenu-list
+#+begin_src emacs-lisp
+(use-package imenu-list :straight t)
+#+end_src
 ** marginalia
 #+begin_src emacs-lisp
 (use-package marginalia
@@ -1263,99 +1271,111 @@ And probably some more.
 *** [[consult-hoogle]]
 *** haskell-mode
 #+begin_src emacs-lisp
-  (require 'newcomment)
+    (require 'newcomment)
 
-  (defun comment-or-uncomment-decl ()
-  "Comment or uncomment current declaration."
-    (interactive)
-    (let ((start-end (hindent-decl-points)))
-      (let ((beg (car start-end))
-            (end (cdr start-end)))
-        (comment-or-uncomment-region
-         (save-excursion
-           (goto-char beg)
-           (push-mark))
-         (save-excursion
-           (goto-char end))))))
+    (defun comment-or-uncomment-decl ()
+    "Comment or uncomment current declaration."
+      (interactive)
+      (let ((start-end (hindent-decl-points)))
+        (let ((beg (car start-end))
+              (end (cdr start-end)))
+          (comment-or-uncomment-region
+           (save-excursion
+             (goto-char beg)
+             (push-mark))
+           (save-excursion
+             (goto-char end))))))
 
-  (defun insert-haskell-undefined ()
-    (interactive)
-    (insert "undefined"))
+    (defun insert-haskell-undefined ()
+      (interactive)
+      (insert "undefined"))
+
+  (defun haskell-block-comment-region (start end)
+    (interactive "r")
+    (save-excursion
+      (let (end-marker)
+        (goto-char end)
+        (setq end-marker (point-marker))
+        (goto-char start)
+        (insert "{-\n")
+        (goto-char (marker-position end-marker))
+        (insert "-}"))))
 
   (use-package haskell-mode
-    :straight t
-    :demand t
-    :config
-    (require 'subword)
-    (setq haskell-font-lock-symbols t
-          haskell-stylish-on-save nil
-          haskell-process-log t
-          haskell-process-sugggest-hoogle-imports t)
-    :bind
-    (:map haskell-mode-map
-          ("<C-m> C-w" . avy-goto-subword-1)
-          ("<C-m> <C-m>" . avy-goto-subword-1)
-          ("C-;" . avy-goto-subword-1)
-          ("C-c M-o" . haskell-mode-tag-find)
-          ("C-c h" . consult-hoogle)
-          ("C-c C-o" . haskell-interactive-bring)
-          ("C-c i p" . haskell-command-insert-language-pragma)
-          ("C-c C-u" . insert-haskell-undefined)
-          ("C-c i s" . haskell-mode-toggle-scc-at-point)
-          ("C-c C-d" . haskell-process-do-info)
-          ("C-c i m" . haskell-add-import)
-          ("C-c m" . haskell-navigate-imports)
-          ("C-c C-n" . haskell-ds-forward-decl)
-          ("C-c C-p" . haskell-ds-backward-decl)
-          ("M-n" . haskell-ds-forward-decl)
-          ("M-p" . haskell-ds-backward-decl)
-          ("M-g M-w" . avy-goto-subword-1)
-          ("C-S-f" . subword-forward)
-          ("C-S-b" . subword-backward)
-          ("C-S-d" . subword-kill)
-          ("C-S-t" . subword-transpose)
-          ("C-<backspace>" . subword-backward-kill)
-          ("M-S-<backspace>" . subword-backward-kill))
-    :hook
-    (haskell-mode . haskell-auto-insert-module-template)
-    (haskell-mode . interactive-haskell-mode)
-    (haskell-mode . haskell-indentation-mode)
-    (haskell-mode . haskell-decl-scan-mode)
-    (haskell-mode . hindent-mode))
+      :straight t
+      :demand t
+      :config
+      (require 'subword)
+      (setq haskell-font-lock-symbols t
+            haskell-stylish-on-save nil
+            haskell-process-log t
+            haskell-process-sugggest-hoogle-imports t)
+      :bind
+      (:map haskell-mode-map
+            ("<C-m> C-w" . avy-goto-subword-1)
+            ("<C-m> <C-m>" . avy-goto-subword-1)
+            ("C-;" . avy-goto-subword-1)
+            ("C-c C-;" . haskell-block-comment-region)
+            ("C-c M-o" . haskell-mode-tag-find)
+            ("C-c h" . consult-hoogle)
+            ("C-c C-o" . haskell-interactive-bring)
+            ("C-c i p" . haskell-command-insert-language-pragma)
+            ("C-c C-u" . insert-haskell-undefined)
+            ("C-c i s" . haskell-mode-toggle-scc-at-point)
+            ("C-c C-d" . haskell-process-do-info)
+            ("C-c i m" . haskell-add-import)
+            ("C-c m" . haskell-navigate-imports)
+            ("C-c C-n" . haskell-ds-forward-decl)
+            ("C-c C-p" . haskell-ds-backward-decl)
+            ("M-n" . haskell-ds-forward-decl)
+            ("M-p" . haskell-ds-backward-decl)
+            ("M-g M-w" . avy-goto-subword-1)
+            ("C-S-f" . subword-forward)
+            ("C-S-b" . subword-backward)
+            ("C-S-d" . subword-kill)
+            ("C-S-t" . subword-transpose)
+            ("C-<backspace>" . subword-backward-kill)
+            ("M-S-<backspace>" . subword-backward-kill))
+      :hook
+      (haskell-mode . haskell-auto-insert-module-template)
+      (haskell-mode . interactive-haskell-mode)
+      (haskell-mode . haskell-indentation-mode)
+      (haskell-mode . haskell-decl-scan-mode)
+      (haskell-mode . hindent-mode))
 
-  (with-eval-after-load 'align
-    (add-to-list 'align-rules-list
-                      '(haskell-types
-                        (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
-                        (modes quote (haskell-mode haskell-literate-mode))))
-         (add-to-list 'align-rules-list
-                      '(haskell-assignment
-                        (regexp . "\\(\\s-+\\)=\\s-+")
-                        (modes quote (haskell-mode haskell-literate-mode))))
-         (add-to-list 'align-rules-list
-                      '(haskell-arrows
-                        (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
-                        (modes quote (haskell-mode haskell-literate-mode))))
-         (add-to-list 'align-rules-list
-                      '(haskell-left-arrows
-                        (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
-                        (modes quote (haskell-mode haskell-literate-mode))))
-         (add-to-list 'align-rules-list
-                      '(haskell-types
-                        (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
-                        (modes quote (haskell-mode haskell-literate-mode))))
-         (add-to-list 'align-rules-list
-                      '(haskell-assignment
-                        (regexp . "\\(\\s-+\\)=\\s-+")
-                        (modes quote (haskell-mode haskell-literate-mode))))
-         (add-to-list 'align-rules-list
-                      '(haskell-arrows
-                        (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
-                        (modes quote (haskell-mode haskell-literate-mode))))
-         (add-to-list 'align-rules-list
-                      '(haskell-left-arrows
-                        (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
-                        (modes quote (haskell-mode haskell-literate-mode)))))
+    (with-eval-after-load 'align
+      (add-to-list 'align-rules-list
+                        '(haskell-types
+                          (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
+                          (modes quote (haskell-mode haskell-literate-mode))))
+           (add-to-list 'align-rules-list
+                        '(haskell-assignment
+                          (regexp . "\\(\\s-+\\)=\\s-+")
+                          (modes quote (haskell-mode haskell-literate-mode))))
+           (add-to-list 'align-rules-list
+                        '(haskell-arrows
+                          (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
+                          (modes quote (haskell-mode haskell-literate-mode))))
+           (add-to-list 'align-rules-list
+                        '(haskell-left-arrows
+                          (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
+                          (modes quote (haskell-mode haskell-literate-mode))))
+           (add-to-list 'align-rules-list
+                        '(haskell-types
+                          (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
+                          (modes quote (haskell-mode haskell-literate-mode))))
+           (add-to-list 'align-rules-list
+                        '(haskell-assignment
+                          (regexp . "\\(\\s-+\\)=\\s-+")
+                          (modes quote (haskell-mode haskell-literate-mode))))
+           (add-to-list 'align-rules-list
+                        '(haskell-arrows
+                          (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
+                          (modes quote (haskell-mode haskell-literate-mode))))
+           (add-to-list 'align-rules-list
+                        '(haskell-left-arrows
+                          (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
+                          (modes quote (haskell-mode haskell-literate-mode)))))
 #+end_src
 *** haskell-ng-mode
 #+begin_src emacs-lisp
