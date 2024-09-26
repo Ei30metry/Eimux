@@ -1107,7 +1107,7 @@ And probably some more.
   (defun write-timerange (buffer &optional description)
       "Write the timestamp of the currently playing episode to its note file"
       (interactive)
-      (let* ((timestamp (emms-track-get (emms-playlist-current-selected-track) 'info-playing-time))
+      (let* ((timestamp emms-playing-time)
             (timestamp-range (concat (emms-playing-time-format-time (- (truncate timestamp) 1))
                                      " -- "
                                      (emms-playing-time-format-time (+ (truncate timestamp) 1)))))
