@@ -1217,7 +1217,13 @@ And probably some more.
 #+end_src
 ** djvu3
 #+begin_src emacs-lisp
-(use-package djvu3 :straight (djvu3 :type git :host github :repo "dalanicolai/djvu3" :files (".el")))
+  (use-package djvu3
+    :straight
+      (djvu3
+       :type git
+       :host github
+       :repo "dalanicolai/djvu3"
+       :files (".el")))
 #+end_src
 * Programming Languages
 #+begin_src emacs-lisp
@@ -1417,6 +1423,16 @@ And probably some more.
 #+begin_src emacs-lisp
 (use-package haskell-snippets
   :straight t)
+#+end_src
+*** hiedb-mode
+#+begin_src emacs-lisp
+  (use-package hiedb-mode
+    :straight
+    (hiedb-mode
+     :type git
+     :host github
+     :repo "agentultra/hiedb-mode"
+     :files (".el")))
 #+end_src
 ** Agda
 #+begin_src elisp
