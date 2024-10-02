@@ -40,10 +40,14 @@
  (setq exec-path-from-shell-arguments nil)
  (exec-path-from-shell-initialize))
 
-(org-babel-load-file
-     (expand-file-name
-       "config.org"
-       user-emacs-directory))
+(push (expand-file-name "~/.emacs.d/lisp") load-path)
+
+;; (org-babel-load-file
+;;      (expand-file-name
+;;        "config.org"
+;;        user-emacs-directory))
+
+(load-file (expand-file-name "config.el" user-emacs-directory))
 
 (setq read-process-output-max (* 1024 1024))
 
