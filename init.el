@@ -42,14 +42,11 @@
 
 (push (expand-file-name "~/.emacs.d/lisp") load-path)
 
-;; (org-babel-load-file
-;;      (expand-file-name
-;;        "config.org"
-;;        user-emacs-directory))
-
-(load-file (expand-file-name "config.el" user-emacs-directory))
+(define-key input-decode-map [?\C-m] [C-m])
 
 (setq read-process-output-max (* 1024 1024))
+
+(load-file (expand-file-name "config.el" user-emacs-directory))
 
 (setq emacs-started nil)
 
