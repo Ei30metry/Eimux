@@ -15,6 +15,9 @@
   :hook
   (inferior-emacs-lisp-mode . smartparens-strict-mode))
 
+(use-package elsa
+  :straight t)
+
 (use-package emacs-lisp-mode
   :config
   :bind

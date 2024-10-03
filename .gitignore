@@ -42,3 +42,5 @@ racket-mode/
 /forge-database.sqlite
 emms/
 bbdb
+etc
+etc/

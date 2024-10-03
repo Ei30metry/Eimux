@@ -1,4 +1,4 @@
-;;; init.el --- Description -*- lexical-binding: t; -*-
+;;; telega-ement-config.el --- Description -*- lexical-binding: t; -*-
 
 (require 'telega)
 
@@ -13,6 +13,11 @@
 (add-hook 'telega-root-mode-hook 'use-telega-fonts)
 
 (setq telega-chat-bidi-display-reordering t
-          telega-use-images t)
+      telega-use-images t)
 
-(provide 'telega-config)
+(use-package ement
+    :straight t
+    :config
+    (setq ement-auto-sync nil))
+
+(provide 'telega-ement-config)
