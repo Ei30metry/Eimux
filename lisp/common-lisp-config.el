@@ -19,8 +19,10 @@
   :straight t)
 
 (use-package sly-quicklisp
-  :straight t)
+  :straight t
+  :disabled)
 
-(use-package sly-asdf :straight t)
+(use-package sly-asdf :straight t
+  :disabled)
 
 (provide 'common-lisp-config)

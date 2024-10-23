@@ -1,6 +1,7 @@
 ;;; org-config.el --- Description -*- lexical-binding: t; -*-
 (use-package org
   :straight t
+  :demand t
   :bind
   ("C-x A" . org-agenda)
   ("C-," . popper-toggle)
@@ -50,28 +51,28 @@
        ("a" "Ask" entry (file+headline "projects/specification.org" "QUESTIONS") "* QUESTION %?\n")))
 
 (use-package org-roam
-   :straight t
-   :after org
-   :bind
-   ("C-x C-r C-r"     . org-roam-capture)
-   ("C-x C-r C-t"     . org-roam-dailies-capture-today)
-   ("C-x C-r C-j t"   . org-roam-dailies-goto-today)
-   ("C-x C-r w"       . org-roam-refile)
-   ("C-x C-r C-j y"   . org-roam-dailies-goto-yesterday)
-   ("C-x C-r C-j C-d" . org-roam-dailies-find-directory)
-   ("C-x C-r C-j n"   . org-roam-dailies-goto-next-note)
-   ("C-x C-r C-j p"   . org-roam-dailies-goto-previous-note)
-   ("C-x C-r C-j d"   . org-roam-dailies-goto-date)
-   ("C-x C-r b"       . org-roam-buffer-display-dedicated)
-   ("C-x C-r C-i r"   . org-roam-ref-add)
-   ("C-x C-r C-i t"   . org-roam-tag-add)
-   ("C-x C-r C-i a"   . org-roam-alias-add)
-   ("C-x C-r C-i n"   . org-roam-node-insert)
-   ("C-x C-r C-f"     . org-roam-node-find)
-   (:map org-roam-mode-map ("M-." . org-roam-ref-find))
-   :config
-   (setq org-roam-directory "~/Roam"
-         org-roam-db-autosync-mode t))
+  :straight t
+  :demand t
+  :bind
+  ("C-x C-r C-r"     . org-roam-capture)
+  ("C-x C-r C-t"     . org-roam-dailies-capture-today)
+  ("C-x C-r C-j t"   . org-roam-dailies-goto-today)
+  ("C-x C-r w"       . org-roam-refile)
+  ("C-x C-r C-j y"   . org-roam-dailies-goto-yesterday)
+  ("C-x C-r C-j C-d" . org-roam-dailies-find-directory)
+  ("C-x C-r C-j n"   . org-roam-dailies-goto-next-note)
+  ("C-x C-r C-j p"   . org-roam-dailies-goto-previous-note)
+  ("C-x C-r C-j d"   . org-roam-dailies-goto-date)
+  ("C-x C-r b"       . org-roam-buffer-display-dedicated)
+  ("C-x C-r C-i r"   . org-roam-ref-add)
+  ("C-x C-r C-i t"   . org-roam-tag-add)
+  ("C-x C-r C-i a"   . org-roam-alias-add)
+  ("C-x C-r C-i n"   . org-roam-node-insert)
+  ("C-x C-r C-f"     . org-roam-node-find)
+  (:map org-roam-mode-map ("M-." . org-roam-ref-find))
+  :config
+  (setq org-roam-directory "~/Roam"
+        org-roam-db-autosync-mode t))
 
 (use-package org-roam-ui
   :straight
