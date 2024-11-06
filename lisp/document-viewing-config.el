@@ -38,6 +38,10 @@
   :hook
   (pdf-view-mode . pdf-view-midnight-minor-mode))
 
+(defun ei30/pdf-view-dark-mode ()
+  (interactive)
+  (message "TODO"))
+
 (use-package djvu :straight t)
 
 (use-package djvu3

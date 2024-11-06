@@ -8,26 +8,29 @@
       smtpmail-stream-type 'starttls
       smtpmail-smtp-service 587
       message-sendmail-envelope-from 'header
+      message-kill-buffer-on-exit t
+      message-auto-save-directory "~/.mail-drafts"
       message-kill-buffer-on-exit t)
 
 (add-hook 'message-mode-hook (lambda () (display-line-numbers-mode 1)))
 (add-hook 'message-mode-hook (lambda () (jinx-mode 1)))
-(setq message-auto-save-directory "~/.mail/drafts"
-      message-kill-buffer-on-exit t)
 
-(defun fetch-mail-and-refresh ()
-  (interactive)
-  (shell-command "mbsync -aV")
-  (notmuch-poll))
+(add-hook 'notmuch-message-mode-hook
+          (lambda () (auto-save-mode -1)))
+
+(add-hook 'message-mode-hook
+          (lambda () (auto-save-mode -1)))
+
+(dolist (x '(message-mode-hook notmuch-message-mode-hook))
+  (add-hook x (lambda () (auto-fill-mode -1))))
+
 
 (use-package notmuch
   :straight t
   :demand t
   :bind
   ("C-x m" . notmuch)
-  ("C-x M" . notmuch-mua-mail)
-  (:map notmuch-hello-mode-map
-        ("F" . fetch-mail-and-refresh)))
+  ("C-x M" . notmuch-mua-mail))
 
 (use-package notmuch-addr
   :straight t)

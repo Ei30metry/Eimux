@@ -18,6 +18,8 @@
   :straight t
   :bind
   ("M-#" . osx-dictionary-search-word-at-point)
-  (:map osx-dictionary-mode-map ("k" . osx-dictionary-quit)))
+  (:map osx-dictionary-mode-map
+        ("k" . osx-dictionary-quit)
+        ("j" . osx-dictionary-search-word-at-point)))
 
 (provide 'writing-utils)

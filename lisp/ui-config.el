@@ -47,5 +47,5 @@
 (use-package color-theme-sanityinc-solarized :straight t)
 (use-package color-theme-sanityinc-tomorrow :straight t)
 
-(load-theme 'doom-sourcerer t)
+(load-theme 'doom-solarized-dark t)
 (provide 'ui-config)

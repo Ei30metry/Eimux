@@ -23,6 +23,7 @@
 (use-package biome :straight t)
 
 (use-package aria2 :straight t)
+(require 'aria2)
 
 (use-package speed-type
     :straight t
@@ -59,5 +60,24 @@
   :straight t)
 
 (setq disabled-command-function nil)
+
+(global-set-key (kbd "C-x C-. C-z r") #'(lambda () (interactive) (find-file "~/.zshrc")))
+(global-set-key (kbd "C-x C-. C-z p") #'(lambda () (interactive) (find-file "~/.zprofile")))
+(global-set-key (kbd "C-x C-. C-z e") #'(lambda () (interactive) (find-file "~/.zshenv")))
+(global-set-key (kbd "C-x C-. C-e o") #'(lambda () (interactive) (find-file "~/.emacs.d/init.el")))
+(global-set-key (kbd "C-x C-. C-e r") #'(lambda () (interactive) (load-file "~/.emacs.d/init.el")))
+(global-set-key (kbd "C-x r j") 'consult-register-load)
+(global-set-key (kbd "C-x C-' p") 'previous-buffer)
+(global-set-key (kbd "C-x C-' n") 'next-buffer)
+(global-set-key (kbd "C-x C-' l") 'persp-ibuffer)
+(global-unset-key (kbd "M-j"))
+(global-set-key (kbd "M-j") 'join-line)
+(global-set-key (kbd "M-RET") 'default-indent-new-line)
+(global-set-key (kbd "C-x <C-m>") 'execute-extended-command)
+(global-set-key (kbd "C-x p /") 'consult-ripgrep)
+(global-set-key (kbd "C-x M-f") 'consult-fd)
+(global-set-key (kbd "C-x p b") 'consult-project-buffer)
+(global-set-key (kbd "C-x p n") 'project-note-file)
+(global-set-key (kbd "C-x p C") 'project-recompile)
 
 (provide 'misc)

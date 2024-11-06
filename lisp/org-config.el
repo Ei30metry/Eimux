@@ -50,6 +50,8 @@
        ("tcn" "Nix" entry (file+headline "config/nix.org" "Tasks") "* TODO %?\n  %i")
        ("a" "Ask" entry (file+headline "projects/specification.org" "QUESTIONS") "* QUESTION %?\n")))
 
+(global-unset-key (kbd "C-x C-r"))
+
 (use-package org-roam
   :straight t
   :demand t
