@@ -1,4 +1,7 @@
 ;;; emms-config.el --- Description -*- lexical-binding: t; -*-
+
+(global-unset-key (kbd "C-x C-v"))
+
 (use-package emms
   :straight t
   :demand t

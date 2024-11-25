@@ -80,4 +80,8 @@
 (global-set-key (kbd "C-x p n") 'project-note-file)
 (global-set-key (kbd "C-x p C") 'project-recompile)
 
+(global-unset-key (kbd "C-<mouse-5>"))
+(global-unset-key (kbd "C-<wheel-up>"))
+(global-unset-key (kbd "C-<wheel-down>"))
+
 (provide 'misc)
