@@ -13,7 +13,7 @@
     (LaTeX-mode . prettify-symbols-mode)
     (LaTeX-mode . smartparens-mode)
     :bind
-    ;; (:map LaTeX-mode-map
+    ;; (:map LaTeX-mdoe-map
     ;; ("<C-m> C-w" . avy-goto-subword-1)
     ;; ("<C-m> <C-m>" . avy-goto-subword-1)
     ;; ("C-S-f" . subword-forward)
@@ -32,7 +32,7 @@
   (setq citar-bibliography '("~/Research/artin.bib"))
   :hook
   (LaTeX-mode . citar-capf-setup)
-  (org-mode . citar-capf-setup))
+  (org-mode   . citar-capf-setup))
 
 (use-package citar-embark
   :after citar embark

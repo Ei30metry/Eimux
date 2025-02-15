@@ -44,3 +44,5 @@ emms/
 bbdb
 etc
 etc/
+var/
+tree-sitter/

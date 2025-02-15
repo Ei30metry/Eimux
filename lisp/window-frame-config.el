@@ -8,6 +8,8 @@
   (persp-mode-prefix-key (kbd "C-x C-,"))
   :bind
   ("C-x k" . (lambda () (interactive) (persp-kill-buffer* nil)))
+  ("C-x C-, C-," . persp-switch)
+  ("C-x C-, C-." . persp-switch-last)
   ("C-x K" . persp-kill-buffer*)
   ("C-." . persp-switch-to-buffer*)
   ("C-x b" . switch-to-buffer)
@@ -37,12 +39,12 @@
           "\\*Tex Help\\*"
           "\\*toc\\*"
           "\\*Occur\\*"
+          "\\*Embark \\(Export\\|Collect\\):.*\\*"
           "\\*eldoc for\\*$"
           "Output\\*$"
           "\\*Backtrace\\*"
           "\\*Async Shell Command\\*"
-          "\\*sly-macroexpansion\\*"
-          "\\*sly-description\\*"
+          "\\*sly-\\(macroexpansion\\|descrition\\)\\*"
           help-mode
           compilation-mode
           haskell-interactive-mode

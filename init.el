@@ -55,6 +55,7 @@
 (require 'code-navigation-config)
 (require 'lsp-config)
 (require 'tex-bib-config)
+(require 'typst-config)
 (require 'terminal-shell-config)
 (require 'document-viewing-config)
 (require 'emacs-lisp-config)
@@ -66,8 +67,13 @@
 (require 'common-lisp-config)
 (require 'ocaml-config)
 (require 'lean-config)
+(require 'koka-config)
+(require 'sql-config)
 (require 'nix-config)
+(require 'llvm-config)
+(require 'c-c++-config)
 (require 'rust-config)
+(require 'zig-config)
 (require 'web-langs-config)
 (require 'python-config)
 (require 'swift-config)
@@ -82,13 +88,11 @@
 (require 'compilation-config)
 (require 'misc)
 
-(global-unset-key (kbd "C-x C-j"))
-(global-unset-key (kbd "C-x C-p"))
-(global-unset-key (kbd "C-x C-o"))
-(global-unset-key (kbd "C-x C-w"))
-(global-unset-key (kbd "C-z"))
-(global-unset-key (kbd "C-x C-d"))
-(global-unset-key (kbd "C-M-m"))
+(dolist (k '("C-x C-j" "C-x C-p"
+             "C-x C-o" "C-x C-w"
+             "C-z"     "C-x C-d"
+             "C-M-m"))
+  (global-unset-key (kbd k)))
 
 (define-key input-decode-map [?\C-m] [C-m])
 

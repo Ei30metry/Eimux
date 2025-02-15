@@ -15,7 +15,9 @@
 (pixel-scroll-precision-mode 1)
 (global-visual-line-mode 1)
 
-(use-package ns-auto-titlebar :straight t :config (ns-auto-titlebar-mode 1))
+(use-package ns-auto-titlebar
+  :straight t
+  :config (ns-auto-titlebar-mode 1))
 
 (use-package mood-line
   :straight t)
@@ -25,7 +27,6 @@
 (add-hook 'prog-mode-hook #'(lambda () (display-line-numbers-mode 1)))
 
 (require 'hl-line)
-
 (global-hl-line-mode t)
 
 (setq initial-scratch-message nil)
@@ -41,11 +42,6 @@
          doom-themes-enable-italic t)
    (doom-themes-visual-bell-config)
    (doom-themes-org-config))
-
-(use-package jbeans-theme :straight t)
-
-(use-package color-theme-sanityinc-solarized :straight t)
-(use-package color-theme-sanityinc-tomorrow :straight t)
 
 (load-theme 'doom-solarized-dark t)
 (provide 'ui-config)

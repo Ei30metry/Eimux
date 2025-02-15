@@ -15,7 +15,8 @@
         org-hide-emphasis-markers t
         org-return-follows-link t
         org-src-tab-acts-natively nil
-        org-agenda-files '("~/Agenda/tasks.org"  "~/Agenda/projects/specification.org"))
+        org-agenda-files '("~/Agenda/tasks.org"
+                           "~/Agenda/projects/specification.org"))
   :hook
   (org-agenda-mode . (lambda () (visual-line-mode -1) (toggle-truncate-lines 1))))
 
@@ -25,7 +26,7 @@
         ("py" . "src python")
         ("sq" . "src sql")
         ("hs" . "src haskell")
-        ("t" . "src tex")
+        ("t"  . "src tex")
         ("rs" . "src rust")
         ("c"  . "src c")
         ("tx" . "src txt")
@@ -43,7 +44,7 @@
        ("tT" "Today" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %t\nDEADLINE: %t")
        ("tl" "Process later" entry (file+headline "tasks.org" "Inbox") "* TODO %?")
        ("tp" "Project")
-       ("tps" "Specification" entry (file+headline "projects/specification.org" "Tasks") "* TODO %?")
+       ("tps" "Specification" entry (file+olp "projects/specification.org" "Tasks" "To Plan") "* TODO %?")
        ("tpg" "GHC" entry (file+headline "projects/ghc.org" "Tasks") "* TODO %?")
        ("tc" "Config")
        ("tce" "Emacs" entry (file+headline "config/emacs-config.org" "Tasks") "* TODO %?\n")

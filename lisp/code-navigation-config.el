@@ -13,7 +13,9 @@
 (use-package xref
   :straight t
   :config
-  (setq xref-prompt-for-identifier nil))
+  (setq xref-prompt-for-identifier nil)
+  :bind
+  ("C-?" . xref-find-references-and-replace))
 
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
@@ -46,6 +48,8 @@
           ("<C-m> C-w" . avy-goto-word-1)
           ("<C-m> <C-m>" . avy-goto-word-1)
           (:map isearch-mode-map
-           ("C-;" . avy-isearch)))
+                ("C-;" . avy-isearch)))
+
+(use-package p-search :straight (:host github :repo "zkry/p-search"))
 
 (provide 'code-navigation-config)

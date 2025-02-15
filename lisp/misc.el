@@ -38,6 +38,8 @@
 
 (use-package bnf-mode :straight t)
 
+(use-package verb :straight t)
+
 (use-package epa
   :straight t)
 
@@ -49,6 +51,8 @@
 
 (use-package w3m :straight t)
 
+(use-package fireplace :straight t)
+
 (add-hook 'comint-mode-hook #'(lambda () (display-line-numbers-mode 1)))
 
 (defun comint-ansi-color-process-output ()
@@ -58,6 +62,11 @@
 
 (use-package osx-plist
   :straight t)
+
+(use-package org-tree-slide
+  :straight t
+  :config
+  (setq org-image-actual-width nil))
 
 (setq disabled-command-function nil)
 

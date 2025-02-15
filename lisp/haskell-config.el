@@ -29,6 +29,10 @@
   (interactive)
   (browse-url (concat ghc-repo-url "-/merge_requests/" (number-to-string (number-at-point)))))
 
+;; (defun find-ghc-Note-at-point ()
+;;   (interactive)
+;;   ())
+
 (use-package dante
   :straight t
   :disabled
@@ -58,6 +62,13 @@
       (insert "{-\n")
       (goto-char (marker-position end-marker))
       (insert "-}"))))
+
+;; (defun haskell-comment-equations (start end)
+;;   (interactive "r")
+;;   (save-excursion
+;;     (let ((name (sexp-at-point)))
+;;       (isearch-forward name)
+;;       (beginning-of-visual-line))))
 
 (defun haskell-mode-copy-module-name (buffer)
   "Puts the module name into the killring"
@@ -125,7 +136,7 @@
     :demand t
     :config
     (require 'subword)
-    (setq haskell-font-lock-symbols t
+    (setq haskell-font-lock-symbols nil
           haskell-stylish-on-save nil
           haskell-process-log t
           haskell-process-sugggest-hoogle-imports t)

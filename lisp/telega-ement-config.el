@@ -1,5 +1,7 @@
 ;;; telega-ement-config.el --- Description -*- lexical-binding: t; -*-
 
+;; TODO: it seems like telega depends on rainbow-identifiers
+(use-package rainbow-identifiers :straight t)
 (require 'telega)
 
 (defun use-telega-fonts ()

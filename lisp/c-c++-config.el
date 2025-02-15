@@ -1,0 +1,1 @@
+(provide 'c-c++-config)

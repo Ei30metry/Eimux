@@ -30,46 +30,46 @@
 
 (use-package embark-consult :straight t)
 
-(use-package consult-omni
-    :straight (consult-omni
-               :type git
-               :host github
-               :repo "armindarvish/consult-omni"
-               :files (:defaults "sources/*.el"))
-    :config
-    (straight-use-package 'request)
-    (setq consult-omni-show-preview t
-          consult-omni-preview-key "C-i"
-          consult-omni-default-count 5
-          consult-omni-default-input-throttle 1.7
-          consult-embark-default-term #'vterm
-          consult-omni-default-browse-function 'browse-url
-          consult-omni-default-interactive-command #'consult-omni-multi
-          consult-omni-http-retrieve-backend 'request
-          consult-omni-open-with-prompt "λ. ")
-    (require 'consult-omni-sources)
-    (require 'consult-omni-embark)
-    (consult-omni-sources-load-modules)
-    (setq consult-omni-multi-sources '("calc"
-                                       "File"
-                                       "Apps"
-                                       "Google"
-                                       "GitHub"
-                                       "Org Agenda")
-          consult-omni-web-sources '("Wikipedia"
-                                     "Github")))
+;; (use-package consult-omni
+;;     :straight (consult-omni
+;;                :type git
+;;                :host github
+;;                :repo "armindarvish/consult-omni"
+;;                :files (:defaults "sources/*.el"))
+;;     :config
+;;     (straight-use-package 'request)
+;;     (setq consult-omni-show-preview t
+;;           consult-omni-preview-key "C-i"
+;;           consult-omni-default-count 5
+;;           consult-omni-default-input-throttle 1.7
+;;           consult-embark-default-term #'vterm
+;;           consult-omni-default-browse-function 'browse-url
+;;           consult-omni-default-interactive-command #'consult-omni-multi
+;;           consult-omni-http-retrieve-backend 'request
+;;           consult-omni-open-with-prompt "λ. ")
+;;     (require 'consult-omni-sources)
+;;     (require 'consult-omni-embark)
+;;     (consult-omni-sources-load-modules)
+;;     (setq consult-omni-multi-sources '("calc"
+;;                                        "File"
+;;                                        "Apps"
+;;                                        "Google"
+;;                                        "GitHub"
+;;                                        "Org Agenda")
+;;           consult-omni-web-sources '("Wikipedia"
+;;                                      "Github")))
 
-(defun consult-omni-web (&optional initial prompt sources no-callback &rest args)
-  "Interactive web search”
+;; (defun consult-omni-web (&optional initial prompt sources no-callback &rest args)
+;;   "Interactive web search”
 
-This is similar to `consult-omni-multi', but runs the search on
-web sources defined in `consult-omni-web-sources'.  See
-`consult-omni-multi' for more details.
-"
-  (interactive "P")
-  (let ((prompt (or prompt (concat "[" (propertize "consult-omni-web" 'face 'consult-omni-prompt-face) "]" " Search:  ")))
-        (sources (or sources consult-omni-web-sources)))
-    (consult-omni-multi initial prompt sources no-callback args)))
+;; This is similar to `consult-omni-multi', but runs the search on
+;; web sources defined in `consult-omni-web-sources'.  See
+;; `consult-omni-multi' for more details.
+;; "
+;;   (interactive "P")
+;;   (let ((prompt (or prompt (concat "[" (propertize "consult-omni-web" 'face 'consult-omni-prompt-face) "]" " Search:  ")))
+;;         (sources (or sources consult-omni-web-sources)))
+;;     (consult-omni-multi initial prompt sources no-callback args)))
 
 (use-package consult-notmuch
   :straight t
@@ -80,7 +80,7 @@ web sources defined in `consult-omni-web-sources'.  See
     :demand t
     :bind
     (:map minibuffer-mode-map
-    ("C-." . embark-act))
+          ("C-." . embark-act))
     :config
     (setq prefix-help-command #'embark-prefix-help-command))
 
