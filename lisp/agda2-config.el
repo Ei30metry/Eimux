@@ -1,6 +1,9 @@
 ;;; agda2-config.el --- Description -*- lexical-binding: t; -*-
 (setq agda-mode-directory
-      (file-name-directory (substring (shell-command-to-string "agda-mode locate") 0 -1)))
+      (file-name-directory (substring
+                            (shell-command-to-string "agda-mode locate")
+                            0
+                            -1)))
 
 (add-to-list 'load-path agda-mode-directory)
 

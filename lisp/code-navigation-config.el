@@ -50,6 +50,14 @@
           (:map isearch-mode-map
                 ("C-;" . avy-isearch)))
 
+(use-package anzu
+  :straight t
+  :config
+  (global-anzu-mode 1))
+
 (use-package p-search :straight (:host github :repo "zkry/p-search"))
+
+(use-package wgrep
+  :straight t)
 
 (provide 'code-navigation-config)

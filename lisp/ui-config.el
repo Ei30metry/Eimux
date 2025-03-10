@@ -4,7 +4,7 @@
       inhibit-startup-message t)
 
 (winner-mode 1)
-(setq display-line-numbers-type 'relative
+(setq display-line-numbers-type 't
       scroll-conservatively 101)
    (if (display-graphic-p)
        (menu-bar-mode 1)

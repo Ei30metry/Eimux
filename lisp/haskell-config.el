@@ -139,6 +139,7 @@
     (setq haskell-font-lock-symbols nil
           haskell-stylish-on-save nil
           haskell-process-log t
+          haskell-process-args-cabal-repl '("--ghc-option=-ferror-spans")
           haskell-process-sugggest-hoogle-imports t)
     :bind
     (:map haskell-mode-map
@@ -157,6 +158,8 @@
           ("C-c m" . haskell-navigate-imports)
           ("C-c C-n" . haskell-ds-forward-decl)
           ("C-c C-p" . haskell-ds-backward-decl)
+          ("C-x C-n" . next-error)
+          ("C-x C-p" . previous-error)
           ("M-n" . haskell-ds-forward-decl)
           ("M-p" . haskell-ds-backward-decl)
           ("M-g M-w" . avy-goto-subword-1)
@@ -172,6 +175,20 @@
     (haskell-mode . haskell-indentation-mode)
     (haskell-mode . haskell-decl-scan-mode)
     (haskell-mode . hindent-mode))
+
+;; TODO: Make this ask for options to pass to cabal repl so that we can
+;; have support for multiple home units
+;; (defun haskell-process-load-file-ask ()
+;;   "Load the current buffer file."
+;;   (interactive)
+;;   (save-buffer)
+;;   (haskell-interactive-mode-reset-error (haskell-session))
+;;   (haskell-process-file-loadish (format "load \"%s\"" (replace-regexp-in-string
+;;                                                        "\""
+;;                                                        "\\\\\""
+;;                                                        (buffer-file-name)))
+;;                                 nil
+;;                                 (current-buffer)))
 
 (use-package haskell-ng-mode
   :straight (:type git

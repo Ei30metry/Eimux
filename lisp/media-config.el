@@ -1,4 +1,4 @@
-;;; emms-config.el --- Description -*- lexical-binding: t; -*-
+;;; media-config.el --- Description -*- lexical-binding: t; -*-
 
 (global-unset-key (kbd "C-x C-v"))
 
@@ -26,4 +26,11 @@
    ("C-x C-v C-v" . podcast-utils/open-write-note)
    ("C-x C-v C-o" . podcast-utils/open-episode-buffer))
 
-(provide 'emms-config)
+(use-package empv
+  :straight t
+  :config
+  (setq empv-invidious-instance "https://inv.nadeko.net/")
+  (with-eval-after-load 'embark (empv-embark-initialize-extra-actions))
+  (add-to-list 'empv-mpv-args "--ytdl-format=bestvideo+bestaudio/best[ext=mp4]/best"))
+
+(provide 'media-config)

@@ -34,7 +34,8 @@
   :config
   (auto-revert-mode 1)
   (setq auto-revert-verbose nil
-        pdf-view-use-scaling t)
+        pdf-view-use-scaling t
+        pdf-view-midnight-colors '("#ebdbb2" . "#282828"))
   :hook
   (pdf-view-mode . pdf-view-midnight-minor-mode))
 

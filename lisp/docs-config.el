@@ -1,6 +1,5 @@
 (use-package helpful
   :straight t
-  :demand t
   :bind
   ("C-h k" . helpful-key)
   ("C-h v" . helpful-variable)

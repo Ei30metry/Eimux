@@ -23,7 +23,6 @@
 (use-package biome :straight t)
 
 (use-package aria2 :straight t)
-(require 'aria2)
 
 (use-package speed-type
     :straight t
@@ -67,6 +66,16 @@
   :straight t
   :config
   (setq org-image-actual-width nil))
+
+(use-package leetcode
+  :straight t)
+
+(use-package hackerrank
+  :straight (hackerrank
+             :type git
+             :host github
+             :repo "jun8git/emacs-hackerrank"
+             :filed (".el")))
 
 (setq disabled-command-function nil)
 

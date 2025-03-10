@@ -81,7 +81,7 @@
 (use-package markdown-mode :straight t)
 (require 'serialization-stuff)
 (require 'writing-utils)
-(require 'emms-config)
+(require 'media-config)
 (require 'mail-config)
 (require 'telega-ement-config)
 (require 'elfeed-config)

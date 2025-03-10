@@ -11,6 +11,8 @@
   (:map dired-mode-map
         ("C-j" . dired-jump))
   :config
+  (let ((gls (executable-find "gls")))
+    (when gls (setq insert-directory-program gls)))
   (require 'dired-x)
   (setq dired-kill-when-opening-new-dired-buffer t))
 

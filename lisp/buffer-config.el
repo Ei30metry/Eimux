@@ -6,8 +6,7 @@
 (setq switch-to-buffer-obey-display-actions t)
 
 (setq display-buffer-alist
-      '(
-        ((or . ((derived-mode . helpful-mode)
+      '(((or . ((derived-mode . helpful-mode)
                 (derived-mode . idris2-info-mode)
                "\\*\\(Help\\|haskell-compilation\\|compilation\\|sly-description\\|sly-macroexpansion\\|toc\\)\\*"))
          (display-buffer-reuse-mode-window
@@ -77,6 +76,10 @@ REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\|idris2-repl\\|te
            (and (get-buffer buffer)
             (kill-buffer buffer)))))
 
+(global-auto-revert-mode 1)
+(setq global-auto-revert-non-file-buffers t
+      auto-revert-verbose nil)
+
 (use-package mode-local
   :straight t)
 
@@ -89,6 +92,31 @@ REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\|idris2-repl\\|te
 (save-place-mode 1)
 
 (require 'ibuffer)
+(define-ibuffer-column size-h
+  (:name "Size" :inline t)
+  (file-size-human-readable (buffer-size)))
+
+(setq ibuffer-formats
+      '((mark modified read-only vc-status-mini " "
+              (name 22 22 :left :elide)
+              " "
+              (size-h 9 -1 :right)
+              " "
+              (mode 12 12 :left :elide)
+              " "
+              vc-relative-file)
+        (mark modified read-only vc-status-mini " "
+              (name 22 22 :left :elide)
+              " "
+              (size-h 9 -1 :right)
+              " "
+              (mode 14 14 :left :elide)
+              " "
+              (vc-status 12 12 :left)
+              " "
+              vc-relative-file)))
+
+(setq ibuffer-filter-group-name-face 'font-lock-doc-face)
 
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 (global-set-key (kbd "C-x K") 'kill-buffer)
@@ -96,7 +124,7 @@ REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\|idris2-repl\\|te
 (use-package discover-my-major
   :straight t
   :bind
-  ("C-h <C-m> . discover-my-major")
+  ("C-h <C-m>" . "discover-my-major")
   ("C-h M-m" . discover-my-mode))
 
 (provide 'buffer-config)
