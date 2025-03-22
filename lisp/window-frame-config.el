@@ -1,6 +1,7 @@
 ;;; window-frame-config.el --- Description -*- lexical-binding: t; -*-
 
 (setq confirm-kill-emacs 'y-or-n-p)
+(set-frame-parameter nil 'internal-border-width 0)
 
 (use-package perspective
   :straight t

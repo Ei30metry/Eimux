@@ -12,6 +12,7 @@
     (LaTeX-mode . display-line-numbers-mode)
     (LaTeX-mode . prettify-symbols-mode)
     (LaTeX-mode . smartparens-mode)
+    (tex-after-compilation-finished-functions . TeX-revert-document-buffer)
     :bind
     ;; (:map LaTeX-mdoe-map
     ;; ("<C-m> C-w" . avy-goto-subword-1)

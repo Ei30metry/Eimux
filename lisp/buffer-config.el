@@ -92,6 +92,20 @@ REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\|idris2-repl\\|te
 (save-place-mode 1)
 
 (require 'ibuffer)
+
+
+
+(use-package ibuffer-vc :straight t :after ibuffer)
+
+(defun ibuffer-set-up-preferred-filters ()
+  (ibuffer-vc-set-filter-groups-by-vc-root)
+  (unless (eq ibuffer-sorting-mode 'filename/process)
+    (ibuffer-do-sort-by-filename/process)))
+
+(add-hook 'ibuffer-hook 'ibuffer-set-up-preferred-filters)
+
+(setq-default ibuffer-show-empty-filter-groups nil)
+
 (define-ibuffer-column size-h
   (:name "Size" :inline t)
   (file-size-human-readable (buffer-size)))
@@ -117,6 +131,8 @@ REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\|idris2-repl\\|te
               vc-relative-file)))
 
 (setq ibuffer-filter-group-name-face 'font-lock-doc-face)
+
+(global-set-key (kbd "C-x C-b" ) 'ibuffer)
 
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 (global-set-key (kbd "C-x K") 'kill-buffer)

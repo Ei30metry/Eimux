@@ -24,19 +24,6 @@
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 
-(use-package sr-speedbar
-  :straight t
-  :config
-  (speedbar-add-supported-extension ".hs")
-  (setq speedbar-use-images nil
-        sr-speedbar-right-side nil)
-  :bind
-  (:map speedbar-mode-map
-        ("<TAB>" . speedbar-expand-line)
-        ("<backtab>" . speedbar-contract-line)
-        ("q" . sr-speedbar-close)
-        ("Q" . nil)))
-
 (use-package avy
     :straight t
     :demand t
@@ -49,6 +36,8 @@
           ("<C-m> <C-m>" . avy-goto-word-1)
           (:map isearch-mode-map
                 ("C-;" . avy-isearch)))
+
+(use-package phi-search :straight t)
 
 (use-package anzu
   :straight t

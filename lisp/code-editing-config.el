@@ -33,7 +33,11 @@
 
 (global-set-key (kbd "<C-m> C-o") 'occur)
 
-(use-package multiple-cursors :straight t)
+(use-package multiple-cursors
+  :straight t
+  :bind
+  ("C->" . mc/edit-ends-of-lines)
+  ("C-<" . mc/edit-beginnings-of-lines))
 
 (use-package vundo
   :straight t
