@@ -22,7 +22,6 @@
    (nov-mode . reading-setup))
 
 (use-package pdf-tools
-  :straight t
   :demand t
   :bind
   (:map pdf-view-mode-map ("g" . revert-buffer-quick)
@@ -77,11 +76,6 @@
 
 (use-package pdf-cache
   :hook ((pdf-view-mode . pdf-cache-prefetch-minor-mode)))
-
-
-(defun ei30/pdf-view-dark-mode ()
-  (interactive)
-  (message "TODO"))
 
 (use-package djvu :straight t)
 

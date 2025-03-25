@@ -28,8 +28,10 @@
 
 (use-package zzz-to-char
   :straight t
-  :bind ("M-z" . zzz-to-char-up-to-char)
-  :demand t)
+  :demand t
+  :bind
+  ("M-z" . zzz-to-char-up-to-char)
+  ("C-'" . zzz-to-char-up-to-char))
 
 (global-set-key (kbd "<C-m> C-o") 'occur)
 
