@@ -6,35 +6,34 @@
 (use-package tab-bar-mode
   :bind
   ("C-x C-, C-," . tab-switch)
-  ("C-x C-, C-k" . tab-close)
-  ("C-x C-, C-K" . tab-close-other)
+  ("C-x C-, C-o" . tab-recent)
 
-  ("C-x C-, C-n" . tab-next)
+  ("C-x C-, r"   . tab-rename)
+  ("C-x C-, k"   . tab-close)
+  ("C-x C-, K"   . tab-close-other)
+  ("C-x C-, d"   . tab-bar-echo-area-print-tab-name)
+
+  ("C-x C-, n"   . tab-next)
   ("s-]"         . tab-next)
 
-  ("C-x C-, C-p" . tab-previous)
-  ("s-["         . tab-previous)
+  ("C-x C-, p"   . tab-previous)
+  ("s-["         . tab-previous))
+
+(use-package activities
+  :straight
+  (activities
+   :type git
+   :host github
+   :repo "alphapapa/activities.el"
+   :files ("*.el")))
+
+(use-package tab-bar-echo-area
+  :straight t
   :config
-  (tab-bar-mode 1)
-  (setq tab-bar-show nil))
+  (tab-bar-echo-area-mode 1))
 
 (global-set-key (kbd "C-x b") 'consult-buffer)
 (global-set-key (kbd "C-.") 'consult-buffer)
-
-;; (use-package perspective
-;;   :straight t
-;;   :custom
-;;   (persp-mode-prefix-key (kbd "C-x C-,"))
-;;   :bind
-;;   ("C-x k" . (lambda () (interactive) (persp-kill-buffer* nil)))
-;;   ("C-x C-, C-," . persp-switch)
-;;   ("C-x C-, C-." . persp-switch-last)
-;;   ("C-x K" . persp-kill-buffer*)
-;;   ("C-." . persp-switch-to-buffer*)
-;;   ("C-x b" . switch-to-buffer)
-;;   :init
-;;   (setq persp-initial-frame-name "misc")
-;;   (persp-mode))
 
 (global-set-key (kbd "C-x w m") 'maximize-window)
 (global-set-key (kbd "C-x w u") 'winner-undo)
@@ -100,7 +99,7 @@
 
 (use-package ligature :straight t)
 
-(use-package show-font :straigh t)
+(use-package show-font :straight t)
 
 (defun ask-before-closing ()
   "Close only if y was pressed."
@@ -113,22 +112,22 @@
   (global-set-key (kbd "C-x C-c") 'ask-before-closing))
 
 (use-package ace-window
-        :straight t
-        :demand t
-        :config
-        (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
-              aw-dispatch-always t)
-        :bind
-        ("C-x o" . other-window)
-        ("M-o" . ace-window))
+  :straight t
+  :demand t
+  :config
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
+        aw-dispatch-always t)
+  :bind
+  ("C-x o" . other-window)
+  ("M-o" . ace-window))
 
 (use-package ultra-scroll
   :straight
   (ultra-scroll
-   :type git
-   :host github
-   :repo "jdtsmith/ultra-scroll"
-   :files ("*.el"))
+    :type git
+    :host github
+    :repo "jdtsmith/ultra-scroll"
+    :files ("*.el"))
   :config
   (ultra-scroll-mode 1))
 
