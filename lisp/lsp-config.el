@@ -27,6 +27,16 @@
         '((haskell (plugin (stan (globalOn . :json-false))))))
   (setq eglot-confirm-server-initiated-edits nil))
 
+(use-package eglot-booster
+  :straight (eglot-booster
+             :type git
+             :host github
+             :repo "jdtsmith/eglot-booster"
+             :files ("*.el"))
+  :after eglot
+  :config
+  (eglot-booster-mode))
+
 (use-package eglot-x
   :straight (eglot-x
 	     :type git
