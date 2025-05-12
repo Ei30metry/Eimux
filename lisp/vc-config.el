@@ -15,6 +15,8 @@
 
 (use-package browse-at-remote :straight t)
 
+(use-package git-timemachine :straight t)
+
 (use-package git-undo :straight t)
 
 (use-package git-modes :straight t)

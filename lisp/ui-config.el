@@ -27,7 +27,6 @@
 (add-hook 'prog-mode-hook #'(lambda () (display-line-numbers-mode 1)))
 
 (require 'hl-line)
-(global-hl-line-mode t)
 
 (setq initial-scratch-message nil)
 
@@ -43,5 +42,5 @@
    (doom-themes-visual-bell-config)
    (doom-themes-org-config))
 
-(load-theme 'doom-solarized-dark t)
+(load-theme 'doom-1337 t)
 (provide 'ui-config)

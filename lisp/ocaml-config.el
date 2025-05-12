@@ -4,7 +4,10 @@
   :straight t)
 
 (use-package merlin
-    :straight t
-    :after tuareg)
+  :straight t
+  :after tuareg)
+
+(use-package utop
+  :straight t)
 
 (provide 'ocaml-config)

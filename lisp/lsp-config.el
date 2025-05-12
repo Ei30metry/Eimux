@@ -22,10 +22,16 @@
   ("C-c C-e C-s C-r" . eglot-reconnect)
   ("C-c C-e C-s C-s" . eglot-shutdown)
   ("C-c C-e C-s C-a" . eglot-shutdown-all))
+  :init
+  (setq project-vc-extra-root-markers '(".project"
+                                        "*.cabal"
+                                        "requirements.txt"
+                                        "autogen.sh"))
   :config
   (setq-default eglot-workspace-configuration
         '((haskell (plugin (stan (globalOn . :json-false))))))
-  (setq eglot-confirm-server-initiated-edits nil))
+  (setq eglot-confirm-server-initiated-edits nil
+        eglot-events-buffer-config '(:size 0 :format full)))
 
 (use-package eglot-booster
   :straight (eglot-booster

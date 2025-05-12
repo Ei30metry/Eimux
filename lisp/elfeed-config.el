@@ -19,6 +19,7 @@
                         ("https://rss.arxiv.org/atom/math.LO" math logic)
                         ("https://rss.arxiv.org/rss/cs.DS" CS DS)
                         ("https://rss.arxiv.org/rss/cs.LO" CS logic)
+                        ("https://okmij.org/ftp/rss.xml" CS logic haskell ocaml)
                         ("https://rss.arxiv.org/rss/cs.DM" CS DM)
                         ("https://rss.arxiv.org/rss/cs.PL" CS PL)
                         ("https://rss.arxiv.org/rss/cs.FL" CS PL)

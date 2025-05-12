@@ -3,15 +3,33 @@
 (setq confirm-kill-emacs 'y-or-n-p)
 (set-frame-parameter nil 'internal-border-width 0)
 
+(defun tab-switch-no-tab-bar (name)
+  "Doesn't turn tab-bar-mode on when switching to a new tab"
+  (interactive
+   (let* ((recent-tabs (mapcar (lambda (tab)
+                                 (alist-get 'name tab))
+                               (tab-bar--tabs-recent))))
+     (list (completing-read (format-prompt "Switch to tab by name"
+                                           (car recent-tabs))
+                            recent-tabs nil nil nil nil recent-tabs))))
+  (tab-bar-switch-to-tab name)
+  (if tab-bar-mode
+      (tab-bar-mode -1)))
+
+;; TODO: Set C-x C-, as the prefix for tab-bar commands
 (use-package tab-bar-mode
   :bind
-  ("C-x C-, C-," . tab-switch)
-  ("C-x C-, C-o" . tab-recent)
+  ("C-x C-, C-," . tab-switch-no-tab-bar)
+  ("C-x C-, s"   . tab-switch-no-tab-bar)
+  ("C-x C-, C-." . tab-recent)
+
+  ("C-x C-, C-s" . desktop-save)
+  ("C-x C-, C-l" . desktop-read)
 
   ("C-x C-, r"   . tab-rename)
   ("C-x C-, k"   . tab-close)
   ("C-x C-, K"   . tab-close-other)
-  ("C-x C-, d"   . tab-bar-echo-area-print-tab-name)
+  ("C-x C-, e"   . tab-bar-echo-area-print-tab-name)
 
   ("C-x C-, n"   . tab-next)
   ("s-]"         . tab-next)
@@ -118,8 +136,8 @@
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
         aw-dispatch-always t)
   :bind
-  ("C-x o" . other-window)
-  ("M-o" . ace-window))
+  ("M-o" . ace-window)
+  ("C-x o" . other-window))
 
 (use-package ultra-scroll
   :straight

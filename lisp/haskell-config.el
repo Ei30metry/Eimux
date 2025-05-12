@@ -141,6 +141,8 @@
           haskell-process-log t
           haskell-process-args-cabal-repl '("--ghc-option=-ferror-spans")
           haskell-process-sugggest-hoogle-imports t)
+    (set-face-foreground 'haskell-type-face "Orange")
+    (set-face-foreground 'haskell-constructor-face "Orange")
     :bind
     (:map haskell-mode-map
           ("<C-m> C-w" . avy-goto-subword-1)

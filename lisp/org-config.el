@@ -11,12 +11,14 @@
   (setq org-startup-indented t
         org-directory "~/Agenda"
         org-log-into-drawer t
+        org-log-done 'time
+        org-insert-heading-respect-content t
         org-treat-insert-todo-heading-as-state-change t
         org-hide-emphasis-markers t
         org-return-follows-link t
         org-src-tab-acts-natively nil
-        org-agenda-files '("~/Agenda/tasks.org"
-                           "~/Agenda/projects/specification.org"))
+        org-todo-keywords '((sequence "TODO(t)" "WAIT(w!)" "|" "CANCEL(c!)" "DONE(d!)"))
+        org-agenda-files '("~/Agenda/tasks.org"))
   :hook
   (org-agenda-mode . (lambda () (visual-line-mode -1) (toggle-truncate-lines 1))))
 
@@ -26,10 +28,10 @@
         ("py" . "src python")
         ("sq" . "src sql")
         ("hs" . "src haskell")
-        ("t"  . "src tex")
+        ("lt"  . "src latex")
         ("rs" . "src rust")
         ("c"  . "src c")
-        ("tx" . "src txt")
+        ("t" . "src txt")
         ("o" . "src ott")))
 
 (use-package org-books
@@ -39,17 +41,16 @@
  (setq org-books-file "~/Agenda/books.org"))
 
 (setq org-capture-templates
-     '(("t" "Task")
-       ("tt" "Planned" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %^t\nDEADLINE: %^t")
-       ("tT" "Today" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %t\nDEADLINE: %t")
-       ("tl" "Process later" entry (file+headline "tasks.org" "Inbox") "* TODO %?")
-       ("tp" "Project")
-       ("tps" "Specification" entry (file+olp "projects/specification.org" "Tasks" "To Plan") "* TODO %?")
-       ("tpg" "GHC" entry (file+headline "projects/ghc.org" "Tasks") "* TODO %?")
-       ("tc" "Config")
-       ("tce" "Emacs" entry (file+headline "config/emacs-config.org" "Tasks") "* TODO %?\n")
-       ("tcn" "Nix" entry (file+headline "config/nix.org" "Tasks") "* TODO %?\n  %i")
-       ("a" "Ask" entry (file+headline "projects/specification.org" "QUESTIONS") "* QUESTION %?\n")))
+      '(("T" "Planned" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %^t\nDEADLINE: %^t")
+        ("t" "Today" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %t")
+        ;; ("m" "Tomorrow" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %(t+1)\nDEADLINE: %(t+1)") TODO: Fix this
+        ("l" "Process later" entry (file+headline "tasks.org" "Inbox") "* TODO %?")
+        ("p" "Project")
+        ("ps" "Specification" entry (file+olp "projects/specification.org" "Tasks" "To Plan") "* TODO %?")
+        ("pg" "GHC" entry (file+headline "projects/ghc.org" "Tasks") "* TODO %?")
+        ("c" "Config")
+        ("ce" "Emacs" entry (file+headline "config/emacs-config.org" "Tasks") "* TODO %?\n")
+        ("cn" "Nix" entry (file+headline "config/nix.org" "Tasks") "* TODO %?\n  %i")))
 
 (global-unset-key (kbd "C-x C-r"))
 
@@ -97,5 +98,28 @@
  :after org
  :hook
  (org-mode . toc-org-mode))
+
+(defun my/org-roam-copy-todo-to-today ()
+  (interactive)
+  (let ((org-refile-keep t) ;; Set this to nil to delete the original!
+        (org-roam-dailies-capture-templates
+          '(("t" "tasks" entry "%?"
+             :if-new (file+head+olp "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n" ("Tasks")))))
+        (org-after-refile-insert-hook #'save-buffer)
+        today-file
+        pos)
+    (save-window-excursion
+      (org-roam-dailies--capture (current-time) t)
+      (setq today-file (buffer-file-name))
+      (setq pos (point)))
+
+    (unless (equal (file-truename today-file)
+                   (file-truename (buffer-file-name)))
+      (org-refile nil nil (list "Tasks" today-file nil pos)))))
+
+(add-to-list 'org-after-todo-state-change-hook
+             (lambda ()
+               (when (equal org-state "DONE")
+                 (my/org-roam-copy-todo-to-today))))
 
 (provide 'org-config)

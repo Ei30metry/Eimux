@@ -93,6 +93,8 @@
             (lambda ()
               (proced-toggle-auto-update 1))))
 
+(use-package emacs-everywhere :straight t)
+
 (global-set-key (kbd "C-x C-. C-z r") #'(lambda () (interactive) (find-file "~/.zshrc")))
 (global-set-key (kbd "C-x C-. C-z p") #'(lambda () (interactive) (find-file "~/.zprofile")))
 (global-set-key (kbd "C-x C-. C-z e") #'(lambda () (interactive) (find-file "~/.zshenv")))

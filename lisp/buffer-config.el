@@ -8,7 +8,7 @@
 (setq display-buffer-alist
       '(((or . ((derived-mode . helpful-mode)
                 (derived-mode . idris2-info-mode)
-               "\\*\\(Help\\|haskell-compilation\\|compilation\\|sly-description\\|sly-macroexpansion\\|toc\\)\\*"))
+           "\\*\\(Help\\|haskell-compilation\\|compilation\\|sly-description\\|sly-macroexpansion\\|toc\\)\\*"))
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)
           (window-height . 20)
@@ -43,12 +43,22 @@ REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\|idris2-repl\\|te
           display-buffer-below-selected)
          (window-height . 20)
          (body-function . select-window))
+
         ("\\*Org Src*"
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)
          (window-height . 45)
          (body-function . select-window))
-        ("Capture-*"
+
+        ((or . ("Capture*" ;; TODO: This isn't always working.
+                "CAPTUTE*"
+                (derived-mode . org-capture-mode)))
+         (display-buffer-reuse-mode-window
+          display-buffer-below-selected)
+         (window-height . 20)
+         (body-function . select-window))
+
+        ("\\*Calendar\\*"
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)
          (window-height . 20)
@@ -67,8 +77,7 @@ REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\|idris2-repl\\|te
 
         ("\\*Warnings\\*"
          (display-buffer-no-window)
-         (allow-no-window . t))
-       ))
+         (allow-no-window . t))))
 
 (add-hook 'minibuffer-exit-hook
       #'(lambda ()
@@ -133,6 +142,8 @@ REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\|idris2-repl\\|te
 (setq ibuffer-filter-group-name-face 'font-lock-doc-face)
 
 (global-set-key (kbd "C-x C-b" ) 'ibuffer)
+(global-set-key (kbd "C-x 4 b") 'consult-buffer-other-window)
+(global-set-key (kbd "C-x 5 b") 'consult-buffer-other-frame)
 
 (global-set-key (kbd "C-x k") 'kill-current-buffer)
 (global-set-key (kbd "C-x K") 'kill-buffer)

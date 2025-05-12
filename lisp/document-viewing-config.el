@@ -25,10 +25,10 @@
   :demand t
   :bind
   (:map pdf-view-mode-map ("g" . revert-buffer-quick)
-                          ("M-s o" . occur)
-                          ("<C-m> C-o" . occur)
-                          ("o" . pdf-outline)
-                          ("M-g M-g" . pdf-view-goto-page))
+        ("M-s o" . occur)
+        ("<C-m> C-o" . occur)
+        ("o" . pdf-outline)
+        ("M-g M-g" . pdf-view-goto-page))
   :mode
   (("\\.pdf\\'" . pdf-view-mode))
   :custom
@@ -48,8 +48,7 @@
                              pdf-cache-prefetch-minor-mode))
   :config
   (setq auto-revert-verbose nil
-        pdf-view-use-scaling t
-        pdf-view-midnight-colors '("#ebdbb2" . "#282828"))
+        pdf-view-use-scaling t)
   (pdf-tools-install)
   :hook
   (pdf-view-mode . pdf-view-midnight-minor-mode))
@@ -86,5 +85,7 @@
      :host github
      :repo "dalanicolai/djvu3"
      :files (".el")))
+
+(use-package shrface :straight t)
 
 (provide 'document-viewing-config)
