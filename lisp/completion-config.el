@@ -24,6 +24,15 @@
 (setq xref-show-xrefs-function #'consult-xref
       xref-show-definitions-function #'consult-xref)
 
+(use-package consult-jump-project
+  :straight (consult-jump-project :type git :host github :repo "jdtsmith/consult-jump-project")
+  :custom
+  (consult-jump-direct-jump-modes '(dired-mode))
+  (recentf-filename-handlers (lambda (f)
+                               (if (file-remote-p f) f
+                                 (abbreviate-file-name f))))
+  :bind ("C-x p p" . consult-jump-project))
+
 (use-package consult-eglot
   :straight t
   :after eglot)

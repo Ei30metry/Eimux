@@ -14,6 +14,9 @@
   (let ((gls (executable-find "gls")))
     (when gls (setq insert-directory-program gls)))
   (require 'dired-x)
-  (setq dired-kill-when-opening-new-dired-buffer t))
+  (setq dired-kill-when-opening-new-dired-buffer t
+        dired-listing-switches "-alFh"))
+
+(use-package disk-usage :straight t)
 
 (provide 'dired-config)

@@ -29,8 +29,15 @@
 
 (use-package citar
   :straight t
+  :custom
+  (org-cite-global-bibliography '("~/Research/artin.bib"))
+  (org-cite-insert-processor 'citar)
+  (org-cite-follow-processor 'citar)
+  (org-cite-activate-processor 'citar)
+
   :config
-  (setq citar-bibliography '("~/Research/artin.bib"))
+  (setq citar-bibliography '("~/Research/artin.bib")
+        citar-notes-paths '("~/Roam/bibliographic-notes"))
   :hook
   (LaTeX-mode . citar-capf-setup)
   (org-mode   . citar-capf-setup))

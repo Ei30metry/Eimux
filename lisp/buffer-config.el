@@ -5,9 +5,12 @@
 (setq initial-major-mode 'emacs-lisp-mode)
 (setq switch-to-buffer-obey-display-actions t)
 
+(setq before-save-hook '(delete-trailing-whitespace))
+
 (setq display-buffer-alist
       '(((or . ((derived-mode . helpful-mode)
                 (derived-mode . idris2-info-mode)
+                (derived-mode . sly-db-mode)
            "\\*\\(Help\\|haskell-compilation\\|compilation\\|sly-description\\|sly-macroexpansion\\|toc\\)\\*"))
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)

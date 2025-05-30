@@ -25,14 +25,15 @@
 (require 'org-tempo)
 (setq org-structure-template-alist
       '(("el" . "src emacs-lisp")
+        ("cl" . "src common-lisp")
         ("py" . "src python")
         ("sq" . "src sql")
         ("hs" . "src haskell")
-        ("lt"  . "src latex")
+        ("lt" . "src latex")
         ("rs" . "src rust")
         ("c"  . "src c")
-        ("t" . "src txt")
-        ("o" . "src ott")))
+        ("t"  . "src txt")
+        ("o"  . "src ott")))
 
 (use-package org-books
  :straight t
@@ -41,16 +42,11 @@
  (setq org-books-file "~/Agenda/books.org"))
 
 (setq org-capture-templates
-      '(("T" "Planned" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %^t\nDEADLINE: %^t")
+      '(("l" "Process later" entry (file+headline "tasks.org" "To process") "* TODO %?")
+        ("s" "Planned" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %^t")
         ("t" "Today" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %t")
-        ;; ("m" "Tomorrow" entry (file+headline "tasks.org" "Planned") "* TODO %?\nSCHEDULED: %(t+1)\nDEADLINE: %(t+1)") TODO: Fix this
-        ("l" "Process later" entry (file+headline "tasks.org" "Inbox") "* TODO %?")
-        ("p" "Project")
-        ("ps" "Specification" entry (file+olp "projects/specification.org" "Tasks" "To Plan") "* TODO %?")
-        ("pg" "GHC" entry (file+headline "projects/ghc.org" "Tasks") "* TODO %?")
-        ("c" "Config")
-        ("ce" "Emacs" entry (file+headline "config/emacs-config.org" "Tasks") "* TODO %?\n")
-        ("cn" "Nix" entry (file+headline "config/nix.org" "Tasks") "* TODO %?\n  %i")))
+        ("m" "Tomorrow" entry (file+headline "tasks.org" "Planned")
+         "* TODO %?\nSCHEDULED: %(format-time-string \"<%Y-%m-%d>\" (time-add (current-time) (days-to-time 1)))")))
 
 (global-unset-key (kbd "C-x C-r"))
 
@@ -99,6 +95,8 @@
  :hook
  (org-mode . toc-org-mode))
 
+(use-package org-pomodoro :straight t)
+
 (defun my/org-roam-copy-todo-to-today ()
   (interactive)
   (let ((org-refile-keep t) ;; Set this to nil to delete the original!
@@ -121,5 +119,24 @@
              (lambda ()
                (when (equal org-state "DONE")
                  (my/org-roam-copy-todo-to-today))))
+
+(use-package websocket-bridge
+  :straight
+  (websocket-bridge
+   :repo "ginqi7/websocket-bridge"
+   :host github
+   :type git
+   :files ("*.el")))
+
+(use-package org-reminders
+  :straight (org-reminders
+             :type git
+             :host github
+             :repo "ginqi7/org-reminders"
+             :files ("*.el"))
+  :config
+  (setq org-reminders-sync-file "/Users/artin/Agenda/tasks.org"))
+
+(use-package org-reminders-cli)
 
 (provide 'org-config)

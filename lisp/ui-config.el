@@ -43,4 +43,5 @@
    (doom-themes-org-config))
 
 (load-theme 'doom-1337 t)
+
 (provide 'ui-config)

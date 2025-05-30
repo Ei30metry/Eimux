@@ -79,6 +79,11 @@
 
 (setq disabled-command-function nil)
 
+(use-package gcmh
+  :straight t
+  :config
+  (gcmh-mode 1))
+
 (use-package proced
   :defer t
   :custom
@@ -95,6 +100,10 @@
 
 (use-package emacs-everywhere :straight t)
 
+(use-package devdocs :straight t)
+
+(use-package exercism :straight t)
+
 (global-set-key (kbd "C-x C-. C-z r") #'(lambda () (interactive) (find-file "~/.zshrc")))
 (global-set-key (kbd "C-x C-. C-z p") #'(lambda () (interactive) (find-file "~/.zprofile")))
 (global-set-key (kbd "C-x C-. C-z e") #'(lambda () (interactive) (find-file "~/.zshenv")))
@@ -108,11 +117,8 @@
 (global-set-key (kbd "M-j") 'join-line)
 (global-set-key (kbd "M-RET") 'default-indent-new-line)
 (global-set-key (kbd "C-x <C-m>") 'execute-extended-command)
-(global-set-key (kbd "C-x p /") 'consult-ripgrep)
 (global-set-key (kbd "C-x M-f") 'consult-fd)
-(global-set-key (kbd "C-x p b") 'consult-project-buffer)
-(global-set-key (kbd "C-x p n") 'project-note-file)
-(global-set-key (kbd "C-x p C") 'project-recompile)
+(global-set-key (kbd "M-/") 'dabbrev-completion)
 
 (global-unset-key (kbd "C-<mouse-5>"))
 (global-unset-key (kbd "C-<wheel-up>"))

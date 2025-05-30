@@ -5,6 +5,8 @@
 
 (use-package llama :straight t)
 
+(use-package transducers :straight t)
+
 (use-package esup
   :straight t)
 
@@ -23,7 +25,8 @@
   :bind
   (:map emacs-lisp-mode-map
    ("C-c C-k" . eval-buffer)
-   ("C-c C-z" . ielm)) ;; TODO write a proper switch-to-ielm
+   ("C-c C-z" . ielm)
+   ("C-c C-c" . eval-defun)) ;; TODO write a proper switch-to-ielm
   :hook
   (emacs-lisp-mode . smartparens-strict-mode))
 

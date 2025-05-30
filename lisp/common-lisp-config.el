@@ -3,13 +3,18 @@
 (use-package sly
   :straight t
   :demand t
-  :config
-  (setq inferior-lisp-program (executable-find "sbcl")
-        sly-completion-mode nil)
   :hook
   (common-lisp-mode . smartparens-strict-mode)
-  (lisp-mode . smartparens-strict-mode)
-  (sly-mrepl-mode . smartparens-strict-mode)
+  (lisp-mode        . smartparens-strict-mode)
+  (lisp-mode        . (lambda ()
+                          (when (string= (buffer-name) "*sly-description*")
+                            (display-line-numbers-mode -1))))
+  (sly-mrepl-mode   . smartparens-strict-mode)
+  :config
+  (setq inferior-lisp-program (executable-find "sbcl")
+        sly-symbol-completion-mode nil
+        sly-complete-symbol-function #'sly-simple-completions)
+  (setq-local )
   :bind
   (:map lisp-mode-map
         ("C-c C-d C-h" . nil)

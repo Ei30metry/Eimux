@@ -80,7 +80,7 @@
           "Output\\*$"
           "\\*Backtrace\\*"
           "\\*Async Shell Command\\*"
-          "\\*sly-\\(macroexpansion\\|descrition\\)\\*"
+          "\\*sly-\\(macroexpansion\\|description\\|db for*\\)\\*"
           help-mode
           compilation-mode
           haskell-interactive-mode
@@ -96,6 +96,7 @@
           idris2-compiler-notes-mode
           sly-mrepl-mode
           inferior-emacs-lisp-mode
+          sly-db-mode
           term-mode
           eshell-mode))
   (popper-mode +1)
