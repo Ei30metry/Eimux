@@ -21,17 +21,13 @@
 
 (defvar ghc-repo-url "https://gitlab.haskell.org/ghc/ghc/")
 
-(defun open-ghc-issue-at-point ()
+(defun open-issue-at-point ()
   (interactive)
   (browse-url (concat ghc-repo-url "-/issues/" (number-to-string (number-at-point)))))
 
-(defun open-ghc-MR-at-point ()
+(defun open-MR-at-point ()
   (interactive)
   (browse-url (concat ghc-repo-url "-/merge_requests/" (number-to-string (number-at-point)))))
-
-;; (defun find-ghc-Note-at-point ()
-;;   (interactive)
-;;   ())
 
 (use-package dante
   :straight t
@@ -131,52 +127,94 @@
   (add-to-list 'vertico-multiform-commands
                '(consult-hoogle buffer)))
 
+(defun fix-doom-1337-haskell-faces ()
+  "Change the default faces for `haskell-constructor-face' and
+`haskell-type-face'set by doom-1337 to orange"
+  (interactive)
+  (let ((doom-1337-theme (custom-theme-enabled-p 'doom-1337))
+        (CL-face (face-attribute 'font-lock-type-face :foreground))
+        (orange "#ff9200")
+        (faces (list 'haskell-type-face 'haskell-constructor-face))
+        (correct-haskell-type-face ))
+    (mapcar (lambda (face)
+              (set-face-foreground face (if doom-1337-theme
+                                            orange
+                                          CL-face)))
+            faces)))
+
+(defun artin/foo (beg end)
+  (interactive "r")
+  (let* ((pat-str (buffer-substring beg end))
+         (binding-var-regexp "\s[^,{]=?\s[[:lower:]]+\\([[:digit:]]+\\)+")
+         (matched-str (string-match binding-var-regexp pat-str))
+         (num-suffix-str (match-string 1))
+         (new-num-suffix (pp-to-string (1+ (string-to-number num-suffix-str)))))
+    (save-excursion
+      (end-of-buffer)
+      (insert matched-str))))
+
+(defun haskell-copy-pat-inc-fvs (beg end)
+  "Copy pattern to the kill ring and increcment the number
+at the end of its variable
+Example: (Just v1) becomes (Just v2)
+         (v1, v2) becomes (v3, v4)"
+  (interactive "r")
+  (let* ((pat-str (buffer-substring beg end))
+         (binding-var-regexp "\s[^,{]=?\s[[:lower:]]+\\([[:digit:]]+\\)+")
+         (matched-str (string-match binding-var-regexp pat-str))
+         (num-suffix-str (match-string 1))
+         (new-num-suffix (pp-to-string (1+ (string-to-number num-suffix-str)))))
+    (save-excursion
+      (end-of-buffer)
+      (insert (replace-match new-num-suffix nil nil matched-str 1)))))
+
 (use-package haskell-mode
-    :straight t
-    :demand t
-    :config
-    (require 'subword)
-    (setq haskell-font-lock-symbols nil
-          haskell-stylish-on-save nil
-          haskell-process-log t
-          haskell-process-args-cabal-repl '("--ghc-option=-ferror-spans")
-          haskell-process-sugggest-hoogle-imports t)
-    (set-face-foreground 'haskell-type-face "Orange")
-    (set-face-foreground 'haskell-constructor-face "Orange")
-    :bind
-    (:map haskell-mode-map
-          ("<C-m> C-w" . avy-goto-subword-1)
-          ("<C-m> <C-m>" . avy-goto-subword-1)
-          ("C-;" . avy-goto-subword-1)
-          ("C-c C-;" . haskell-block-comment-region)
-          ("C-c M-o" . haskell-mode-tag-find)
-          ("C-c h" . consult-hoogle)
-          ("C-c C-o" . haskell-interactive-bring)
-          ("C-c i p" . haskell-command-insert-language-pragma)
-          ("C-c C-u" . insert-haskell-undefined)
-          ("C-c i s" . haskell-mode-toggle-scc-at-point)
-          ("C-c C-d" . haskell-process-do-info)
-          ("C-c i m" . haskell-add-import)
-          ("C-c m" . haskell-navigate-imports)
-          ("C-c C-n" . haskell-ds-forward-decl)
-          ("C-c C-p" . haskell-ds-backward-decl)
-          ("C-x C-n" . next-error)
-          ("C-x C-p" . previous-error)
-          ("M-n" . haskell-ds-forward-decl)
-          ("M-p" . haskell-ds-backward-decl)
-          ("M-g M-w" . avy-goto-subword-1)
-          ("C-S-f" . subword-forward)
-          ("C-S-b" . subword-backward)
-          ("C-S-d" . subword-kill)
-          ("C-S-t" . subword-transpose)
-          ("C-<backspace>" . subword-backward-kill)
-          ("M-S-<backspace>" . subword-backward-kill))
-    :hook
-    (haskell-mode . haskell-auto-insert-module-template)
-    (haskell-mode . interactive-haskell-mode)
-    (haskell-mode . haskell-indentation-mode)
-    (haskell-mode . haskell-decl-scan-mode)
-    (haskell-mode . hindent-mode))
+  :straight t
+  :demand t
+  :config
+  (require 'subword)
+  (setq haskell-font-lock-symbols nil
+        haskell-stylish-on-save nil
+        haskell-process-log t
+        haskell-process-args-cabal-repl '("--ghc-option=-ferror-spans")
+        haskell-process-sugggest-hoogle-imports t)
+  :bind
+  (:map haskell-mode-map
+        ("<C-m> C-w" . avy-goto-subword-1)
+        ("<C-m> <C-m>" . avy-goto-subword-1)
+        ("C-;" . avy-goto-subword-1)
+        ("C-c C-;" . haskell-block-comment-region)
+        ("C-c M-o" . haskell-mode-tag-find)
+        ("C-c h" . consult-hoogle)
+        ("C-c C-o C-o" . open-GHC-style-note-at-point)
+        ("C-c C-o n" . open-GHC-style-note)
+        ("C-c C-o i" . open-issue-at-point)
+        ("C-c C-o m" . open-MR-at-point)
+        ("C-c i p" . haskell-command-insert-language-pragma)
+        ("C-c C-u" . insert-haskell-undefined)
+        ("C-c i s" . haskell-mode-toggle-scc-at-point)
+        ("C-c C-d" . haskell-process-do-info)
+        ("C-c i m" . haskell-add-import)
+        ("C-c m" . haskell-navigate-imports)
+        ("C-c C-n" . haskell-ds-forward-decl)
+        ("C-c C-p" . haskell-ds-backward-decl)
+        ("C-x C-n" . next-error)
+        ("C-x C-p" . previous-error)
+        ("M-n" . haskell-ds-forward-decl)
+        ("M-p" . haskell-ds-backward-decl)
+        ("M-g M-w" . avy-goto-subword-1)
+        ("C-S-f" . subword-forward)
+        ("C-S-b" . subword-backward)
+        ("C-S-d" . subword-kill)
+        ("C-S-t" . subword-transpose)
+        ("C-<backspace>" . subword-backward-kill)
+        ("M-S-<backspace>" . subword-backward-kill))
+  :hook
+  (haskell-mode . haskell-auto-insert-module-template)
+  (haskell-mode . interactive-haskell-mode)
+  (haskell-mode . haskell-indentation-mode)
+  (haskell-mode . haskell-decl-scan-mode)
+  (haskell-mode . hindent-mode))
 
 ;; TODO: Make this ask for options to pass to cabal repl so that we can
 ;; have support for multiple home units

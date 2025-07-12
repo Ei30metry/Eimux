@@ -5,11 +5,30 @@
 
 (global-unset-key (kbd "C-x D"))
 
+(use-package dired-preview
+  :straight t
+  :config
+  (setq dired-preview-delay 0.4
+        dired-preview-max-size (expt 2 20)
+        dired-preview-ignored-extensions-regexp
+        (concat "\\."
+                "\\(gz\\|"
+                "zst\\|"
+                "tar\\|"
+                "xz\\|"
+                "rar\\|"
+                "zip\\|"
+                "iso\\|"
+                "\\)")))
+
+(use-package dwim-shell-command :straight t)
+
 (use-package dired
   :bind
   ("C-x D" . dired-jump)
   (:map dired-mode-map
-        ("C-j" . dired-jump))
+        ("C-j" . dired-jump)
+        ("P" . dired-preview-mode))
   :config
   (let ((gls (executable-find "gls")))
     (when gls (setq insert-directory-program gls)))
@@ -18,5 +37,10 @@
         dired-listing-switches "-alFh"))
 
 (use-package disk-usage :straight t)
+
+(use-package dired-narrow :straight t)
+
+;; Default values for demo purposes
+
 
 (provide 'dired-config)

@@ -20,6 +20,7 @@
   ("M-#" . osx-dictionary-search-word-at-point)
   (:map osx-dictionary-mode-map
         ("k" . osx-dictionary-quit)
+        ("<mouse-3>" . osx-dictionary-quit)
         ("j" . osx-dictionary-search-word-at-point)))
 
 (provide 'writing-utils)

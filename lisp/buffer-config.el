@@ -5,7 +5,7 @@
 (setq initial-major-mode 'emacs-lisp-mode)
 (setq switch-to-buffer-obey-display-actions t)
 
-(setq before-save-hook '(delete-trailing-whitespace))
+(add-hook 'before-save-hook #'delete-trailing-whitespace)
 
 (setq display-buffer-alist
       '(((or . ((derived-mode . helpful-mode)
@@ -83,10 +83,10 @@ REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\|idris2-repl\\|te
          (allow-no-window . t))))
 
 (add-hook 'minibuffer-exit-hook
-      #'(lambda ()
-         (let ((buffer "*Completions*"))
-           (and (get-buffer buffer)
-            (kill-buffer buffer)))))
+      (lambda ()
+       (let ((buffer "*Completions*"))
+         (and (get-buffer buffer)
+          (kill-buffer buffer)))))
 
 (global-auto-revert-mode 1)
 (setq global-auto-revert-non-file-buffers t
@@ -105,8 +105,6 @@ REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\|idris2-repl\\|te
 
 (require 'ibuffer)
 
-
-
 (use-package ibuffer-vc :straight t :after ibuffer)
 
 (defun ibuffer-set-up-preferred-filters ()
@@ -114,7 +112,7 @@ REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\|idris2-repl\\|te
   (unless (eq ibuffer-sorting-mode 'filename/process)
     (ibuffer-do-sort-by-filename/process)))
 
-(add-hook 'ibuffer-hook 'ibuffer-set-up-preferred-filters)
+(add-hook 'ibuffer-hook #'ibuffer-set-up-preferred-filters)
 
 (setq-default ibuffer-show-empty-filter-groups nil)
 

@@ -18,7 +18,8 @@
 	     :host github
 	     :repo "xenodium/ready-player"
 	     :files ("*.el" "data"))
-  :commands (ready-player-mode))
+  :hook
+  (ready-player-mode . ready-player-toggle-modeline))
 
 (use-package biome :straight t)
 
@@ -52,7 +53,8 @@
 
 (use-package fireplace :straight t)
 
-(add-hook 'comint-mode-hook #'(lambda () (display-line-numbers-mode 1)))
+(add-hook 'comint-mode-hook
+          (lambda () (display-line-numbers-mode 1)))
 
 (defun comint-ansi-color-process-output ()
     (ansi-color-process-output nil)
@@ -68,7 +70,10 @@
   (setq org-image-actual-width nil))
 
 (use-package leetcode
-  :straight t)
+  :straight t
+  :config
+  (setq leetcode-directory "~/Programming/algorithms/leetcode"
+        leetcode-prefer-language "racket"))
 
 (use-package hackerrank
   :straight (hackerrank
@@ -93,10 +98,10 @@
   (proced-auto-update-interval 1)
   (proced-descent t)
   (proced-filter 'user)
-  :config
-  (add-hook 'proced-mode-hook
-            (lambda ()
-              (proced-toggle-auto-update 1))))
+  :hook
+  (proced-mode . (lambda () (proced-toggle-auto-update 1))))
+
+(use-package proced-narrow :straight t :after proced)
 
 (use-package emacs-everywhere :straight t)
 
@@ -104,11 +109,42 @@
 
 (use-package exercism :straight t)
 
-(global-set-key (kbd "C-x C-. C-z r") #'(lambda () (interactive) (find-file "~/.zshrc")))
-(global-set-key (kbd "C-x C-. C-z p") #'(lambda () (interactive) (find-file "~/.zprofile")))
-(global-set-key (kbd "C-x C-. C-z e") #'(lambda () (interactive) (find-file "~/.zshenv")))
-(global-set-key (kbd "C-x C-. C-e o") #'(lambda () (interactive) (find-file "~/.emacs.d/init.el")))
-(global-set-key (kbd "C-x C-. C-e r") #'(lambda () (interactive) (load-file "~/.emacs.d/init.el")))
+(use-package nyan-mode :straight t)
+
+(use-package page-break-lines
+  :straight t
+  :config
+  (global-page-break-lines-mode 1))
+
+(defun delete-following-space (prefix)
+  "Delete all of the space characters between point
+and the first non-space character in front of it.
+If the function is called with a prefix, it will call the
+\\[delete-horizontal-space] command"
+  (interactive "P")
+  (if prefix
+      (delete-horizontal-space)
+    (let ((curr-point (point)))
+      (skip-chars-forward "\s\t")
+      (delete-region curr-point (point)))))
+
+(defun load-init-file ()
+  (interactive)
+  (load-file "~/.emacs.d/init.el"))
+
+(global-set-key (kbd "C-x C-. C-z r") (lambda ()
+                                        (interactive)
+                                        (find-file "~/.zshrc")))
+(global-set-key (kbd "C-x C-. C-z p") (lambda ()
+                                        (interactive)
+                                        (find-file "~/.zprofile")))
+(global-set-key (kbd "C-x C-. C-z e") (lambda ()
+                                        (interactive)
+                                        (find-file "~/.zshenv")))
+(global-set-key (kbd "C-x C-. C-e o") (lambda ()
+                                        (interactive)
+                                        (find-file "~/.emacs.d/init.el")))
+(global-set-key (kbd "C-x C-. C-e r") 'load-init-file)
 (global-set-key (kbd "C-x r j") 'consult-register-load)
 (global-set-key (kbd "C-x C-' p") 'previous-buffer)
 (global-set-key (kbd "C-x C-' n") 'next-buffer)
@@ -118,6 +154,7 @@
 (global-set-key (kbd "M-RET") 'default-indent-new-line)
 (global-set-key (kbd "C-x <C-m>") 'execute-extended-command)
 (global-set-key (kbd "C-x M-f") 'consult-fd)
+(global-set-key (kbd "M-\\") 'delete-following-space)
 (global-set-key (kbd "M-/") 'dabbrev-completion)
 
 (global-unset-key (kbd "C-<mouse-5>"))

@@ -105,7 +105,10 @@
             ("C-n" . vertico-next)
             ("C-p" . vertico-previous))
   :config
-  (setq vertico-cycle t)
+  (setq vertico-cycle t
+        enable-recursive-minibuffers t
+        minibuffer-prompt-properties '(read-only t cursor-intangible t
+                                       face minibuffer-prompt))
   :init
   (vertico-mode))
 

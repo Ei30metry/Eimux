@@ -20,7 +20,41 @@
         org-todo-keywords '((sequence "TODO(t)" "WAIT(w!)" "|" "CANCEL(c!)" "DONE(d!)"))
         org-agenda-files '("~/Agenda/tasks.org"))
   :hook
-  (org-agenda-mode . (lambda () (visual-line-mode -1) (toggle-truncate-lines 1))))
+  (org-agenda-mode . (lambda ()
+                       (visual-line-mode -1)
+                       (toggle-truncate-lines 1))))
+
+
+(defun org-heading-remove-scheduled ()
+  "Remove the SCHEDULED property"
+  (interactive)
+  (cl-flet ((remove-schedule ()
+              (save-excursion
+                (let ((keyword (org-entry-get (point) "SCHEDULED")))
+                  (when keyword
+                    (org-remove-timestamp-with-keyword org-scheduled-string))))))
+    (if (region-active-p)
+        (org-map-entries #'remove-schedule)
+      (remove-schedule))))
+
+(defun org-heading-remove-deadline ()
+  "Remove the DEADLINE property"
+  (interactive)
+  (cl-flet ((remove-deadline ()
+              (save-excursion
+                (let ((keyword (org-entry-get (point) "DEADLINE")))
+                  (when keyword
+                    (org-remove-timestamp-with-keyword org-deadline-string))))))
+    (if (region-active-p)
+        (org-map-entries #'remove-deadline)
+      (remove-deadline))))
+
+(defun org-heading-remove-scheduled-and-deadline ()
+  "Remove the SCHEDULED and DEADLINE properties"
+  (interactive)
+  (org-heading-remove-scheduled)
+  (org-heading-remove-deadline))
+
 
 (require 'org-tempo)
 (setq org-structure-template-alist
@@ -33,7 +67,8 @@
         ("rs" . "src rust")
         ("c"  . "src c")
         ("t"  . "src txt")
-        ("o"  . "src ott")))
+        ("o"  . "src ott")
+        ("ss" . "src scheme")))
 
 (use-package org-books
  :straight t
@@ -120,23 +155,23 @@
                (when (equal org-state "DONE")
                  (my/org-roam-copy-todo-to-today))))
 
-(use-package websocket-bridge
-  :straight
-  (websocket-bridge
-   :repo "ginqi7/websocket-bridge"
-   :host github
-   :type git
-   :files ("*.el")))
+;; (use-package websocket-bridge
+;;   :straight
+;;   (websocket-bridge
+;;    :repo "ginqi7/websocket-bridge"
+;;    :host github
+;;    :type git
+;;    :files ("*.el")))
 
-(use-package org-reminders
-  :straight (org-reminders
-             :type git
-             :host github
-             :repo "ginqi7/org-reminders"
-             :files ("*.el"))
-  :config
-  (setq org-reminders-sync-file "/Users/artin/Agenda/tasks.org"))
+;; (use-package org-reminders
+;;   :straight (org-reminders
+;;              :type git
+;;              :host github
+;;              :repo "ginqi7/org-reminders"
+;;              :files ("*.el"))
+;;   :config
+;;   (setq org-reminders-sync-file "/Users/artin/Agenda/tasks.org"))
 
-(use-package org-reminders-cli)
+;; (use-package org-reminders-cli)
 
 (provide 'org-config)

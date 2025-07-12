@@ -14,7 +14,8 @@
    :demand t
    :bind
    (:map nov-mode-map
-   ("j" . osx-dictionary-search-word-at-point))
+         ("j" . osx-dictionary-search-word-at-point)
+         ("<mouse-3>" . osx-dictionary-search-word-at-point))
    :mode
    (("\\.epub\\'" . nov-mode))
    :hook
@@ -28,6 +29,7 @@
         ("M-s o" . occur)
         ("<C-m> C-o" . occur)
         ("o" . pdf-outline)
+        ("j" . osx-dictionary-search-input)
         ("M-g M-g" . pdf-view-goto-page))
   :mode
   (("\\.pdf\\'" . pdf-view-mode))

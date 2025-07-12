@@ -6,6 +6,8 @@
 (use-package geiser-chez
   :straight t)
 
+(use-package scheme-complete :straight )
+
 (use-package macrostep-geiser
   :straight t
   :after geiser-mode

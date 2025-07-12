@@ -51,4 +51,6 @@
 
 (use-package p-search :straight (:host github :repo "zkry/p-search"))
 
+(use-package symbol-overlay :straight t)
+
 (provide 'code-navigation-config)

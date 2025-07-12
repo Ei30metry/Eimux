@@ -81,15 +81,18 @@
           "\\*Backtrace\\*"
           "\\*Async Shell Command\\*"
           "\\*sly-\\(macroexpansion\\|description\\|db for*\\)\\*"
+          inferior-python-mode
           help-mode
           compilation-mode
           haskell-interactive-mode
           comint-mode
           vterm-mode
+          eat-mode
           pdf-outline-buffer-mode
           helpful-mode
           osx-dictionary-mode
           racket-repl-mode
+          racket-describe-mode
           nix-repl-mode
           idris2-repl-mode
           idris2-info-mode

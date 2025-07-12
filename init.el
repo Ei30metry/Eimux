@@ -82,23 +82,22 @@
 (require 'python-config)
 (require 'swift-config)
 (require 'ott-config)
-(use-package markdown-mode :straight t)
+(require 'markdown-config)
 (require 'serialization-stuff)
 (require 'writing-utils)
 (require 'media-config)
 (require 'mail-config)
 (require 'telega-ement-config)
-(require 'elfeed-
-         config)
+(require 'elfeed-config)
 (require 'compilation-config)
 (require 'lsp-config)
 (require 'misc)
 
-(dolist (k '("C-x C-j" "C-x C-p"
-             "C-x C-o" "C-x C-w"
-             "C-z"     "C-x C-d"
-             "C-M-m"))
-  (global-unset-key (kbd k)))
+(mapcar (lambda (k) (global-unset-key (kbd k)))
+        (list "C-x C-j" "C-x C-p"
+              "C-x C-o" "C-x C-w"
+              "C-z"     "C-x C-d"
+              "C-M-m"))
 
 (define-key input-decode-map [?\C-m] [C-m])
 
