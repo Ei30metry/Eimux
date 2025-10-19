@@ -28,7 +28,7 @@
 (use-package avy
     :straight t
     :demand t
-    :config (avy-setup-default)
+
     :bind
     ("C-;" . avy-goto-word-1)
     ("<C-m> C-c" . avy-goto-char-2)
@@ -36,7 +36,24 @@
     ("<C-m> C-w" . avy-goto-word-1)
     ("<C-m> <C-m>" . avy-goto-word-1)
     (:map isearch-mode-map
-    ("C-;" . avy-isearch)))
+          ("C-;" . avy-isearch))
+
+    :config
+    (defun avy-action-teleport-whole-line (pt)
+      (avy-action-kill-whole-line pt)
+      (save-excursion (yank)) t)
+
+    (defun avy-action-embark (pt)
+      (unwind-protect
+          (save-excursion
+            (goto-char pt)
+            (embark-act))
+        (select-window
+         (cdr (ring-ref avy-ring 0))))
+      t)
+
+    (setf (alist-get ?T avy-dispatch-alist) 'avy-action-teleport-whole-line
+          (alist-get ?. avy-dispatch-alist) 'avy-action-embark))
 
 (use-package isearch
   :config
@@ -50,6 +67,8 @@
 (setq grep-command "rg -nS --no-heading ")
 
 (use-package p-search :straight (:host github :repo "zkry/p-search"))
+
+(use-package deadgrep :straight t)
 
 (use-package symbol-overlay :straight t)
 

@@ -72,6 +72,7 @@
           "\\*Help\\*"
           "\\*hoogle\\*"
           "\\*haskell\\*"
+          "\\*eldoc\\*"
           "\\*Tex Help\\*"
           "\\*toc\\*"
           "\\*Occur\\*"
@@ -104,6 +105,8 @@
           eshell-mode))
   (popper-mode +1)
   (popper-echo-mode +1))                ; For echo area hints
+
+(use-package fontaine :straight t)
 
 (set-face-attribute 'default nil
                     :font "JetBrains Mono 13"

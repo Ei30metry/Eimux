@@ -23,4 +23,9 @@
         ("<mouse-3>" . osx-dictionary-quit)
         ("j" . osx-dictionary-search-word-at-point)))
 
+(use-package spacious-padding :straight t)
+(use-package wc-mode :straight t)
+(use-package tmr :straight t)
+(use-package logos :straight t)
+
 (provide 'writing-utils)

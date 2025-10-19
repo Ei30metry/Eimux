@@ -1,14 +1,14 @@
 (use-package python-mode
   :config
-  (setq python-interpreter "python")
+  (setq python-interpreter "ipython")
   :bind
   (:map python-mode-map
         ("M-q" . ruff-format-region)))
 
-(use-package pet
-  :straight t
-  :config
-  (add-hook 'python-base-mode-hook 'pet-mode -10))
+;; (use-package pet
+;;   :straight t
+;;   :config
+;;   (add-hook 'python-base-mode-hook 'pet-mode -10))
 
 (use-package uv-menu
   :straight (uv-menu

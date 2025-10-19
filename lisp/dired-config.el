@@ -28,7 +28,8 @@
   ("C-x D" . dired-jump)
   (:map dired-mode-map
         ("C-j" . dired-jump)
-        ("P" . dired-preview-mode))
+        ("P"   . dired-preview-mode)
+        ("e"   . dired-toggle-read-only))
   :config
   (let ((gls (executable-find "gls")))
     (when gls (setq insert-directory-program gls)))
@@ -39,6 +40,8 @@
 (use-package disk-usage :straight t)
 
 (use-package dired-narrow :straight t)
+
+(use-package dired-atool :straight t)
 
 ;; Default values for demo purposes
 

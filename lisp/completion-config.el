@@ -12,7 +12,9 @@
    ("<C-m> C-d" . consult-mark)
    ("M-g M-m" . consult-mark)
    (:map org-mode-map
-   ("<C-m> C-i" . consult-org-heading)))
+         ("<C-m> C-i" . consult-org-heading))
+   :custom
+   (consult-ripgrep-args "rga --null --line-buffered --color=never --max-columns=1000  --smart-case --no-heading --with-filename --line-number"))
 
 (setq completion-in-region-function
       (lambda (&rest args)
@@ -88,8 +90,11 @@
     :straight t
     :demand t
     :bind
+    ("C-x C-j" . embark-act)
     (:map minibuffer-mode-map
           ("C-." . embark-act))
+    (:map embark-mode-map
+          ("S" . sudo-find-file))
     :config
     (setq prefix-help-command #'embark-prefix-help-command))
 

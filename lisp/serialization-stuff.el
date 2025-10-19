@@ -9,4 +9,11 @@
 (use-package csv-mode
   :straight t)
 
+(use-package grid-table
+  :straight (grid-table
+             :type git
+             :host github
+             :repo "yibie/grid-table"
+             :files ("*.el")))
+
 (provide 'serialization-stuff)

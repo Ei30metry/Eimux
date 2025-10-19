@@ -42,6 +42,17 @@
   (doom-themes-org-config)
   (load-theme 'doom-1337 t))
 
+(use-package autothemer :straight t)
+
+(use-package kanagawa-themes :straight t)
+
+(use-package oxocarbon-emacs
+  :straight (oxocarbon-theme
+             :type git
+             :host github
+             :repo "konrad1977/oxocarbon-emacs"
+             :files ("*.el")))
+
 (use-package stimmung-themes :straight t)
 
 (use-package kaolin-themes :straight t)
@@ -50,29 +61,12 @@
 
 (use-package humanoid-themes :straight t)
 
-(use-package lambda-line
-  :straight
-  (:type git :host github :repo "lambda-emacs/lambda-line")
-  :custom
-  (lambda-line-position 'bottom) ;; Set position of status-line
-  (lambda-line-abbrev t) ;; abbreviate major modes
-  (lambda-line-hspace "   ")  ;; add some cushion
-  (lambda-line-prefix t) ;; use a prefix symbol
-  (lambda-line-prefix-padding nil) ;; no extra space for prefix
-  (lambda-line-git-diff-mode-line nilx)
-  (lambda-line-status-invert nil)  ;; no invert colors
-  (lambda-line-gui-ro-symbol  " ⨂") ;; symbols
-  (lambda-line-gui-mod-symbol " ⬤")
-  (lambda-line-gui-rw-symbol  " ◯")
-  (lambda-line-vc-symbol "  ")
-  (lambda-line-git-diff-mode-line nil)
-  (lambda-line-space-top +.15)  ;; padding on top and bottom of line
-  (lambda-line-space-bottom -.15)
-  (lambda-line-symbol-position 0.1) ;; adjust the vertical placement of symbol
-  :config
-  (when (eq lambda-line-position 'top)
-    (setq-default mode-line-format (list "%_"))
-    (setq mode-line-format (list "%_"))))
+(use-package flyover
+  :straight (flyover
+             :type git
+             :host github
+             :repo "konrad1977/flyover"
+             :files ("*.el")))
 
 (use-package doom-modeline
   :straight t

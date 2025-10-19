@@ -35,4 +35,9 @@
   (interactive)
   (switch-to-buffer (podcast-utils/episode-note-buffer)))
 
+;; TODO: Implement me
+(defun podcast-utils/echo-episode-length ()
+  (interactive)
+  (message "TODO"))
+
 (provide 'podcast-utils)

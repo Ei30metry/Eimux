@@ -1,8 +1,12 @@
 ;;; lsp-config.el --- Description -*- lexical-binding: t; -*-
+
 (setq gc-cons-threshold 100000000)
+
+(setq artin/pyright-uvx-command
+      '("uvx" "--from" "pyright" "pyright-langserver" "--" "--stdio"))
+
 (use-package eglot
-  :ensure nil
-  :commands eglot
+  :demand t
   :bind
   ("C-c C-e C-e" . eglot)
   (:map eglot-mode-map
@@ -26,7 +30,12 @@
   (setq-default eglot-workspace-configuration
         '((haskell (plugin (stan (globalOn . :json-false))))))
   (setq eglot-confirm-server-initiated-edits nil
-        eglot-events-buffer-config '(:size 0 :format full)))
+        eglot-events-buffer-config '(:size 0 :format full))
+
+  (add-to-list 'eglot-server-programs
+               `(python-mode . ,artin/pyright-uvx-command))
+  (add-to-list 'eglot-server-programs
+               '(swift-mode . ("xcrun" "sourcekit-lsp"))))
 
 (use-package eglot-booster
   :straight (eglot-booster
@@ -45,7 +54,8 @@
 	     :repo "nemethf/eglot-x"
 	     :files ("*.el"))
   :config
-  :after rustic
+  :after after
+  (require 'eglot-x)
   (eglot-x-setup))
 
 (provide 'lsp-config)

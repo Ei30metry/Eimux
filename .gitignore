@@ -46,3 +46,5 @@ etc
 etc/
 var/
 tree-sitter/
+mindstream/
+ido.last

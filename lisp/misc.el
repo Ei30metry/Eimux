@@ -71,9 +71,14 @@
 
 (use-package leetcode
   :straight t
+  :bind
+  (:map leetcode-solution-mode-map
+        ("C-c C-s" . nil)
+        ("C-c C-t" . nil))
   :config
   (setq leetcode-directory "~/Programming/algorithms/leetcode"
-        leetcode-prefer-language "racket"))
+        leetcode-prefer-language "racket"
+        leetcode-save-solutions t))
 
 (use-package hackerrank
   :straight (hackerrank
@@ -110,6 +115,10 @@
 (use-package exercism :straight t)
 
 (use-package nyan-mode :straight t)
+
+(use-package sqlite-mode-extras
+  :straight t
+  :hook ((sqlite-mode . sqlite-extras-minor-mode)))
 
 (use-package page-break-lines
   :straight t
@@ -156,9 +165,51 @@ If the function is called with a prefix, it will call the
 (global-set-key (kbd "C-x M-f") 'consult-fd)
 (global-set-key (kbd "M-\\") 'delete-following-space)
 (global-set-key (kbd "M-/") 'dabbrev-completion)
+(global-set-key (kbd "C-x C-f") 'ffap)
 
 (global-unset-key (kbd "C-<mouse-5>"))
 (global-unset-key (kbd "C-<wheel-up>"))
 (global-unset-key (kbd "C-<wheel-down>"))
+
+(setq help-at-pt-display-when-idle t)
+
+(use-package pacmacs
+  :straight t
+  :config
+  (setq pacmacs-lives 10
+        pacmacs-current-level 3)
+  :bind
+  (:map pacmacs-mode-map
+        ("w" . pacmacs-up)
+        ("a" . pacmacs-left)
+        ("d" . pacmacs-right)
+        ("s" . pacmacs-down)))
+
+(use-package snake
+  :bind
+  (:map snake-mode-map
+        ("w" . snake-move-up)
+        ("a" . snake-move-left)
+        ("d" . snake-move-right)
+        ("s" . snake-move-down)))
+
+(use-package know-your-http-well :straight t)
+
+(defun delete-buffer ()
+  (interactive)
+  (with-current-buffer (current-buffer)
+    (delete-region (point-min) (point-max))))
+
+(defun sudo-find-file (file)
+  "Open FILE as root."
+  (interactive "FOpen file as root: ")
+  (when (file-writable-p file)
+    (user-error "File is user writeable, aborting sudo"))
+  (find-file (if (file-remote-p file)
+                 (concat "/" (file-remote-p file 'method) ":"
+                         (file-remote-p file 'user) "@" (file-remote-p file 'host)
+                         "|sudo:root@"
+                         (file-remote-p file 'host) ":" (file-remote-p file 'localname))
+               (concat "/sudo:root@localhost:" file))))
 
 (provide 'misc)

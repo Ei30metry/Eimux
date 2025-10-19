@@ -11,7 +11,7 @@
       '(((or . ((derived-mode . helpful-mode)
                 (derived-mode . idris2-info-mode)
                 (derived-mode . sly-db-mode)
-           "\\*\\(Help\\|haskell-compilation\\|compilation\\|sly-description\\|sly-macroexpansion\\|toc\\)\\*"))
+           "\\*\\(Help\\|haskell-compilation\\|compilation\\|sly-description\\|sly-macroexpansion\\|toc\\|eldoc\\)\\*"))
          (display-buffer-reuse-mode-window
           display-buffer-below-selected)
           (window-height . 20)
@@ -154,5 +154,13 @@ REPL </>\\|Racket Describe </>\\|Racket Logger </>\\|Tex Help\\|idris2-repl\\|te
   :bind
   ("C-h <C-m>" . "discover-my-major")
   ("C-h M-m" . discover-my-mode))
+
+(use-package bufferfile
+  :straight (bufferfile
+             :type git
+             :host github
+             :repo "jamescherti/bufferfile.el")
+  :config
+  (setq bufferfile-use-vc t))
 
 (provide 'buffer-config)

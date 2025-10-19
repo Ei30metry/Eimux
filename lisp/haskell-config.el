@@ -127,31 +127,21 @@
   (add-to-list 'vertico-multiform-commands
                '(consult-hoogle buffer)))
 
-(defun fix-doom-1337-haskell-faces ()
+;; TODO: Move to somewhere better
+(defun fix-doom-1337-type-and-constructor-faces ()
   "Change the default faces for `haskell-constructor-face' and
 `haskell-type-face'set by doom-1337 to orange"
   (interactive)
   (let ((doom-1337-theme (custom-theme-enabled-p 'doom-1337))
         (CL-face (face-attribute 'font-lock-type-face :foreground))
         (orange "#ff9200")
-        (faces (list 'haskell-type-face 'haskell-constructor-face))
+        (faces (list 'haskell-type-face 'haskell-constructor-face 'font-lock-type-face))
         (correct-haskell-type-face ))
     (mapcar (lambda (face)
               (set-face-foreground face (if doom-1337-theme
                                             orange
                                           CL-face)))
             faces)))
-
-(defun artin/foo (beg end)
-  (interactive "r")
-  (let* ((pat-str (buffer-substring beg end))
-         (binding-var-regexp "\s[^,{]=?\s[[:lower:]]+\\([[:digit:]]+\\)+")
-         (matched-str (string-match binding-var-regexp pat-str))
-         (num-suffix-str (match-string 1))
-         (new-num-suffix (pp-to-string (1+ (string-to-number num-suffix-str)))))
-    (save-excursion
-      (end-of-buffer)
-      (insert matched-str))))
 
 (defun haskell-copy-pat-inc-fvs (beg end)
   "Copy pattern to the kill ring and increcment the number
@@ -186,8 +176,8 @@ Example: (Just v1) becomes (Just v2)
         ("C-c C-;" . haskell-block-comment-region)
         ("C-c M-o" . haskell-mode-tag-find)
         ("C-c h" . consult-hoogle)
-        ("C-c C-o C-o" . open-GHC-style-note-at-point)
-        ("C-c C-o n" . open-GHC-style-note)
+        ("C-c C-o C-o" . ghc-notes-goto-note-at-point)
+        ("C-c C-o n" . consult-ghc-notes-project)
         ("C-c C-o i" . open-issue-at-point)
         ("C-c C-o m" . open-MR-at-point)
         ("C-c i p" . haskell-command-insert-language-pragma)

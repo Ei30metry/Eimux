@@ -1,4 +1,5 @@
 ;;; org-config.el --- Description -*- lexical-binding: t; -*-
+
 (use-package org
   :straight t
   :demand t
@@ -18,12 +19,20 @@
         org-return-follows-link t
         org-src-tab-acts-natively nil
         org-todo-keywords '((sequence "TODO(t)" "WAIT(w!)" "|" "CANCEL(c!)" "DONE(d!)"))
-        org-agenda-files '("~/Agenda/tasks.org"))
+        org-agenda-files '("~/Agenda/tasks.org")
+        org-extend-today-until 3
+        org-use-effective-time t)
   :hook
   (org-agenda-mode . (lambda ()
                        (visual-line-mode -1)
                        (toggle-truncate-lines 1))))
 
+(defun echo-area-tooltips ()
+  "Show tooltips in the echo area automatically for current buffer."
+  (setq-local help-at-pt-display-when-idle t
+              help-at-pt-timer-delay 0)
+  (help-at-pt-cancel-timer)
+  (help-at-pt-set-timer))
 
 (defun org-heading-remove-scheduled ()
   "Remove the SCHEDULED property"
@@ -130,7 +139,21 @@
  :hook
  (org-mode . toc-org-mode))
 
+(use-package org-roam-ql
+  :straight t)
+
+(use-package org-super-agenda
+  :straight t)
+
 (use-package org-pomodoro :straight t)
+
+;; (use-package org-supertag :straight t)
+
+(use-package org-workbench
+  :straight (:host github :repo "yibie/org-workbench")
+  :after org-roam ; or org-roam, org-brain, etc.
+  :config
+  (org-workbench-setup))
 
 (defun my/org-roam-copy-todo-to-today ()
   (interactive)

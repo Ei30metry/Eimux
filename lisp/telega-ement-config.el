@@ -22,4 +22,14 @@
     :config
     (setq ement-auto-sync nil))
 
+(use-package imessage
+  :straight (imessage
+             :type git
+             :host github
+             :repo "sahlhoff/imessage"
+             :files (".el"))
+  :init
+  (require 's)
+  (require 'helm))
+
 (provide 'telega-ement-config)

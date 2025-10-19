@@ -1,9 +1,10 @@
 (use-package magit
   :straight t
-  :demand t
-  :commands magit-status)
+  :demand t)
 
 (use-package diff-hl :straight t)
+
+(use-package magit-delta :straight t)
 
 (use-package magit-todos
   :straight t
