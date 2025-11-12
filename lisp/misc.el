@@ -92,7 +92,8 @@
 (use-package gcmh
   :straight t
   :config
-  (gcmh-mode 1))
+  (gcmh-mode 1)
+  (setq gcmh-high-cons-threshold (* 200 1024 1024)))
 
 (use-package proced
   :defer t
@@ -116,6 +117,13 @@
 
 (use-package nyan-mode :straight t)
 
+(use-package time-zones
+  :straight (time-zones
+             :type git
+             :host github
+             :repo "xenodium/time-zones"
+             :files ("*.el")))
+
 (use-package sqlite-mode-extras
   :straight t
   :hook ((sqlite-mode . sqlite-extras-minor-mode)))
@@ -126,7 +134,7 @@
   (global-page-break-lines-mode 1))
 
 (defun delete-following-space (prefix)
-  "Delete all of the space characters between point
+  "Delete the space characters between point
 and the first non-space character in front of it.
 If the function is called with a prefix, it will call the
 \\[delete-horizontal-space] command"
@@ -141,18 +149,26 @@ If the function is called with a prefix, it will call the
   (interactive)
   (load-file "~/.emacs.d/init.el"))
 
-(global-set-key (kbd "C-x C-. C-z r") (lambda ()
-                                        (interactive)
-                                        (find-file "~/.zshrc")))
-(global-set-key (kbd "C-x C-. C-z p") (lambda ()
-                                        (interactive)
-                                        (find-file "~/.zprofile")))
-(global-set-key (kbd "C-x C-. C-z e") (lambda ()
-                                        (interactive)
-                                        (find-file "~/.zshenv")))
-(global-set-key (kbd "C-x C-. C-e o") (lambda ()
-                                        (interactive)
-                                        (find-file "~/.emacs.d/init.el")))
+(global-set-key (kbd "C-x C-. C-z r")
+                (lambda ()
+                  (interactive)
+                  (find-file "~/.zshrc")))
+
+(global-set-key (kbd "C-x C-. C-z p")
+                (lambda ()
+                  (interactive)
+                  (find-file "~/.zprofile")))
+
+(global-set-key (kbd "C-x C-. C-z e")
+                (lambda ()
+                  (interactive)
+                  (find-file "~/.zshenv")))
+
+(global-set-key (kbd "C-x C-. C-e o")
+                (lambda ()
+                  (interactive)
+                  (find-file "~/.emacs.d/init.el")))
+
 (global-set-key (kbd "C-x C-. C-e r") 'load-init-file)
 (global-set-key (kbd "C-x r j") 'consult-register-load)
 (global-set-key (kbd "C-x C-' p") 'previous-buffer)
@@ -172,6 +188,8 @@ If the function is called with a prefix, it will call the
 (global-unset-key (kbd "C-<wheel-down>"))
 
 (setq help-at-pt-display-when-idle t)
+
+(use-package crux :straight t)
 
 (use-package pacmacs
   :straight t

@@ -39,6 +39,15 @@
           ("C-;" . avy-isearch))
 
     :config
+    (defun avy-action-kill-whole-line (pt)
+      (save-excursion
+        (goto-char pt)
+        (kill-whole-line))
+      (select-window
+       (cdr
+        (ring-ref avy-ring 0)))
+      t)
+
     (defun avy-action-teleport-whole-line (pt)
       (avy-action-kill-whole-line pt)
       (save-excursion (yank)) t)

@@ -30,7 +30,12 @@
   (setq-default eglot-workspace-configuration
         '((haskell (plugin (stan (globalOn . :json-false))))))
   (setq eglot-confirm-server-initiated-edits nil
-        eglot-events-buffer-config '(:size 0 :format full))
+        eglot-events-buffer-config '(:size 0 :format full)
+        eglot-events-buffer-size 0
+        eglot-sync-connect nil     ; async startup
+        eglot-extend-to-xref t
+        eglot-autoshutdown t
+        eglot-ignored-server-capabilities '(:documentHighlightProvider))    ; avoid extra process startups
 
   (add-to-list 'eglot-server-programs
                `(python-mode . ,artin/pyright-uvx-command))

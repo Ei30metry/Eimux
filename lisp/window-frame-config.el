@@ -81,6 +81,7 @@
           "Output\\*$"
           "\\*Backtrace\\*"
           "\\*Async Shell Command\\*"
+          "\\*haskell-compilation\\*"
           "\\*sly-\\(macroexpansion\\|description\\|db for*\\)\\*"
           inferior-python-mode
           help-mode

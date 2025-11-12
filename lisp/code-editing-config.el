@@ -24,7 +24,11 @@
 (global-set-key (kbd "C-x M-a M-c") 'align-current)
 (global-set-key (kbd "C-x M-a M-e") 'align-entire)
 
-(use-package format-all :straight t)
+(use-package format-all
+  :straight t
+  :bind
+  (:map prog-mode-map
+        ("C-c C-f" . format-all-region-or-buffer)))
 
 (use-package zzz-to-char
   :straight t

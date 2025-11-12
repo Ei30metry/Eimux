@@ -231,4 +231,6 @@ Example: (Just v1) becomes (Just v2)
   (treesit-install-language-grammar 'haskell)
   (treesit-install-language-grammar 'cabal))
 
+(require 'ghc-notes)
+
 (provide 'haskell-config)

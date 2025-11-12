@@ -6,10 +6,10 @@
   (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
   (add-to-list 'auto-mode-alist '("/go\\.mod\\'" . go-mod-ts-mode))
   :config
-  (setq go-ts-mode-indent-offset 4))
+  (setq go-ts-mode-indent-offset 4)
+  (add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode)))
 
 
-(use-package go-mode
-  :straight t)
+(use-package gotest :straight t)
 
-(use-package go-eldoc :straight t)
+(use-package gorepl-mode :straight t)

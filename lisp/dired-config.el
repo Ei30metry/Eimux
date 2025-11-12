@@ -43,6 +43,13 @@
 
 (use-package dired-atool :straight t)
 
+(use-package oil
+  :straight (oil
+	     :type git
+	     :host github
+	     :repo "yibie/Oil.el"
+	     :files ("*.el")))
+
 ;; Default values for demo purposes
 
 

@@ -1,20 +1,27 @@
 ;; -*- lexical-binding: t; -*-
 
-;; https://codeberg.org/woolsweater/.emacs.d/src/branch/main/modules/my-swift-mode.el
-(require 'cl-lib)
-(require 'swift-lsp)
-(require 'apple-docs-query)
-(require 'xcode-build)
-(require 'swift-refactor)
-
 (use-package swift-mode
   :straight t)
 
 (use-package swift-helpful :straight t)
 
-;; (use-package flycheck-swift :straight t)
-
 (use-package swift-format :straight t)
+
+(use-package swift-development
+  :straight (swift-development
+             :type git
+             :host github
+             :repo "konrad1977/swift-development"
+             :files ("*.el"))
+  :config
+  (require 'swift-development)
+  (require 'xcode-project)
+  (require 'xcode-build-config)
+
+  (require 'ios-simulator)
+  (require 'ios-device)
+  (require 'swift-refactor)
+  (require 'localizeable-mode))
 
 ;;; swift-config.el ends here
 (provide 'swift-config)

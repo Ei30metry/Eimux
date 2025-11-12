@@ -9,9 +9,6 @@
 ;; Version: 0.0.1
 
 ;;; Code:
-(setq gc-cons-threshold (* 50 1000 1000)
-      read-process-output-max (* 1024 1024))
-
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name
@@ -32,7 +29,9 @@
 
 (setq locale-coding-system 'utf-8
       mac-command-modifier 'meta
-      mac-option-modifier 'super)
+      mac-option-modifier 'super
+      mac-pass-command-to-system nil
+      mac-pass-control-to-system nil)
 
 (set-terminal-coding-system 'utf-8-unix)
 (set-keyboard-coding-system 'utf-8)
@@ -40,6 +39,12 @@
 (prefer-coding-system 'utf-8)
 
 (push (expand-file-name "~/.emacs.d/lisp") load-path)
+
+(setq native-comp-async-report-warnings-errors 'silent
+      native-comp-speed 3
+      native-comp-deferred-compilation t)
+
+(setq straight-disable-native-compile nil)
 
 (require 'env-stuff)
 (require 'org-config)
@@ -96,6 +101,8 @@
 (require 'elfeed-config)
 (require 'compilation-config)
 (require 'lsp-config)
+(require 'dap-config)
+(require 'docker-config)
 (require 'misc)
 
 (mapcar (lambda (k) (global-unset-key (kbd k)))

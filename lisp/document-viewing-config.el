@@ -56,6 +56,11 @@
   (pdf-view-mode . pdf-view-midnight-minor-mode))
 
 
+(defun artin/add-current-word-to-new-words (word)
+  "Adds word to the new words section of the book that is currently being read."
+  (message "Not implemented yet"))
+
+
 (use-package pdf-history
   :ensure nil
   :hook ((pdf-view-mode . pdf-history-minor-mode)))

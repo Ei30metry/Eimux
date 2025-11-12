@@ -24,6 +24,10 @@
 (column-number-mode 1)
 
 (add-hook 'prog-mode-hook (lambda () (display-line-numbers-mode 1)))
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (unless (bound-and-true-p treesit-font-lock-feature-list)
+              (setq-local jit-lock-defer-time 0.03))))
 
 (require 'hl-line)
 
