@@ -6,6 +6,11 @@
 
 (use-package magit-delta :straight t)
 
+(use-package magit-pre-commit
+  :straight (:host github
+             :repo "DamianB-BitFlipper/magit-pre-commit.el")
+  :after magit)
+
 (use-package magit-todos
   :straight t
   :after magit

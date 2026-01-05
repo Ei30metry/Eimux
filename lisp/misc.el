@@ -23,7 +23,17 @@
 
 (use-package biome :straight t)
 
-(use-package aria2 :straight t)
+(use-package aria2
+  :straight t
+  :custom
+  (aria2-download-directory "~/Downloads/aria2-downlods/")
+  (aria2-start-rpc-server t)
+  :config
+  (unless aria2--cc
+    (setq aria2--cc
+          (if (and aria2-cc-file (file-exists-p aria2-cc-file))
+              (eieio-persistent-read aria2-cc-file 'aria2-controller)
+            (make-instance 'aria2-controller)))))
 
 (use-package speed-type
     :straight t
@@ -35,6 +45,14 @@
      ("C-i" . speed-type--replay))
     :config
     (setq speed-type-default-lang 'English))
+
+
+(use-package detached
+  :straight t
+  :init
+  (detached-init)
+  :custom ((detached-show-output-on-attach t)
+           (detached-terminal-data-command system-type)))
 
 (use-package bnf-mode :straight t)
 

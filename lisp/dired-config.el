@@ -50,7 +50,13 @@
 	     :repo "yibie/Oil.el"
 	     :files ("*.el")))
 
-;; Default values for demo purposes
+(use-package grease
+  :staright (grease
+             :type git
+             :host github
+             :repo "mwac-dev/grease.el"
+             :files ("*.el")))
 
+(use-package dirvish :straight t)
 
 (provide 'dired-config)

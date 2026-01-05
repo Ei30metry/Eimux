@@ -18,7 +18,7 @@
         org-hide-emphasis-markers t
         org-return-follows-link t
         org-src-tab-acts-natively nil
-        org-todo-keywords '((sequence "TODO(t)" "WAIT(w!)" "|" "CANCEL(c!)" "DONE(d!)"))
+        org-todo-keywords '((sequence "TODO(t)" "WAIT(w!)" "DOING(D)" "|" "CANCEL(c!)" "DONE(d!)"))
         org-agenda-files '("~/Agenda/tasks.org")
         org-extend-today-until 3
         org-use-effective-time t)

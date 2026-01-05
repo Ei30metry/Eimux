@@ -5,7 +5,7 @@
 
 (winner-mode 1)
 
-(setq display-line-numbers-type 't
+(setq display-line-numbers-type 'nil
       scroll-conservatively 101)
    (if (display-graphic-p)
        (menu-bar-mode 1)

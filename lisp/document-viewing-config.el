@@ -95,4 +95,11 @@
 
 (use-package shrface :straight t)
 
+(use-package calibredb
+  :straight t
+  :config
+  (setq calibredb-root-dir "~/Books")
+  (setq calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
+  (setq calibredb-library-alist '(("~/Books" (name . "Books")))))
+
 (provide 'document-viewing-config)

@@ -75,6 +75,8 @@
 
 (setq grep-command "rg -nS --no-heading ")
 
+(use-package wgrep :straight t)
+
 (use-package p-search :straight (:host github :repo "zkry/p-search"))
 
 (use-package deadgrep :straight t)
